@@ -18,9 +18,61 @@ export type AgendaEvent = {
   registrationDeadline: string;
   description: string;
   practical: string[];
+  showInAgenda?: boolean;
+  detailVariant?: "standard" | "travel";
+  subtitle?: string;
+  travel?: {
+    dateRange: string;
+    destination: string;
+    transport: string;
+    stay: string;
+    priceIndication: string;
+    signupDeadline: string;
+    expectations: string[];
+  };
 };
 
 export const agendaEvents: AgendaEvent[] = [
+  {
+    slug: "studiereis-budapest-25",
+    day: "28",
+    month: "APR",
+    year: "2025",
+    dateLabel: "28 april – 04 mei 2025",
+    type: "STUDIEREIS",
+    title: "Studiereis Budapest ’25",
+    subtitle: "Budapest, Hongarije",
+    time: "Meerdaags",
+    location: "Budapest, Hongarije",
+    address: "Budapest, Hongarije",
+    art: "meeting",
+    organizer: "S.V. Fermi",
+    price: "€ 325,-",
+    capacity: 40,
+    registered: 28,
+    registrationDeadline: "24 januari 2025",
+    description: "Ga samen met S.V. Fermi op een onvergetelijke studiereis naar Budapest! Een week vol cultuur, techniek, gezelligheid en natuurlijk het échte Fermi-gevoel. Ontdek de stad, bezoek inspirerende bedrijven en beleef dit samen met je medeleden!",
+    practical: [
+      "Vervoer met de bus vanuit Nederland.",
+      "Verblijf in een centraal hotel in Budapest.",
+      "Prijsindicatie is inclusief vervoer en verblijf."
+    ],
+    showInAgenda: false,
+    detailVariant: "travel",
+    travel: {
+      dateRange: "28 april — 04 mei 2025",
+      destination: "Budapest, Hongarije",
+      transport: "Met de bus vanuit Nederland",
+      stay: "Centraal hotel in Budapest",
+      priceIndication: "€ 325,- (inclusief vervoer en verblijf)",
+      signupDeadline: "24 januari 2025",
+      expectations: [
+        "Bezoek aan inspirerende bedrijven en universiteiten",
+        "Ontdek de stad met een gevarieerd activiteitenprogramma",
+        "Uiteraard genoeg tijd voor gezelligheid met je medeleden"
+      ]
+    }
+  },
   {
     slug: "maandborrel",
     day: "13",
