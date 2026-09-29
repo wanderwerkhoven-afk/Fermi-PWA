@@ -19,19 +19,55 @@
   "navigation": {
     "type": "fixed bottom navigation",
     "items": [
-      { "label": "Home", "route": "/" },
-      { "label": "Agenda", "route": "/agenda/" },
-      { "label": "Fermi", "route": "/fermi/" },
-      { "label": "Community", "route": "/community/" },
-      { "label": "Profiel", "route": "/profiel/" }
+      {
+        "label": "Home",
+        "route": "/"
+      },
+      {
+        "label": "Agenda",
+        "route": "/agenda/"
+      },
+      {
+        "label": "Fermi",
+        "route": "/fermi/"
+      },
+      {
+        "label": "Community",
+        "route": "/community/"
+      },
+      {
+        "label": "Profiel",
+        "route": "/profiel/"
+      }
     ]
   },
   "screens": [
-    { "id": "home", "route": "/", "status": "implemented" },
-    { "id": "agenda", "route": "/agenda/", "status": "implemented" },
-    { "id": "fermi", "route": "/fermi/", "status": "planned" },
-    { "id": "community", "route": "/community/", "status": "planned" },
-    { "id": "profile", "route": "/profiel/", "status": "planned" }
+    {
+      "id": "home",
+      "route": "/",
+      "status": "implemented"
+    },
+    {
+      "id": "agenda",
+      "route": "/agenda/",
+      "status": "implemented",
+      "reference": "Approved Agenda mockup: compact dark navy header, paper-plane/calendar collage, five pill filters, orange featured event card, cream compact event cards with photographic right-side imagery."
+    },
+    {
+      "id": "fermi",
+      "route": "/fermi/",
+      "status": "planned"
+    },
+    {
+      "id": "community",
+      "route": "/community/",
+      "status": "planned"
+    },
+    {
+      "id": "profile",
+      "route": "/profiel/",
+      "status": "planned"
+    }
   ],
   "design_system": {
     "theme": "dark editorial collage",
@@ -60,7 +96,7 @@
       "science/physics visual motifs",
       "photographic event imagery"
     ],
-    "master_reference": "Dark theme mockups approved in chat; Home and Agenda establish current visual direction."
+    "master_reference": "Approved dark-theme mockups are the visual master. Agenda must closely follow the supplied mockup composition, spacing, orange/cream/navy palette, collage header and photographic event cards."
   },
   "components": {
     "shared_current": [],
@@ -88,7 +124,8 @@
     "Dark Fermi theme is current visual master.",
     "Stock placeholder images are acceptable until custom artwork is created.",
     "GitHub Pages is used for the current static development deployment.",
-    "Routes and assets must remain compatible with /Fermi-PWA/."
+    "Routes and assets must remain compatible with /Fermi-PWA/.",
+    "Agenda event cards use relevant stock photography as temporary imagery until final Fermi artwork is available."
   ],
   "open_decisions": [
     "Final authentication provider.",
