@@ -2801,7 +2801,16 @@ button {
   margin: 0;
   font: 800 clamp(44px,11vw,58px)/.95 Georgia,"Times New Roman",serif;
   letter-spacing: -.04em;
-  background: linear-gradient(100deg, var(--fermi-paper) 0%, var(--fermi-paper) 45%, #ffb06b 70%, var(--fermi-orange) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--fermi-paper) 0%,
+    var(--fermi-paper) 48%,
+    #f2dcc2 50%,
+    #ffad63 66%,
+    var(--fermi-orange) 100%
+  );
+  background-size: 100% 100%;
+  background-position: center;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
