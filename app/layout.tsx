@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: "S.V. Fermi",
   description: "De ledenapp van S.V. Fermi",
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export const viewport: Viewport = {
