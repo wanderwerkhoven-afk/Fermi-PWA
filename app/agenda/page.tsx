@@ -12,7 +12,7 @@ import {
   Menu,
   UserRound,
   UsersRound,
-} from "lucide-react";
+} from "lucide-react";\nimport { agendaEvents } from "@/data/agenda-events";
 
 const events = [
   {
@@ -122,10 +122,15 @@ export default function AgendaPage() {
       </section>
 
       <section className="agenda-list agenda-list-redesign">
-        {events.map((event) => (
+        {agendaEvents.map((event) => (
+          <Link
+            href={`/agenda/${event.slug}`}
+            className="agenda-card-link"
+            key={event.slug}
+            aria-label={`Bekijk ${event.title}`}
+          >
           <article
             className={`agenda-card agenda-card-redesign ${event.featured ? "featured" : ""}`}
-            key={event.day + event.title}
           >
             <div className="agenda-date agenda-date-redesign">
               <strong>{event.day}</strong>
@@ -139,9 +144,9 @@ export default function AgendaPage() {
               <p><MapPin size={16} /> {event.location}</p>
 
               {event.featured && (
-                <button className="agenda-detail-button">
+                <span className="agenda-detail-button">
                   Bekijk details <ChevronRight size={19} />
-                </button>
+                </span>
               )}
             </div>
 
@@ -151,6 +156,7 @@ export default function AgendaPage() {
 
             {!event.featured && <ChevronRight className="agenda-card-chevron" size={22} />}
           </article>
+          </Link>
         ))}
       </section>
 
