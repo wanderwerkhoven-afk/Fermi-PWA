@@ -62,7 +62,8 @@
     {
       "id": "community",
       "route": "/community/",
-      "status": "planned"
+      "status": "implemented",
+      "reference": "Approved Community mockup: dark collage hero, member search, filter pills, 'Word ACTiEF!' committee CTA and cream member directory rows with badges."
     },
     {
       "id": "profile",
@@ -141,7 +142,10 @@
     "Study-trip event details use a dedicated travel visual variant within the shared /agenda/[slug]/ route.",
     "Studiereis Budapest ’25 exists as a hidden-from-November-overview demo/detail route at /agenda/studiereis-budapest-25/.",
     "Fermi primary tab is implemented at /fermi/.",
-    "Fermi page sections are Bestuur, Commissies and Documenten using the approved dark editorial collage visual language."
+    "Fermi page sections are Bestuur, Commissies and Documenten using the approved dark editorial collage visual language.",
+    "Community primary tab is implemented at /community/.",
+    "Community member search and filters are interactive client-side in the current prototype.",
+    "Community member data is stored centrally in data/community-members.ts."
   ],
   "open_decisions": [
     "Final authentication provider.",
