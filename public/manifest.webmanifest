@@ -1,0 +1,10 @@
+{
+  "name": "S.V. Fermi",
+  "short_name": "Fermi",
+  "description": "De ledenapp van S.V. Fermi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06283B",
+  "theme_color": "#06283B",
+  "lang": "nl"
+}
