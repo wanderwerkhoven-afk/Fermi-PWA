@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520">
+  <defs>
+    <filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".35" numOctaves="3" seed="8"/><feComponentTransfer><feFuncA type="table" tableValues="0 .16"/></feComponentTransfer></filter>
+  </defs>
+  <rect width="900" height="520" fill="#06283B"/>
+  <path d="M330 78l180-50 145 65 162-28 83 98v357H236l-36-119 44-111-31-94z" fill="#FF7A1A"/>
+  <g fill="#F4EADC" opacity=".92">
+    <circle cx="755" cy="80" r="7"/><circle cx="785" cy="80" r="7"/><circle cx="815" cy="80" r="7"/>
+    <circle cx="755" cy="110" r="7"/><circle cx="785" cy="110" r="7"/><circle cx="815" cy="110" r="7"/>
+  </g>
+  <g>
+    <circle cx="420" cy="198" r="58" fill="#d9a57e"/><path d="M360 199c8-77 103-94 123-16-38-23-83-27-123 16z" fill="#162832"/><path d="M327 497c16-155 63-221 101-221 39 0 83 66 101 221z" fill="#101f29"/>
+    <circle cx="565" cy="167" r="55" fill="#c99572"/><path d="M511 171c4-70 100-91 113-17-29-23-75-28-113 17z" fill="#0e1b24"/><path d="M475 497c20-160 62-226 96-226 40 0 82 72 99 226z" fill="#122834"/>
+    <circle cx="680" cy="210" r="53" fill="#e2b28a"/><path d="M625 212c4-67 93-91 111-19-27-17-73-25-111 19z" fill="#462b25"/><path d="M594 497c15-145 52-210 91-210 38 0 77 67 98 210z" fill="#0f2733"/>
+    <circle cx="760" cy="224" r="47" fill="#d6a078"/><path d="M716 224c7-62 77-77 92-15-25-17-57-23-92 15z" fill="#1e2529"/><path d="M685 497c14-125 42-190 81-190 37 0 72 58 93 190z" fill="#183342"/>
+  </g>
+  <path d="M412 250c77 31 112 40 167 23M564 260c58 24 101 29 142 8" stroke="#F4EADC" stroke-width="18" stroke-linecap="round"/>
+  <rect width="900" height="520" filter="url(#g)"/>
+</svg>
