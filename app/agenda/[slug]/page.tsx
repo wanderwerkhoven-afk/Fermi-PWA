@@ -43,9 +43,9 @@ export default async function EventDetailPage({
 
   if (!event) notFound();
 
-  const isTravel = event.detailVariant === "travel" && event.travel;
+  const travel = event.detailVariant === "travel" ? event.travel : undefined;
 
-  if (isTravel) {
+  if (travel) {
     return (
       <main className="app-shell travel-detail-shell">
         <div className="noise" aria-hidden="true" />
@@ -90,11 +90,11 @@ export default async function EventDetailPage({
           <div className="travel-primary-facts">
             <div>
               <span className="travel-icon-bubble"><CalendarRange size={24} /></span>
-              <span><strong>{event.travel.dateRange}</strong><small>Datum</small></span>
+              <span><strong>{travel.dateRange}</strong><small>Datum</small></span>
             </div>
             <div>
               <span className="travel-icon-bubble"><MapPin size={26} /></span>
-              <span><strong>{event.travel.destination}</strong><small>Locatie</small></span>
+              <span><strong>{travel.destination}</strong><small>Locatie</small></span>
             </div>
           </div>
 
@@ -103,19 +103,19 @@ export default async function EventDetailPage({
           <div className="travel-info-grid">
             <article>
               <span className="travel-icon-bubble"><Plane size={24} /></span>
-              <div><h3>Vervoer</h3><p>{event.travel.transport}</p></div>
+              <div><h3>Vervoer</h3><p>{travel.transport}</p></div>
             </article>
             <article>
               <span className="travel-icon-bubble"><BedDouble size={24} /></span>
-              <div><h3>Verblijf</h3><p>{event.travel.stay}</p></div>
+              <div><h3>Verblijf</h3><p>{travel.stay}</p></div>
             </article>
             <article>
               <span className="travel-icon-bubble"><Coins size={24} /></span>
-              <div><h3>Prijsindicatie</h3><p>{event.travel.priceIndication}</p></div>
+              <div><h3>Prijsindicatie</h3><p>{travel.priceIndication}</p></div>
             </article>
             <article>
               <span className="travel-icon-bubble"><CalendarDays size={24} /></span>
-              <div><h3>Inschrijfdeadline</h3><p>{event.travel.signupDeadline}</p></div>
+              <div><h3>Inschrijfdeadline</h3><p>{travel.signupDeadline}</p></div>
             </article>
           </div>
 
@@ -128,9 +128,9 @@ export default async function EventDetailPage({
           <section className="travel-expectations">
             <h2>Wat kun je verwachten?<span aria-hidden="true">✦</span></h2>
             <div>
-              <p><span className="travel-icon-bubble small"><Building2 size={18} /></span>{event.travel.expectations[0]}</p>
-              <p><span className="travel-icon-bubble small"><UsersRound size={18} /></span>{event.travel.expectations[1]}</p>
-              <p><span className="travel-icon-bubble small"><Wine size={18} /></span>{event.travel.expectations[2]}</p>
+              <p><span className="travel-icon-bubble small"><Building2 size={18} /></span>{travel.expectations[0]}</p>
+              <p><span className="travel-icon-bubble small"><UsersRound size={18} /></span>{travel.expectations[1]}</p>
+              <p><span className="travel-icon-bubble small"><Wine size={18} /></span>{travel.expectations[2]}</p>
             </div>
           </section>
         </section>
@@ -138,10 +138,10 @@ export default async function EventDetailPage({
         <nav className="bottom-nav" aria-label="Hoofdnavigatie">
           <Link className="nav-item" href="/"><Home size={23} /><span>Home</span></Link>
           <Link className="nav-item active" href="/agenda"><CalendarDays size={23} /><span>Agenda</span><i /></Link>
-          <a className="nav-item center-item" href="#">
+          <Link className="nav-item center-item" href="/fermi">
             <span className="nav-fermi"><Menu size={14} /><span>Fermi</span></span>
             <span>Fermi</span>
-          </a>
+          </Link>
           <a className="nav-item" href="#"><UsersRound size={25} /><span>Community</span></a>
           <a className="nav-item" href="#"><UserRound size={24} /><span>Profiel</span></a>
         </nav>
