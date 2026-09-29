@@ -188,10 +188,10 @@ export default function FermiPage() {
           <span>Fermi</span>
           <i />
         </Link>
-        <a className="nav-item" href="#">
+        <Link className="nav-item" href="/community">
           <UsersRound size={25} />
           <span>Community</span>
-        </a>
+        </Link>
         <a className="nav-item" href="#">
           <UserRound size={24} />
           <span>Profiel</span>
