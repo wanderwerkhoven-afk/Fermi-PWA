@@ -2798,15 +2798,18 @@ button {
 }
 
 .community-title-copy h1 {
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
   margin: 0;
   font: 800 clamp(44px,11vw,58px)/.95 Georgia,"Times New Roman",serif;
   letter-spacing: -.04em;
   background: linear-gradient(
     90deg,
     var(--fermi-paper) 0%,
-    var(--fermi-paper) 48%,
-    #f2dcc2 50%,
-    #ffad63 66%,
+    var(--fermi-paper) 46%,
+    #f3dec6 50%,
+    #ff9f4b 58%,
     var(--fermi-orange) 100%
   );
   background-size: 100% 100%;
