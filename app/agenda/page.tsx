@@ -120,10 +120,10 @@ export default function AgendaPage() {
           <span>Agenda</span>
           <i />
         </Link>
-        <a className="nav-item center-item" href="#">
+        <Link className="nav-item center-item" href="/fermi">
           <span className="nav-fermi"><Menu size={14} /><span>Fermi</span></span>
           <span>Fermi</span>
-        </a>
+        </Link>
         <a className="nav-item" href="#"><UsersRound size={25} /><span>Community</span></a>
         <a className="nav-item" href="#"><UserRound size={24} /><span>Profiel</span></a>
       </nav>
