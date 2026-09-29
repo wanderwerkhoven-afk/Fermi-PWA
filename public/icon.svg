@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#06283B"/>
+  <circle cx="256" cy="256" r="206" fill="none" stroke="#F4EADC" stroke-width="18"/>
+  <path d="M134 142 L372 142 L256 238 Z" fill="none" stroke="#F4EADC" stroke-width="18" stroke-linejoin="round"/>
+  <path d="M372 142 L317 54 L256 238 Z" fill="none" stroke="#F4EADC" stroke-width="18" stroke-linejoin="round"/>
+  <path d="M256 238 A102 102 0 0 0 154 340" fill="none" stroke="#F4EADC" stroke-width="18" stroke-linecap="round"/>
+  <path d="M154 340 A102 102 0 0 0 256 442" fill="none" stroke="#F4EADC" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="256" cy="347" r="70" fill="#06283B" stroke="#F4EADC" stroke-width="14"/>
+  <text x="256" y="361" text-anchor="middle" font-family="Georgia,serif" font-size="42" fill="#F4EADC">Fermi</text>
+  <text x="111" y="270" text-anchor="middle" font-family="Georgia,serif" font-size="38" fill="#F4EADC">S</text>
+  <text x="401" y="270" text-anchor="middle" font-family="Georgia,serif" font-size="38" fill="#F4EADC">V</text>
+</svg>
