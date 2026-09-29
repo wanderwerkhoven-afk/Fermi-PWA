@@ -142,7 +142,7 @@ export default async function EventDetailPage({
             <span className="nav-fermi"><Menu size={14} /><span>Fermi</span></span>
             <span>Fermi</span>
           </Link>
-          <a className="nav-item" href="#"><UsersRound size={25} /><span>Community</span></a>
+          <Link className="nav-item" href="/community"><UsersRound size={25} /><span>Community</span></Link>
           <a className="nav-item" href="#"><UserRound size={24} /><span>Profiel</span></a>
         </nav>
       </main>
@@ -196,7 +196,7 @@ export default async function EventDetailPage({
           <span className="nav-fermi"><Menu size={14} /><span>Fermi</span></span>
           <span>Fermi</span>
         </a>
-        <a className="nav-item" href="#"><UsersRound size={25} /><span>Community</span></a>
+        <Link className="nav-item" href="/community"><UsersRound size={25} /><span>Community</span></Link>
         <a className="nav-item" href="#"><UserRound size={24} /><span>Profiel</span></a>
       </nav>
     </main>
