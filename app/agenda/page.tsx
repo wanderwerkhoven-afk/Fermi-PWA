@@ -12,56 +12,8 @@ import {
   Menu,
   UserRound,
   UsersRound,
-} from "lucide-react";\nimport { agendaEvents } from "@/data/agenda-events";
-
-const events = [
-  {
-    day: "13",
-    month: "NOV",
-    type: "BORREL",
-    title: "Maandborrel",
-    time: "16:30 – 23:00",
-    location: "Café de Jäger, Haarlem",
-    art: "beer",
-    featured: true,
-  },
-  {
-    day: "21",
-    month: "NOV",
-    type: "CURSUS",
-    title: "Impuls Cursus",
-    time: "15:30 – 18:00",
-    location: "JMH 04D04",
-    art: "course",
-  },
-  {
-    day: "26",
-    month: "NOV",
-    type: "LEZING",
-    title: "Lezing: Quantum Computers",
-    time: "15:30 – 17:00",
-    location: "K2.01",
-    art: "quantum",
-  },
-  {
-    day: "28",
-    month: "NOV",
-    type: "COMMISSIE",
-    title: "Open Spreekuur",
-    time: "15:30 – 17:30",
-    location: "JMH 04D04",
-    art: "legal",
-  },
-  {
-    day: "04",
-    month: "DEC",
-    type: "VERGADERING",
-    title: "ALV",
-    time: "19:30 – 22:00",
-    location: "De Fysica Kantine",
-    art: "meeting",
-  },
-];
+} from "lucide-react";
+import { agendaEvents } from "@/data/agenda-events";
 
 const filters = ["Alles", "Borrel", "Lezingen", "Reizen", "Commissies"];
 
@@ -129,33 +81,31 @@ export default function AgendaPage() {
             key={event.slug}
             aria-label={`Bekijk ${event.title}`}
           >
-          <article
-            className={`agenda-card agenda-card-redesign ${event.featured ? "featured" : ""}`}
-          >
-            <div className="agenda-date agenda-date-redesign">
-              <strong>{event.day}</strong>
-              <span>{event.month}</span>
-            </div>
+            <article className={`agenda-card agenda-card-redesign ${event.featured ? "featured" : ""}`}>
+              <div className="agenda-date agenda-date-redesign">
+                <strong>{event.day}</strong>
+                <span>{event.month}</span>
+              </div>
 
-            <div className="agenda-card-copy agenda-card-copy-redesign">
-              <span className="agenda-type">{event.type}</span>
-              <h2>{event.title}</h2>
-              <p><Clock3 size={16} /> {event.time}</p>
-              <p><MapPin size={16} /> {event.location}</p>
+              <div className="agenda-card-copy agenda-card-copy-redesign">
+                <span className="agenda-type">{event.type}</span>
+                <h2>{event.title}</h2>
+                <p><Clock3 size={16} /> {event.time}</p>
+                <p><MapPin size={16} /> {event.location}</p>
 
-              {event.featured && (
-                <span className="agenda-detail-button">
-                  Bekijk details <ChevronRight size={19} />
-                </span>
-              )}
-            </div>
+                {event.featured && (
+                  <span className="agenda-detail-button">
+                    Bekijk details <ChevronRight size={19} />
+                  </span>
+                )}
+              </div>
 
-            <div className={`agenda-photo agenda-photo-${event.art}`} aria-label="Tijdelijke stockafbeelding">
-              <span className="agenda-photo-overlay" />
-            </div>
+              <div className={`agenda-photo agenda-photo-${event.art}`} aria-label="Tijdelijke stockafbeelding">
+                <span className="agenda-photo-overlay" />
+              </div>
 
-            {!event.featured && <ChevronRight className="agenda-card-chevron" size={22} />}
-          </article>
+              {!event.featured && <ChevronRight className="agenda-card-chevron" size={22} />}
+            </article>
           </Link>
         ))}
       </section>
