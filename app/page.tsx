@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   Bell,
   CalendarDays,
@@ -111,7 +112,7 @@ export default function HomePage() {
         <section className="section-block">
           <div className="section-heading">
             <h2>Binnenkort</h2>
-            <button className="text-link">Bekijk agenda <ChevronRight size={17} /></button>
+            <Link className="text-link" href="/agenda">Bekijk agenda <ChevronRight size={17} /></Link>
           </div>
 
           <div className="event-strip">
@@ -175,15 +176,15 @@ export default function HomePage() {
       </section>
 
       <nav className="bottom-nav" aria-label="Hoofdnavigatie">
-        <a className="nav-item active" href="#">
+        <Link className="nav-item active" href="/">
           <Home size={23} fill="currentColor" />
           <span>Home</span>
           <i />
-        </a>
-        <a className="nav-item" href="#">
+        </Link>
+        <Link className="nav-item" href="/agenda">
           <CalendarDays size={23} />
           <span>Agenda</span>
-        </a>
+        </Link>
         <a className="nav-item center-item" href="#">
           <span className="nav-fermi">
             <Menu size={14} />
