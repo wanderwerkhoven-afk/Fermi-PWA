@@ -57,7 +57,7 @@
       "id": "fermi",
       "route": "/fermi/",
       "status": "implemented",
-      "reference": "Approved Fermi page mockup: collage hero, cut-out Fermi title, board cards, 2x2 committee grid and document list with physics artwork."
+      "reference": "Fermi overview preserves approved mockup: exactly three board preview cards, then committees and documents. Full board lives on /fermi/bestuur/."
     },
     {
       "id": "community",
@@ -76,6 +76,12 @@
       "route": "/agenda/[slug]/",
       "status": "implemented",
       "reference": "Approved event detail master now includes a rich study-trip variant matching the Budapest ’25 mockup: collage hero, travel facts, 2x2 practical grid, registration/share actions and expectations."
+    },
+    {
+      "id": "fermi-board",
+      "route": "/fermi/bestuur/",
+      "status": "implemented",
+      "reference": "Full five-person board detail page; overview remains visually compact."
     }
   ],
   "design_system": {
@@ -149,7 +155,9 @@
     "Community member data is stored centrally in data/community-members.ts.",
     "Profile primary tab is implemented at /profiel/.",
     "Digital member card currently uses prototype member data and a visual QR placeholder.",
-    "Profile navigation is linked from all implemented primary screens and event detail pages."
+    "Profile navigation is linked from all implemented primary screens and event detail pages.",
+    "Fermi overview must not expand the complete board inline; it previews three roles to preserve the approved mockup.",
+    "Full board information is routed to /fermi/bestuur/."
   ],
   "open_decisions": [
     "Final authentication provider.",
