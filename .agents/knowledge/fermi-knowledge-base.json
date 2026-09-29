@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "last_updated": "2026-09-29",
+  "project": {
+    "name": "S.V. Fermi PWA",
+    "purpose": "Afgeschermde ledenapp voor leden, commissies en bestuur van S.V. Fermi.",
+    "repository": "wanderwerkhoven-afk/Fermi-PWA",
+    "language": "nl"
+  },
+  "stack": {
+    "framework": "Next.js App Router",
+    "language": "TypeScript",
+    "icons": "lucide-react",
+    "pwa": true,
+    "deployment": "GitHub Pages via GitHub Actions",
+    "static_export": true,
+    "github_pages_base_path": "/Fermi-PWA/"
+  },
+  "navigation": {
+    "type": "fixed bottom navigation",
+    "items": [
+      { "label": "Home", "route": "/" },
+      { "label": "Agenda", "route": "/agenda/" },
+      { "label": "Fermi", "route": "/fermi/" },
+      { "label": "Community", "route": "/community/" },
+      { "label": "Profiel", "route": "/profiel/" }
+    ]
+  },
+  "screens": [
+    { "id": "home", "route": "/", "status": "implemented" },
+    { "id": "agenda", "route": "/agenda/", "status": "implemented" },
+    { "id": "fermi", "route": "/fermi/", "status": "planned" },
+    { "id": "community", "route": "/community/", "status": "planned" },
+    { "id": "profile", "route": "/profiel/", "status": "planned" }
+  ],
+  "design_system": {
+    "theme": "dark editorial collage",
+    "tokens": {
+      "navy": "#06283B",
+      "navy_deep": "#031D2C",
+      "navy_soft": "#0B3550",
+      "orange": "#FF7A1A",
+      "orange_dark": "#D96313",
+      "cream": "#F4EADC",
+      "paper": "#EFE1CF",
+      "white": "#FFF9F0",
+      "muted": "#A8B6C0"
+    },
+    "typography": {
+      "display": "Georgia/serif",
+      "interface": "system sans-serif"
+    },
+    "visual_language": [
+      "dark navy background",
+      "orange highlight color",
+      "warm cream paper cards",
+      "editorial collage",
+      "torn paper edges",
+      "halftone and print-inspired decoration",
+      "science/physics visual motifs",
+      "photographic event imagery"
+    ],
+    "master_reference": "Dark theme mockups approved in chat; Home and Agenda establish current visual direction."
+  },
+  "components": {
+    "shared_current": [],
+    "candidates_for_extraction": [
+      "BottomNav",
+      "FermiHeader",
+      "FermiMark"
+    ]
+  },
+  "assets": {
+    "temporary_images_allowed": true,
+    "preferred_structure": {
+      "brand": "public/brand/",
+      "home": "public/images/home/",
+      "agenda": "public/images/agenda/",
+      "fermi": "public/images/fermi/",
+      "community": "public/images/community/",
+      "profile": "public/images/profile/"
+    },
+    "naming": "lowercase kebab-case"
+  },
+  "decisions": [
+    "App is members-only in product scope.",
+    "Mobile-first PWA.",
+    "Dark Fermi theme is current visual master.",
+    "Stock placeholder images are acceptable until custom artwork is created.",
+    "GitHub Pages is used for the current static development deployment.",
+    "Routes and assets must remain compatible with /Fermi-PWA/."
+  ],
+  "open_decisions": [
+    "Final authentication provider.",
+    "Final backend/database provider.",
+    "Official production member administration integration.",
+    "Final custom image asset set."
+  ]
+}
