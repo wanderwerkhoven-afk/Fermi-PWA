@@ -2,9 +2,18 @@
   "name": "S.V. Fermi",
   "short_name": "Fermi",
   "description": "De ledenapp van S.V. Fermi",
-  "start_url": "/",
+  "start_url": "/Fermi-PWA/",
+  "scope": "/Fermi-PWA/",
   "display": "standalone",
   "background_color": "#06283B",
   "theme_color": "#06283B",
-  "lang": "nl"
+  "lang": "nl",
+  "icons": [
+    {
+      "src": "/Fermi-PWA/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
 }
