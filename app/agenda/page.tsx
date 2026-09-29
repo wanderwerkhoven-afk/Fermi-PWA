@@ -74,7 +74,7 @@ export default function AgendaPage() {
       </section>
 
       <section className="agenda-list agenda-list-redesign">
-        {agendaEvents.map((event) => (
+        {agendaEvents.filter((event) => event.showInAgenda !== false).map((event) => (
           <Link
             href={`/agenda/${event.slug}`}
             className="agenda-card-link"
