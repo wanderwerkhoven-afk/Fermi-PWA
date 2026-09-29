@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430">
+  <defs><filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".45" numOctaves="2" seed="5"/><feComponentTransfer><feFuncA type="table" tableValues="0 .14"/></feComponentTransfer></filter></defs>
+  <rect width="760" height="430" fill="#06283B"/>
+  <path d="M0 85l180-45 132 56 185-40 263 35v339H0z" fill="#FF7A1A"/>
+  <g transform="translate(165 85)">
+    <circle cx="78" cy="75" r="42" fill="#c99773"/><path d="M34 79c5-56 84-74 91-11-29-17-64-18-91 11z" fill="#182832"/><path d="M8 345c10-124 38-187 79-187s73 63 88 187z" fill="#0e2733"/>
+    <circle cx="220" cy="62" r="44" fill="#e0ae85"/><path d="M176 65c7-55 84-72 91-13-24-18-61-18-91 13z" fill="#2b211e"/><path d="M151 345c17-128 43-189 78-189 41 0 70 60 87 189z" fill="#122b38"/>
+    <circle cx="351" cy="84" r="42" fill="#c6936f"/><path d="M309 88c3-56 76-71 84-16-24-16-56-18-84 16z" fill="#17242c"/><path d="M279 345c20-121 42-177 78-177 39 0 66 57 84 177z" fill="#0d202a"/>
+  </g>
+  <g fill="#F4EADC"><circle cx="670" cy="60" r="6"/><circle cx="699" cy="60" r="6"/><circle cx="728" cy="60" r="6"/><circle cx="670" cy="89" r="6"/><circle cx="699" cy="89" r="6"/><circle cx="728" cy="89" r="6"/></g>
+  <rect width="760" height="430" filter="url(#g)"/>
+</svg>
