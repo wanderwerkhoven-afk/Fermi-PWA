@@ -119,11 +119,11 @@ export default function FermiPage() {
         <section className="fermi-section">
           <div className="fermi-section-heading">
             <h2>Bestuur</h2>
-            <button>Bekijk volledig bestuur <ChevronRight size={18} /></button>
+            <Link href="/fermi/bestuur">Bekijk volledig bestuur <ChevronRight size={18} /></Link>
           </div>
 
           <div className="fermi-board-grid">
-            {board.map(({ name, role, description, icon: Icon, image }) => (
+            {board.slice(0, 3).map(({ name, role, description, icon: Icon, image }) => (
               <article className="fermi-board-card" key={name}>
                 <div className={`fermi-board-photo fermi-board-${image}`}>
                   <span className="fermi-board-art-overlay" />
