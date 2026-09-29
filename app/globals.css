@@ -2801,6 +2801,11 @@ button {
   margin: 0;
   font: 800 clamp(44px,11vw,58px)/.95 Georgia,"Times New Roman",serif;
   letter-spacing: -.04em;
+  background: linear-gradient(100deg, var(--fermi-paper) 0%, var(--fermi-paper) 45%, #ffb06b 70%, var(--fermi-orange) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 .community-title-copy h1::after {
@@ -2847,7 +2852,7 @@ button {
   height: 155px;
   background:
     linear-gradient(0deg,rgba(6,40,59,.06),rgba(6,40,59,.02)),
-    url("https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=700&q=82") center/cover;
+    url("/Fermi-PWA/images/community/community-hero.svg") center/cover;
   filter: grayscale(1) contrast(1.08);
   clip-path: polygon(5% 27%,21% 18%,35% 24%,48% 8%,65% 18%,83% 5%,100% 18%,100% 100%,0 100%);
 }
@@ -3022,7 +3027,7 @@ button {
   inset: 0;
   background:
     linear-gradient(90deg,rgba(255,122,26,.12),rgba(6,40,59,.22)),
-    url("https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=650&q=82") center/cover;
+    url("/Fermi-PWA/images/community/community-join.svg") center/cover;
   filter: grayscale(1) contrast(1.12);
   clip-path: polygon(18% 0,100% 0,100% 100%,0 100%,9% 72%,2% 46%);
 }
