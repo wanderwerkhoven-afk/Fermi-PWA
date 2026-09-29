@@ -196,10 +196,10 @@ export default function HomePage() {
           <UsersRound size={25} />
           <span>Community</span>
         </Link>
-        <a className="nav-item" href="#">
+        <Link className="nav-item" href="/profiel">
           <UserRound size={24} />
           <span>Profiel</span>
-        </a>
+        </Link>
       </nav>
     </main>
   );
