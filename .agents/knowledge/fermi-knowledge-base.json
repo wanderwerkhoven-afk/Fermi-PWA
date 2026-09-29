@@ -67,6 +67,12 @@
       "id": "profile",
       "route": "/profiel/",
       "status": "planned"
+    },
+    {
+      "id": "agenda-event-detail",
+      "route": "/agenda/[slug]/",
+      "status": "implemented",
+      "reference": "Static event detail pages generated from data/agenda-events.ts; cards on Agenda link to these pages."
     }
   ],
   "design_system": {
@@ -99,7 +105,9 @@
     "master_reference": "Approved dark-theme mockups are the visual master. Agenda must closely follow the supplied mockup composition, spacing, orange/cream/navy palette, collage header and photographic event cards."
   },
   "components": {
-    "shared_current": [],
+    "shared_current": [
+      "EventActions"
+    ],
     "candidates_for_extraction": [
       "BottomNav",
       "FermiHeader",
@@ -125,7 +133,10 @@
     "Stock placeholder images are acceptable until custom artwork is created.",
     "GitHub Pages is used for the current static development deployment.",
     "Routes and assets must remain compatible with /Fermi-PWA/.",
-    "Agenda event cards use relevant stock photography as temporary imagery until final Fermi artwork is available."
+    "Agenda event cards use relevant stock photography as temporary imagery until final Fermi artwork is available.",
+    "Agenda events use one canonical typed data source in data/agenda-events.ts.",
+    "Agenda event detail routes are statically generated for GitHub Pages compatibility.",
+    "Prototype event registration is local UI state only until authentication/backend are connected."
   ],
   "open_decisions": [
     "Final authentication provider.",
