@@ -2407,7 +2407,8 @@ button {
   font: 800 31px/.95 Georgia,"Times New Roman",serif;
 }
 
-.fermi-section-heading button {
+.fermi-section-heading button,
+.fermi-section-heading a {
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -2417,16 +2418,13 @@ button {
   color: var(--fermi-orange);
   font-size: 12px;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .fermi-board-grid {
   display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
+  grid-template-columns: repeat(3,minmax(0,1fr));
   gap: 9px;
-}
-
-.fermi-board-card:first-child {
-  grid-column: 1 / -1;
 }
 
 .fermi-board-card {
@@ -3759,5 +3757,217 @@ button {
 
   .profile-stats small {
     font-size: 9px;
+  }
+}
+
+
+/* Team Fermi — full board detail, keeps overview lightweight */
+.board-page-shell {
+  background:
+    radial-gradient(circle at 88% 4%, rgba(255,122,26,.12), transparent 22rem),
+    linear-gradient(180deg,#062b40 0%,#06283b 51%,#032235 100%);
+}
+
+.board-page-hero {
+  position: relative;
+  padding: max(22px, env(safe-area-inset-top)) 16px 17px;
+  overflow: hidden;
+}
+
+.board-page-topbar {
+  display: grid;
+  grid-template-columns: 46px 1fr 46px;
+  gap: 10px;
+  align-items: center;
+}
+
+.board-page-brand {
+  justify-self: center;
+  font-size: 22px;
+}
+
+.board-page-brand .fermi-mark {
+  width: 50px;
+}
+
+.board-page-title {
+  position: relative;
+  min-height: 156px;
+  padding-top: 28px;
+}
+
+.board-page-kicker {
+  color: var(--fermi-orange);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.board-page-title h1 {
+  margin: 6px 0 7px;
+  font: 800 48px/.95 Georgia,"Times New Roman",serif;
+  letter-spacing: -.035em;
+}
+
+.board-page-title p {
+  margin: 0;
+  color: #cfd9df;
+  font-size: 15px;
+}
+
+.board-title-dots {
+  position: absolute;
+  right: -10px;
+  top: 18px;
+  width: 105px;
+  height: 90px;
+  background-image: radial-gradient(circle,#ff7a1a 0 3px,transparent 3.5px);
+  background-size: 16px 16px;
+  opacity: .9;
+}
+
+.board-page-content {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 16px;
+  padding: 0 14px 28px;
+}
+
+.board-full-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.board-full-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--fermi-paper);
+  color: var(--fermi-navy-deep);
+  box-shadow: 0 11px 25px rgba(0,0,0,.16);
+}
+
+.board-full-card.featured {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  min-height: 240px;
+}
+
+.board-full-photo {
+  min-height: 175px;
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(.25) contrast(1.04);
+}
+
+.board-full-card.featured .board-full-photo {
+  min-height: 240px;
+}
+
+.board-photo-treatment {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg,transparent 55%,rgba(3,29,44,.12)),
+    radial-gradient(circle at 84% 15%,rgba(255,122,26,.28) 0 28px,transparent 29px);
+}
+
+.board-full-copy {
+  position: relative;
+  padding: 27px 13px 15px;
+}
+
+.board-role-icon {
+  position: absolute;
+  left: 13px;
+  top: -24px;
+  width: 49px;
+  height: 49px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--fermi-orange);
+}
+
+.board-full-card.featured .board-full-copy {
+  align-self: center;
+  padding: 24px;
+}
+
+.board-full-card.featured .board-role-icon {
+  position: static;
+  margin-bottom: 12px;
+}
+
+.board-person-name {
+  display: block;
+  color: var(--fermi-orange-dark);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.board-full-copy h2 {
+  margin: 4px 0 8px;
+  font: 800 21px/1 Georgia,serif;
+}
+
+.board-full-card.featured h2 {
+  font-size: 30px;
+}
+
+.board-full-copy p {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.42;
+}
+
+.board-source-note {
+  padding: 15px 16px;
+  border: 1px solid var(--fermi-line);
+  border-radius: 16px;
+  background: rgba(7,48,72,.7);
+}
+
+.board-source-note strong {
+  font: 700 16px Georgia,serif;
+}
+
+.board-source-note p {
+  margin: 5px 0 0;
+  color: var(--fermi-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+@media (max-width: 420px) {
+  .fermi-board-grid {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+  }
+
+  .fermi-board-card {
+    min-width: 0;
+  }
+
+  .fermi-board-copy {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .fermi-board-name {
+    font-size: 8px;
+  }
+
+  .board-full-grid {
+    gap: 8px;
+  }
+
+  .board-full-photo {
+    min-height: 155px;
   }
 }
