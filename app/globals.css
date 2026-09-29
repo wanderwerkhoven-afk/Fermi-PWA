@@ -1552,3 +1552,323 @@ button {
     font-size: 12.5px;
   }
 }
+
+
+/* Clickable agenda cards + event details */
+.agenda-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 17px;
+}
+
+.agenda-card-link:focus-visible {
+  outline: 3px solid var(--fermi-orange);
+  outline-offset: 3px;
+}
+
+.agenda-card-link .agenda-card {
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.agenda-card-link:active .agenda-card {
+  transform: scale(.985);
+}
+
+.event-detail-shell {
+  background:
+    radial-gradient(circle at 88% 7%, rgba(255,122,26,.12), transparent 22rem),
+    linear-gradient(180deg,#062b40 0%,#06283b 50%,#042437 100%);
+}
+
+.event-detail-topbar {
+  position: relative;
+  z-index: 6;
+  min-height: 74px;
+  padding: max(18px, env(safe-area-inset-top)) 18px 10px;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  text-align: center;
+  font: 700 18px Georgia, serif;
+}
+
+.event-back-button {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--fermi-line);
+  border-radius: 50%;
+  background: rgba(5,42,63,.78);
+  color: var(--fermi-white);
+  text-decoration: none;
+}
+
+.event-detail-hero {
+  position: relative;
+  min-height: 315px;
+  margin: 0 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,122,26,.75);
+  border-radius: 25px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 18px 36px rgba(0,0,0,.22);
+}
+
+.event-detail-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 16% 20%, rgba(255,122,26,.8) 0 2px, transparent 3px);
+  background-size: 17px 17px;
+  opacity: .28;
+}
+
+.event-detail-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg,rgba(3,29,44,.12) 10%,rgba(3,29,44,.26) 48%,rgba(3,29,44,.93) 100%);
+}
+
+.event-detail-date {
+  position: absolute;
+  z-index: 3;
+  top: 17px;
+  left: 17px;
+  width: 66px;
+  min-height: 77px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border-radius: 12px;
+  background: var(--fermi-navy-deep);
+  box-shadow: 0 9px 18px rgba(0,0,0,.24);
+}
+
+.event-detail-date strong {
+  font: 800 34px/.9 Georgia,serif;
+  color: var(--fermi-orange);
+}
+
+.event-detail-date span {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.event-detail-hero-copy {
+  position: absolute;
+  z-index: 3;
+  left: 18px;
+  right: 18px;
+  bottom: 20px;
+}
+
+.event-detail-hero-copy .agenda-type {
+  background: var(--fermi-orange);
+  color: #25170e;
+}
+
+.event-detail-hero-copy h1 {
+  margin: 9px 0 4px;
+  font: 800 clamp(38px,10vw,53px)/.96 Georgia,"Times New Roman",serif;
+  letter-spacing: -.035em;
+}
+
+.event-detail-hero-copy p {
+  margin: 0;
+  color: #dce4e8;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.event-detail-content {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 16px;
+  padding: 17px 14px 28px;
+}
+
+.event-facts-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  border: 1px solid rgba(132,184,212,.28);
+  border-radius: 20px;
+  background: rgba(7,48,72,.76);
+}
+
+.event-facts-card > div {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 25px minmax(0,1fr);
+  gap: 8px;
+  padding: 14px;
+  align-items: start;
+  border-bottom: 1px solid rgba(132,184,212,.16);
+}
+
+.event-facts-card > div:nth-child(odd) {
+  border-right: 1px solid rgba(132,184,212,.16);
+}
+
+.event-facts-card > div:nth-last-child(-n+2) {
+  border-bottom: 0;
+}
+
+.event-facts-card svg {
+  color: var(--fermi-orange);
+  margin-top: 2px;
+}
+
+.event-facts-card span {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.event-facts-card small {
+  color: var(--fermi-muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.event-facts-card strong {
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.event-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.event-register-button {
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 17px;
+  background: var(--fermi-orange);
+  color: #23160d;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(159,68,7,.2);
+}
+
+.event-register-button.joined {
+  background: var(--fermi-paper);
+  color: var(--fermi-navy-deep);
+}
+
+.event-capacity-copy,
+.event-action-feedback {
+  margin: 0;
+  text-align: center;
+  color: #c8d3da;
+  font-size: 12px;
+}
+
+.event-action-feedback {
+  color: var(--fermi-paper);
+}
+
+.event-detail-section {
+  padding: 18px;
+  border: 1px solid rgba(132,184,212,.23);
+  border-radius: 20px;
+  background: rgba(7,48,72,.62);
+}
+
+.event-detail-kicker {
+  color: var(--fermi-orange);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .09em;
+}
+
+.event-detail-section h2 {
+  margin: 7px 0 10px;
+  font: 800 25px/1 Georgia,serif;
+}
+
+.event-detail-section > p {
+  margin: 0;
+  color: #d5dee3;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.event-practical-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 13px;
+}
+
+.event-practical-list > div {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 9px;
+  align-items: start;
+}
+
+.event-practical-list svg {
+  color: var(--fermi-orange);
+}
+
+.event-practical-list p {
+  margin: 0;
+  color: #d5dee3;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.event-registration-info {
+  background:
+    radial-gradient(circle at 92% 15%,rgba(255,122,26,.16),transparent 90px),
+    var(--fermi-paper);
+  color: var(--fermi-navy-deep);
+}
+
+.event-registration-info > p {
+  color: var(--fermi-navy-soft);
+  font-weight: 700;
+}
+
+@media (min-width: 760px) {
+  .agenda-card-link:hover .agenda-card {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 31px rgba(0,0,0,.2);
+  }
+}
+
+@media (max-width: 390px) {
+  .event-detail-hero {
+    min-height: 285px;
+  }
+
+  .event-facts-card {
+    grid-template-columns: 1fr;
+  }
+
+  .event-facts-card > div,
+  .event-facts-card > div:nth-child(odd),
+  .event-facts-card > div:nth-last-child(-n+2) {
+    border-right: 0;
+    border-bottom: 1px solid rgba(132,184,212,.16);
+  }
+
+  .event-facts-card > div:last-child {
+    border-bottom: 0;
+  }
+}
