@@ -2421,8 +2421,12 @@ button {
 
 .fermi-board-grid {
   display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
+  grid-template-columns: repeat(2,minmax(0,1fr));
   gap: 9px;
+}
+
+.fermi-board-card:first-child {
+  grid-column: 1 / -1;
 }
 
 .fermi-board-card {
@@ -2443,16 +2447,24 @@ button {
   filter: grayscale(1) contrast(1.05);
 }
 
-.fermi-board-chair {
-  background-image: url("https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=80");
+.fermi-board-lara {
+  background-image: url("https://svfermi.nl/wp-content/uploads/2026/03/WhatsApp-Image-2026-03-19-at-12.24.21.jpeg");
 }
 
-.fermi-board-secretary {
-  background-image: url("https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=80");
+.fermi-board-sienna {
+  background-image: url("https://svfermi.nl/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-19-at-10.55.43.jpeg");
 }
 
-.fermi-board-treasurer {
-  background-image: url("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=80");
+.fermi-board-daan {
+  background-image: url("https://svfermi.nl/wp-content/uploads/2026/03/WhatsApp-Image-2026-03-25-at-21.51.41.jpeg");
+}
+
+.fermi-board-helena {
+  background-image: url("https://svfermi.nl/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-19-at-10.55.43-1.jpeg");
+}
+
+.fermi-board-demi {
+  background-image: url("https://svfermi.nl/wp-content/uploads/2026/03/WhatsApp-Image-2026-03-02-at-20.31.48.jpeg");
 }
 
 .fermi-board-art-overlay {
@@ -2497,6 +2509,16 @@ button {
 
 .fermi-board-copy {
   padding: 25px 12px 13px;
+}
+
+.fermi-board-name {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--fermi-orange-dark);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .02em;
+  text-transform: uppercase;
 }
 
 .fermi-board-copy h3 {
