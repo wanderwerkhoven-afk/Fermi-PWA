@@ -110,7 +110,7 @@ export default function AgendaPage() {
 
         <div className="month-switcher month-switcher-redesign">
           <button aria-label="Vorige maand"><ChevronLeft size={23} /></button>
-          <strong>November 2026</strong>
+          <strong>November 2025</strong>
           <button aria-label="Volgende maand"><ChevronRight size={23} /></button>
         </div>
 
