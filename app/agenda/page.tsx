@@ -125,7 +125,7 @@ export default function AgendaPage() {
           <span>Fermi</span>
         </Link>
         <Link className="nav-item" href="/community"><UsersRound size={25} /><span>Community</span></Link>
-        <a className="nav-item" href="#"><UserRound size={24} /><span>Profiel</span></a>
+        <Link className="nav-item" href="/profiel"><UserRound size={24} /><span>Profiel</span></Link>
       </nav>
     </main>
   );
