@@ -15,11 +15,52 @@ import {
 } from "lucide-react";
 
 const events = [
-  { day: "13", month: "NOV", type: "BORREL", title: "Maandborrel", time: "16:30 – 23:00", location: "Café de Jäger, Haarlem", art: "agenda-beer", featured: true },
-  { day: "21", month: "NOV", type: "CURSUS", title: "Impuls Cursus", time: "15:30 – 18:00", location: "JMH 04D04", art: "agenda-course" },
-  { day: "26", month: "NOV", type: "LEZING", title: "Lezing: Quantum Computers", time: "15:30 – 17:00", location: "K2.01", art: "agenda-quantum" },
-  { day: "28", month: "NOV", type: "COMMISSIE", title: "Open Spreekuur", time: "15:30 – 17:30", location: "JMH 04D04", art: "agenda-legal" },
-  { day: "04", month: "DEC", type: "VERGADERING", title: "ALV", time: "19:30 – 22:00", location: "De Fysica Kantine", art: "agenda-alv" },
+  {
+    day: "13",
+    month: "NOV",
+    type: "BORREL",
+    title: "Maandborrel",
+    time: "16:30 – 23:00",
+    location: "Café de Jäger, Haarlem",
+    art: "beer",
+    featured: true,
+  },
+  {
+    day: "21",
+    month: "NOV",
+    type: "CURSUS",
+    title: "Impuls Cursus",
+    time: "15:30 – 18:00",
+    location: "JMH 04D04",
+    art: "course",
+  },
+  {
+    day: "26",
+    month: "NOV",
+    type: "LEZING",
+    title: "Lezing: Quantum Computers",
+    time: "15:30 – 17:00",
+    location: "K2.01",
+    art: "quantum",
+  },
+  {
+    day: "28",
+    month: "NOV",
+    type: "COMMISSIE",
+    title: "Open Spreekuur",
+    time: "15:30 – 17:30",
+    location: "JMH 04D04",
+    art: "legal",
+  },
+  {
+    day: "04",
+    month: "DEC",
+    type: "VERGADERING",
+    title: "ALV",
+    time: "19:30 – 22:00",
+    location: "De Fysica Kantine",
+    art: "meeting",
+  },
 ];
 
 const filters = ["Alles", "Borrel", "Lezingen", "Reizen", "Commissies"];
@@ -29,7 +70,7 @@ export default function AgendaPage() {
     <main className="app-shell agenda-shell">
       <div className="noise" aria-hidden="true" />
 
-      <section className="agenda-hero">
+      <section className="agenda-hero agenda-hero-redesign">
         <header className="topbar">
           <div className="brand">
             <div className="fermi-mark" aria-hidden="true">
@@ -46,46 +87,57 @@ export default function AgendaPage() {
           </button>
         </header>
 
-        <div className="agenda-title-row">
-          <div>
-            <h1>Agenda</h1>
+        <div className="agenda-title-row agenda-title-redesign">
+          <div className="agenda-title-copy">
+            <h1>Agen<span>da</span></h1>
             <p>Wat staat er op de planning?</p>
           </div>
-          <div className="agenda-collage" aria-hidden="true">
-            <span className="agenda-orange-paper" />
+
+          <div className="agenda-collage agenda-collage-redesign" aria-hidden="true">
             <span className="agenda-paper-plane">➤</span>
+            <span className="agenda-route-line" />
+            <span className="agenda-orange-paper" />
             <span className="agenda-calendar-sheet">
-              <b>NOV</b><i /><i /><i /><i /><i /><i />
+              <span className="calendar-rings" />
+              <b>NOVEMBER</b>
+              <span className="calendar-grid">
+                {Array.from({ length: 20 }).map((_, index) => <i key={index} />)}
+              </span>
+              <span className="calendar-circle" />
             </span>
           </div>
         </div>
 
-        <div className="month-switcher">
-          <button aria-label="Vorige maand"><ChevronLeft size={22} /></button>
+        <div className="month-switcher month-switcher-redesign">
+          <button aria-label="Vorige maand"><ChevronLeft size={23} /></button>
           <strong>November 2026</strong>
-          <button aria-label="Volgende maand"><ChevronRight size={22} /></button>
+          <button aria-label="Volgende maand"><ChevronRight size={23} /></button>
         </div>
 
-        <div className="agenda-filters" aria-label="Agenda filters">
+        <div className="agenda-filters agenda-filters-redesign" aria-label="Agenda filters">
           {filters.map((filter, index) => (
             <button key={filter} className={index === 0 ? "active" : ""}>{filter}</button>
           ))}
         </div>
       </section>
 
-      <section className="agenda-list">
+      <section className="agenda-list agenda-list-redesign">
         {events.map((event) => (
-          <article className={`agenda-card ${event.featured ? "featured" : ""}`} key={event.day + event.title}>
-            <div className="agenda-date">
+          <article
+            className={`agenda-card agenda-card-redesign ${event.featured ? "featured" : ""}`}
+            key={event.day + event.title}
+          >
+            <div className="agenda-date agenda-date-redesign">
               <strong>{event.day}</strong>
               <span>{event.month}</span>
             </div>
 
-            <div className="agenda-card-copy">
+            <div className="agenda-card-copy agenda-card-copy-redesign">
               <span className="agenda-type">{event.type}</span>
               <h2>{event.title}</h2>
               <p><Clock3 size={16} /> {event.time}</p>
               <p><MapPin size={16} /> {event.location}</p>
+
               {event.featured && (
                 <button className="agenda-detail-button">
                   Bekijk details <ChevronRight size={19} />
@@ -93,12 +145,10 @@ export default function AgendaPage() {
               )}
             </div>
 
-            <div className={`agenda-card-art ${event.art}`} aria-label="Afbeelding placeholder">
-              <span className="agenda-art-symbol">
-                {event.art === "agenda-beer" ? "●●" : event.art === "agenda-course" ? "∫" : event.art === "agenda-quantum" ? "ψ" : event.art === "agenda-legal" ? "§" : "✋"}
-              </span>
-              <span className="agenda-art-rip" />
+            <div className={`agenda-photo agenda-photo-${event.art}`} aria-label="Tijdelijke stockafbeelding">
+              <span className="agenda-photo-overlay" />
             </div>
+
             {!event.featured && <ChevronRight className="agenda-card-chevron" size={22} />}
           </article>
         ))}
