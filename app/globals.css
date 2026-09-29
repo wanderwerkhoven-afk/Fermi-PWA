@@ -1211,3 +1211,344 @@ button {
     font-size: 11px;
   }
 }
+
+
+/* Team Fermi — Agenda mockup fidelity pass */
+.agenda-hero-redesign {
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 14px;
+}
+
+.agenda-title-redesign {
+  min-height: 160px;
+  margin-top: 5px;
+  align-items: center;
+}
+
+.agenda-title-copy {
+  max-width: 66%;
+}
+
+.agenda-title-redesign h1 {
+  font-size: clamp(56px, 14.2vw, 74px);
+  line-height: .92;
+  letter-spacing: -.052em;
+}
+
+.agenda-title-redesign h1 span {
+  color: var(--fermi-orange);
+}
+
+.agenda-title-redesign p {
+  margin-top: 9px;
+  font-size: 17px;
+  line-height: 1.15;
+}
+
+.agenda-collage-redesign {
+  right: -18px;
+  top: -3px;
+  width: 222px;
+  height: 164px;
+}
+
+.agenda-collage-redesign .agenda-paper-plane {
+  top: -5px;
+  right: 87px;
+  font-size: 46px;
+}
+
+.agenda-route-line {
+  right: 87px;
+  top: 31px;
+  width: 76px;
+  height: 54px;
+}
+
+.agenda-collage-redesign .agenda-orange-paper {
+  right: -2px;
+  top: 54px;
+  width: 150px;
+  height: 99px;
+}
+
+.agenda-collage-redesign .agenda-calendar-sheet {
+  right: 0;
+  bottom: -4px;
+  width: 128px;
+  height: 124px;
+  transform: rotate(7deg);
+}
+
+.month-switcher-redesign {
+  width: 61%;
+  min-height: 55px;
+  grid-template-columns: 46px 1fr 46px;
+  border-color: rgba(132,184,212,.42);
+  border-radius: 18px;
+  background: rgba(4,34,53,.9);
+}
+
+.month-switcher-redesign strong {
+  font-size: 18px;
+}
+
+.agenda-filters-redesign {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr 1.08fr .9fr 1.25fr;
+  gap: 8px;
+  overflow: visible;
+  margin-top: 14px;
+}
+
+.agenda-filters-redesign button {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 8px;
+  font-size: 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.agenda-list-redesign {
+  gap: 10px;
+  padding: 0 13px 26px;
+}
+
+.agenda-card-redesign {
+  min-height: 116px;
+  grid-template-columns: 78px minmax(0, 1.18fr) minmax(118px, .92fr);
+  border-radius: 16px;
+  border: 1px solid rgba(250,241,228,.92);
+  background: #f3e7d7;
+}
+
+.agenda-card-redesign.featured {
+  min-height: 226px;
+  grid-template-columns: 82px minmax(0, 1.1fr) minmax(174px, 1.05fr);
+  background:
+    radial-gradient(circle at 13% 67%, rgba(255,166,77,.2) 0 2px, transparent 3px),
+    linear-gradient(112deg,#a94d0d 0%,#8d3d09 54%,#25170f 100%);
+  background-size: 17px 17px, auto;
+}
+
+.agenda-card-redesign.featured::after {
+  content: "";
+  position: absolute;
+  left: -10px;
+  bottom: 14px;
+  width: 82px;
+  height: 70px;
+  opacity: .95;
+  background-image: radial-gradient(circle, #ff7a1a 0 3px, transparent 3.5px);
+  background-size: 15px 15px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.agenda-date-redesign {
+  width: 58px;
+  height: 70px;
+  margin: 10px 0 0 9px;
+  border-radius: 9px;
+  box-shadow: 0 7px 14px rgba(0,0,0,.18);
+}
+
+.agenda-date-redesign strong {
+  font-size: 31px;
+}
+
+.agenda-card-copy-redesign {
+  padding: 9px 7px 9px 0;
+}
+
+.agenda-card-redesign h2 {
+  margin: 5px 0 6px;
+  font-size: 19px;
+  line-height: 1;
+}
+
+.agenda-card-redesign.featured h2 {
+  margin: 8px 0 8px;
+  font-size: 34px;
+}
+
+.agenda-card-redesign p {
+  margin: 5px 0;
+  gap: 6px;
+  font-size: 11.5px;
+  line-height: 1.15;
+}
+
+.agenda-card-redesign .agenda-type {
+  padding: 4px 10px 3px;
+  font-size: 9.5px;
+  line-height: 1;
+}
+
+.agenda-detail-button {
+  min-height: 45px;
+  margin-top: 10px;
+  padding: 0 15px;
+  border-radius: 13px;
+  font-size: 14px;
+}
+
+.agenda-photo {
+  background-position: center;
+  filter: saturate(.8) contrast(1.06);
+}
+
+.agenda-photo::before {
+  width: 30px;
+  left: -2px;
+  background: #f3e7d7;
+}
+
+.featured .agenda-photo::before {
+  width: 38px;
+  background: #8d3d09;
+}
+
+.agenda-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-radial-gradient(circle at 30% 25%, rgba(4,34,53,.10) 0 1px, transparent 1px 4px);
+  mix-blend-mode: multiply;
+  opacity: .22;
+}
+
+.agenda-photo-beer {
+  background-image:
+    linear-gradient(90deg, rgba(108,42,6,.1), rgba(2,22,33,.22)),
+    url("https://images.unsplash.com/photo-1775642675008-b73184710886?auto=format&fit=crop&w=900&q=82");
+  background-position: 55% center;
+}
+
+.agenda-photo-course {
+  background-image:
+    linear-gradient(90deg, rgba(244,234,220,.05), rgba(3,29,44,.20)),
+    url("https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=800&q=82");
+}
+
+.agenda-photo-quantum {
+  background-image:
+    linear-gradient(90deg, rgba(244,234,220,.04), rgba(3,29,44,.14)),
+    url("https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=82");
+}
+
+.agenda-photo-legal {
+  background-image:
+    linear-gradient(90deg, rgba(244,234,220,.03), rgba(3,29,44,.16)),
+    url("https://images.unsplash.com/photo-1528747008803-f9f5cc8f1a64?auto=format&fit=crop&w=800&q=82");
+}
+
+.agenda-photo-meeting {
+  background-image:
+    linear-gradient(90deg, rgba(244,234,220,.02), rgba(3,29,44,.18)),
+    url("https://images.unsplash.com/photo-1438232992991-995b7058bbb3?auto=format&fit=crop&w=800&q=82");
+}
+
+.agenda-card-redesign.featured .agenda-photo {
+  filter: saturate(.75) contrast(1.1);
+}
+
+.agenda-card-redesign.featured .agenda-photo-overlay {
+  background:
+    radial-gradient(circle at 73% 42%, rgba(255,122,26,.18), transparent 42%),
+    linear-gradient(90deg, rgba(126,48,6,.10), rgba(2,18,28,.22));
+}
+
+.agenda-card-redesign .agenda-card-chevron {
+  right: 8px;
+  width: 21px;
+  height: 21px;
+}
+
+@media (max-width: 420px) {
+  .agenda-hero-redesign {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  .agenda-title-copy {
+    max-width: 60%;
+  }
+
+  .agenda-title-redesign {
+    min-height: 150px;
+  }
+
+  .agenda-title-redesign h1 {
+    font-size: 55px;
+  }
+
+  .agenda-title-redesign p {
+    font-size: 15px;
+  }
+
+  .agenda-collage-redesign {
+    right: -42px;
+    transform: scale(.9);
+  }
+
+  .month-switcher-redesign {
+    width: 65%;
+    min-height: 52px;
+  }
+
+  .month-switcher-redesign strong {
+    font-size: 16px;
+  }
+
+  .agenda-filters-redesign {
+    gap: 6px;
+  }
+
+  .agenda-filters-redesign button {
+    min-height: 41px;
+    padding-inline: 5px;
+    font-size: 10.5px;
+  }
+
+  .agenda-card-redesign {
+    min-height: 112px;
+    grid-template-columns: 68px minmax(0, 1.22fr) minmax(104px, .85fr);
+  }
+
+  .agenda-card-redesign.featured {
+    min-height: 218px;
+    grid-template-columns: 70px minmax(0, 1.18fr) minmax(135px, .95fr);
+  }
+
+  .agenda-date-redesign {
+    width: 53px;
+    height: 66px;
+    margin-left: 8px;
+  }
+
+  .agenda-date-redesign strong {
+    font-size: 29px;
+  }
+
+  .agenda-card-redesign h2 {
+    font-size: 17px;
+  }
+
+  .agenda-card-redesign.featured h2 {
+    font-size: 28px;
+  }
+
+  .agenda-card-redesign p {
+    font-size: 10.5px;
+  }
+
+  .agenda-detail-button {
+    min-height: 42px;
+    font-size: 12.5px;
+  }
+}
