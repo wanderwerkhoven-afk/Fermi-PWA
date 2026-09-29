@@ -18,7 +18,7 @@ export const communityMembers: CommunityMember[] = [
     badge: "Bestuur",
     badgeTone: "orange",
     categories: ["Alle leden", "Bestuur"],
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=240&q=82"
+    image: "/Fermi-PWA/images/community/member-sophie.svg"
   },
   {
     id: "lars-van-dijk",
@@ -28,7 +28,7 @@ export const communityMembers: CommunityMember[] = [
     badge: "AcCom",
     badgeTone: "navy",
     categories: ["Alle leden", "Commissies"],
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&q=82"
+    image: "/Fermi-PWA/images/community/member-lars.svg"
   },
   {
     id: "emma-jansen",
@@ -38,7 +38,7 @@ export const communityMembers: CommunityMember[] = [
     badge: "TN Jaar 2",
     badgeTone: "soft",
     categories: ["Alle leden", "Jaar 2+"],
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=82"
+    image: "/Fermi-PWA/images/community/member-emma.svg"
   },
   {
     id: "daan-visser",
@@ -48,7 +48,7 @@ export const communityMembers: CommunityMember[] = [
     badge: "EduCom",
     badgeTone: "navy",
     categories: ["Alle leden", "Commissies"],
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=240&q=82"
+    image: "/Fermi-PWA/images/community/member-daan.svg"
   },
   {
     id: "noor-bakker",
@@ -58,7 +58,7 @@ export const communityMembers: CommunityMember[] = [
     badge: "AcCom",
     badgeTone: "navy",
     categories: ["Alle leden", "Commissies"],
-    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=240&q=82"
+    image: "/Fermi-PWA/images/community/member-noor.svg"
   },
   {
     id: "milan-de-boer",
@@ -68,6 +68,6 @@ export const communityMembers: CommunityMember[] = [
     badge: "TN Jaar 1",
     badgeTone: "soft",
     categories: ["Alle leden", "Jaar 1"],
-    image: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?auto=format&fit=crop&w=240&q=82"
+    image: "/Fermi-PWA/images/community/member-milan.svg"
   }
 ];
