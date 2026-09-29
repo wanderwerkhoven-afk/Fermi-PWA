@@ -19,22 +19,39 @@ import {
 
 const board = [
   {
+    name: "Lara Smit",
     role: "Voorzitter",
-    description: "Verbindt de vereniging en houdt het overzicht.",
+    description: "Leidt het bestuur, bewaakt de koers en vertegenwoordigt S.V. Fermi.",
     icon: UserRound,
-    image: "chair",
+    image: "lara",
   },
   {
+    name: "Sienna Koomen",
     role: "Secretaris",
-    description: "Regelt de communicatie en houdt alles bij.",
+    description: "Verzorgt communicatie, administratie en houdt de vereniging organisatorisch bij.",
     icon: BarChartIcon,
-    image: "secretary",
+    image: "sienna",
   },
   {
+    name: "Daan Pronk",
     role: "Penningmeester",
-    description: "Beheert de financiën en zorgt voor een gezonde vereniging.",
+    description: "Beheert de financiën van de vereniging en bewaakt inkomsten en uitgaven.",
     icon: Coins,
-    image: "treasurer",
+    image: "daan",
+  },
+  {
+    name: "Helena Diks",
+    role: "Commissaris Sociaal",
+    description: "Organiseert borrels, activiteiten en sociale uitjes voor de leden.",
+    icon: UsersRound,
+    image: "helena",
+  },
+  {
+    name: "Demi Avnioğlu",
+    role: "Commissaris Educatief",
+    description: "Organiseert lezingen, bedrijfsbezoeken en studiegerichte activiteiten.",
+    icon: GraduationCap,
+    image: "demi",
   },
 ];
 
@@ -106,8 +123,8 @@ export default function FermiPage() {
           </div>
 
           <div className="fermi-board-grid">
-            {board.map(({ role, description, icon: Icon, image }) => (
-              <article className="fermi-board-card" key={role}>
+            {board.map(({ name, role, description, icon: Icon, image }) => (
+              <article className="fermi-board-card" key={name}>
                 <div className={`fermi-board-photo fermi-board-${image}`}>
                   <span className="fermi-board-art-overlay" />
                 </div>
@@ -115,6 +132,7 @@ export default function FermiPage() {
                   <Icon size={23} />
                 </div>
                 <div className="fermi-board-copy">
+                  <span className="fermi-board-name">{name}</span>
                   <h3>{role}</h3>
                   <p>{description}</p>
                 </div>
