@@ -4,11 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "S.V. Fermi",
   description: "De ledenapp van S.V. Fermi",
-  manifest: "/manifest.webmanifest",
+  manifest: "/Fermi-PWA/manifest.webmanifest",
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/Fermi-PWA/icon.svg",
+    shortcut: "/Fermi-PWA/icon.svg",
+    apple: "/Fermi-PWA/icon.svg",
   },
 };
 
