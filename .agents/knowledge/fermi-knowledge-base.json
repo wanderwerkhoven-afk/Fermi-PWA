@@ -72,7 +72,7 @@
       "id": "agenda-event-detail",
       "route": "/agenda/[slug]/",
       "status": "implemented",
-      "reference": "Static event detail pages generated from data/agenda-events.ts; cards on Agenda link to these pages."
+      "reference": "Approved event detail master now includes a rich study-trip variant matching the Budapest ’25 mockup: collage hero, travel facts, 2x2 practical grid, registration/share actions and expectations."
     }
   ],
   "design_system": {
@@ -136,7 +136,9 @@
     "Agenda event cards use relevant stock photography as temporary imagery until final Fermi artwork is available.",
     "Agenda events use one canonical typed data source in data/agenda-events.ts.",
     "Agenda event detail routes are statically generated for GitHub Pages compatibility.",
-    "Prototype event registration is local UI state only until authentication/backend are connected."
+    "Prototype event registration is local UI state only until authentication/backend are connected.",
+    "Study-trip event details use a dedicated travel visual variant within the shared /agenda/[slug]/ route.",
+    "Studiereis Budapest ’25 exists as a hidden-from-November-overview demo/detail route at /agenda/studiereis-budapest-25/."
   ],
   "open_decisions": [
     "Final authentication provider.",
