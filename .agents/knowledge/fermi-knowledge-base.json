@@ -56,7 +56,8 @@
     {
       "id": "fermi",
       "route": "/fermi/",
-      "status": "planned"
+      "status": "implemented",
+      "reference": "Approved Fermi page mockup: collage hero, cut-out Fermi title, board cards, 2x2 committee grid and document list with physics artwork."
     },
     {
       "id": "community",
@@ -138,7 +139,9 @@
     "Agenda event detail routes are statically generated for GitHub Pages compatibility.",
     "Prototype event registration is local UI state only until authentication/backend are connected.",
     "Study-trip event details use a dedicated travel visual variant within the shared /agenda/[slug]/ route.",
-    "Studiereis Budapest ’25 exists as a hidden-from-November-overview demo/detail route at /agenda/studiereis-budapest-25/."
+    "Studiereis Budapest ’25 exists as a hidden-from-November-overview demo/detail route at /agenda/studiereis-budapest-25/.",
+    "Fermi primary tab is implemented at /fermi/.",
+    "Fermi page sections are Bestuur, Commissies and Documenten using the approved dark editorial collage visual language."
   ],
   "open_decisions": [
     "Final authentication provider.",
