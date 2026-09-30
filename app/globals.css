@@ -4945,7 +4945,10 @@ button {
   content: "";
   position: absolute;
   z-index: 9999;
-  inset: 0;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: calc(100% + 210px);
   pointer-events: none;
   background:
     radial-gradient(circle at 110% 5%, rgba(22,99,138,.4), transparent 25rem),
