@@ -4654,12 +4654,24 @@ button {
   pointer-events: none;
 }
 
-.home-hero-art img {
+.home-hero-church {
   width: 100%;
   height: 100%;
   display: block;
   object-fit: contain;
   object-position: right center;
+}
+
+.home-hero-atom {
+  position: absolute;
+  z-index: 3;
+  right: 2px;
+  bottom: 2px;
+  width: 82px;
+  height: 82px;
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 .featured-event {
@@ -4782,6 +4794,13 @@ button {
     top: -43px;
     width: 174px;
     height: 150px;
+  }
+
+  .home-hero-atom {
+    right: 0;
+    bottom: 1px;
+    width: 68px;
+    height: 68px;
   }
 
   .content {
