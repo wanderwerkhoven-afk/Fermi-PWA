@@ -75,7 +75,13 @@ export default function HomePage() {
 
           <div className="hero-collage-placeholder home-hero-art" aria-hidden="true">
             <img
+              className="home-hero-church"
               src="/Fermi-PWA/images/home/home-hero-church.png"
+              alt=""
+            />
+            <img
+              className="home-hero-atom"
+              src="/Fermi-PWA/images/home/home-member-pass-atom.png"
               alt=""
             />
           </div>
