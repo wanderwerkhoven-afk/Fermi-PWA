@@ -88,6 +88,14 @@ button {
   letter-spacing: -.02em;
 }
 
+.fermi-logo-image {
+  width: 54px;
+  height: 54px;
+  display: block;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
 .fermi-mark {
   position: relative;
   width: 54px;
