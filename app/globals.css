@@ -4942,3 +4942,87 @@ button {
     linear-gradient(180deg, #062b40 0%, var(--fermi-navy) 45%, #042437 100%);
   clip-path: inset(0 0 0 calc(100% - 14px));
 }
+
+
+/* Home — digital member pass popup */
+body.member-pass-modal-open {
+  overflow: hidden;
+}
+
+.member-pass-modal {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+  background: rgba(1, 16, 25, .82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.member-pass-modal-card {
+  position: relative;
+  width: min(100%, 390px);
+  max-height: calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  display: grid;
+  place-items: center;
+  animation: memberPassIn .22s ease-out;
+}
+
+.member-pass-modal-image {
+  width: 100%;
+  max-height: inherit;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 24px 50px rgba(0, 0, 0, .42));
+}
+
+.member-pass-modal-close {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 249, 240, .38);
+  border-radius: 50%;
+  background: rgba(3, 29, 44, .88);
+  color: var(--fermi-white);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .24);
+  cursor: pointer;
+}
+
+.member-pass-modal-close:active {
+  transform: scale(.96);
+}
+
+@keyframes memberPassIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 420px) {
+  .member-pass-modal {
+    padding-inline: 14px;
+  }
+
+  .member-pass-modal-card {
+    width: min(100%, 360px);
+  }
+
+  .member-pass-modal-close {
+    top: 8px;
+    right: 8px;
+    width: 40px;
+    height: 40px;
+  }
+}
