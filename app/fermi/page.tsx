@@ -11,7 +11,6 @@ import {
   GraduationCap,
   Home,
   Megaphone,
-  Menu,
   Plane,
   UserRound,
   UsersRound,
@@ -207,8 +206,7 @@ export default function FermiPage() {
         </Link>
         <Link className="nav-item center-item active" href="/fermi">
           <span className="nav-fermi">
-            <Menu size={14} />
-            <span>Fermi</span>
+            <img src="/Fermi-PWA/images/branding/fermi-logo.png" alt="" />
           </span>
           <span>Fermi</span>
           <i />
