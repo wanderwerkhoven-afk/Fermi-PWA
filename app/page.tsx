@@ -172,12 +172,6 @@ export default function HomePage() {
             <strong>Digitale ledenpas</strong>
             <small>Toon je ledenpas bij activiteiten en ontvang kortingen</small>
           </span>
-          <span className="pass-art home-pass-art" aria-hidden="true">
-            <img
-              src="/Fermi-PWA/images/home/home-member-pass-atom.png"
-              alt=""
-            />
-          </span>
           <ChevronRight size={20} />
         </button>
       </section>
