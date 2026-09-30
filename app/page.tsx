@@ -11,7 +11,6 @@ import {
   IdCard,
   MapPin,
   Megaphone,
-  Menu,
   ShoppingBag,
   UserRound,
   UsersRound,
@@ -243,8 +242,7 @@ export default function HomePage() {
         </Link>
         <Link className="nav-item center-item" href="/fermi">
           <span className="nav-fermi">
-            <Menu size={14} />
-            <span>Fermi</span>
+            <img src="/Fermi-PWA/images/branding/fermi-logo.png" alt="" />
           </span>
           <span>Fermi</span>
         </Link>
