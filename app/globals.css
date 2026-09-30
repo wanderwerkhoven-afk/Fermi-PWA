@@ -4628,11 +4628,12 @@ button {
 .top-hero {
   padding-bottom: 0;
   overflow: visible;
-  z-index: 4;
+  z-index: auto;
 }
 
 .welcome-row {
   min-height: 112px;
+  z-index: auto;
 }
 
 .welcome-row > div:first-child {
@@ -4657,12 +4658,14 @@ button {
 }
 
 .home-hero-church {
+  position: relative;
+  z-index: 0;
   width: 100%;
   height: 100%;
   display: block;
   object-fit: contain;
   object-position: right center;
-  transform: translate(10px, 10px) scale(1.2);
+  transform: translate(30px, 10px) scale(1.2);
   transform-origin: center right;
 }
 
