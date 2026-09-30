@@ -25,6 +25,7 @@ const upcoming = [
     time: "15:30 – 17:30",
     location: "JMH 04D04",
     art: "legal",
+    href: "/agenda/open-spreekuur",
   },
   {
     day: "21",
@@ -33,6 +34,7 @@ const upcoming = [
     time: "19:00 – 23:00",
     location: "De Fysica Kantine",
     art: "beer",
+    href: "/agenda",
   },
   {
     day: "26",
@@ -41,17 +43,51 @@ const upcoming = [
     time: "15:30 – 17:00",
     location: "K2.01",
     art: "quantum",
+    href: "/agenda/quantum-computers",
+  },
+];
+
+const announcements = [
+  {
+    id: "studytrip",
+    icon: "megaphone" as const,
+    title: "Inschrijvingen Studiereis geopend!",
+    summary: "De inschrijvingen voor de studiereis zijn nu open. Vergeet je niet in te schrijven!",
+    detail: "Bekijk alle informatie over de studiereis, praktische details en de inschrijving op de activiteitenpagina.",
+    href: "/agenda/studiereis-budapest-25",
+    cta: "Bekijk studiereis",
+  },
+  {
+    id: "merch",
+    icon: "shop" as const,
+    title: "Nieuw: Fermi Merchandise",
+    summary: "De nieuwe collectie is nu beschikbaar in de webshop. Scoor jouw hoodie!",
+    detail: "De merchandise-sectie wordt binnenkort uitgebreid. Houd de app in de gaten voor de volledige collectie.",
+    href: "/fermi",
+    cta: "Ga naar Fermi",
   },
 ];
 
 export default function HomePage() {
   const [memberPassOpen, setMemberPassOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [announcementsOpen, setAnnouncementsOpen] = useState(false);
+  const [activeAnnouncement, setActiveAnnouncement] = useState<(typeof announcements)[number] | null>(null);
+
+  const overlayOpen = memberPassOpen || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
 
   useEffect(() => {
-    if (!memberPassOpen) return;
+    if (!overlayOpen) return;
+
+    const closeOverlays = () => {
+      setMemberPassOpen(false);
+      setNotificationsOpen(false);
+      setAnnouncementsOpen(false);
+      setActiveAnnouncement(null);
+    };
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMemberPassOpen(false);
+      if (event.key === "Escape") closeOverlays();
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -61,7 +97,7 @@ export default function HomePage() {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.classList.remove("member-pass-modal-open");
     };
-  }, [memberPassOpen]);
+  }, [overlayOpen]);
 
   return (
     <main className="app-shell">
@@ -78,7 +114,13 @@ export default function HomePage() {
             <span>SV Fermi</span>
           </div>
 
-          <button className="icon-button notification-button" aria-label="Meldingen">
+          <button
+            className="icon-button notification-button interactive-control"
+            type="button"
+            aria-label="Meldingen"
+            aria-haspopup="dialog"
+            onClick={() => setNotificationsOpen(true)}
+          >
             <Bell size={22} strokeWidth={2.1} />
             <span className="notification-dot" />
           </button>
@@ -119,9 +161,9 @@ export default function HomePage() {
               <span><MapPin size={18} /> Café de Jäger, Haarlem</span>
             </div>
 
-            <button className="primary-button">
+            <Link className="primary-button interactive-control" href="/agenda/maandborrel">
               Bekijk activiteit <ChevronRight size={22} />
-            </button>
+            </Link>
           </div>
 
           <div className="featured-art home-featured-art" aria-hidden="true">
@@ -140,7 +182,7 @@ export default function HomePage() {
 
           <div className="event-strip">
             {upcoming.map((event) => (
-              <article className="mini-event" key={event.day}>
+              <Link className="mini-event mini-event-link interactive-card" href={event.href} key={event.day}>
                 <div className={`mini-art placeholder-art ${event.art}`}>
                   <div className="date-chip">
                     <strong>{event.day}</strong>
@@ -153,7 +195,7 @@ export default function HomePage() {
                   <p><Clock3 size={15} /> {event.time}</p>
                   <p><MapPin size={15} /> {event.location}</p>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </section>
@@ -161,32 +203,38 @@ export default function HomePage() {
         <section className="section-block">
           <div className="section-heading">
             <h2>Mededelingen</h2>
-            <button className="text-link">Bekijk alle mededelingen <ChevronRight size={17} /></button>
+            <button
+              className="text-link interactive-control"
+              type="button"
+              onClick={() => setAnnouncementsOpen(true)}
+            >
+              Bekijk alle mededelingen <ChevronRight size={17} />
+            </button>
           </div>
 
           <div className="announcements">
-            <button className="announcement-card">
-              <span className="announcement-icon"><Megaphone size={22} /></span>
-              <span className="announcement-copy">
-                <strong>Inschrijvingen Studiereis geopend!</strong>
-                <small>De inschrijvingen voor de studiereis zijn nu open. Vergeet je niet in te schrijven!</small>
-              </span>
-              <ChevronRight className="announcement-chevron" size={21} />
-            </button>
-
-            <button className="announcement-card">
-              <span className="announcement-icon"><ShoppingBag size={22} /></span>
-              <span className="announcement-copy">
-                <strong>Nieuw: Fermi Merchandise</strong>
-                <small>De nieuwe collectie is nu beschikbaar in de webshop. Scoor jouw hoodie!</small>
-              </span>
-              <ChevronRight className="announcement-chevron" size={21} />
-            </button>
+            {announcements.map((item) => (
+              <button
+                className="announcement-card interactive-card"
+                type="button"
+                key={item.id}
+                onClick={() => setActiveAnnouncement(item)}
+              >
+                <span className="announcement-icon">
+                  {item.icon === "megaphone" ? <Megaphone size={22} /> : <ShoppingBag size={22} />}
+                </span>
+                <span className="announcement-copy">
+                  <strong>{item.title}</strong>
+                  <small>{item.summary}</small>
+                </span>
+                <ChevronRight className="announcement-chevron" size={21} />
+              </button>
+            ))}
           </div>
         </section>
 
         <button
-          className="member-pass-preview"
+          className="member-pass-preview interactive-card"
           type="button"
           onClick={() => setMemberPassOpen(true)}
           aria-haspopup="dialog"
@@ -199,6 +247,96 @@ export default function HomePage() {
           <ChevronRight size={20} />
         </button>
       </section>
+
+      {notificationsOpen && (
+        <div className="home-overlay" role="dialog" aria-modal="true" aria-label="Meldingen" onClick={() => setNotificationsOpen(false)}>
+          <section className="home-sheet" onClick={(event) => event.stopPropagation()}>
+            <div className="home-sheet-header">
+              <div>
+                <small>SV Fermi</small>
+                <h2>Meldingen</h2>
+              </div>
+              <button className="home-sheet-close" type="button" aria-label="Sluit meldingen" onClick={() => setNotificationsOpen(false)}>
+                <X size={21} />
+              </button>
+            </div>
+            <Link className="home-notification interactive-card" href="/agenda/studiereis-budapest-25" onClick={() => setNotificationsOpen(false)}>
+              <span className="announcement-icon"><Megaphone size={20} /></span>
+              <span>
+                <strong>Studiereis-inschrijving geopend</strong>
+                <small>Bekijk de reisdetails en inschrijving.</small>
+              </span>
+              <ChevronRight size={18} />
+            </Link>
+            <Link className="home-notification interactive-card" href="/agenda" onClick={() => setNotificationsOpen(false)}>
+              <span className="announcement-icon"><CalendarDays size={20} /></span>
+              <span>
+                <strong>Nieuwe activiteiten</strong>
+                <small>Er staan nieuwe activiteiten in de agenda.</small>
+              </span>
+              <ChevronRight size={18} />
+            </Link>
+          </section>
+        </div>
+      )}
+
+      {announcementsOpen && (
+        <div className="home-overlay" role="dialog" aria-modal="true" aria-label="Alle mededelingen" onClick={() => setAnnouncementsOpen(false)}>
+          <section className="home-sheet" onClick={(event) => event.stopPropagation()}>
+            <div className="home-sheet-header">
+              <div>
+                <small>Actueel</small>
+                <h2>Mededelingen</h2>
+              </div>
+              <button className="home-sheet-close" type="button" aria-label="Sluit mededelingen" onClick={() => setAnnouncementsOpen(false)}>
+                <X size={21} />
+              </button>
+            </div>
+            <div className="home-sheet-list">
+              {announcements.map((item) => (
+                <button
+                  className="home-notification interactive-card"
+                  type="button"
+                  key={item.id}
+                  onClick={() => {
+                    setAnnouncementsOpen(false);
+                    setActiveAnnouncement(item);
+                  }}
+                >
+                  <span className="announcement-icon">
+                    {item.icon === "megaphone" ? <Megaphone size={20} /> : <ShoppingBag size={20} />}
+                  </span>
+                  <span>
+                    <strong>{item.title}</strong>
+                    <small>{item.summary}</small>
+                  </span>
+                  <ChevronRight size={18} />
+                </button>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
+
+      {activeAnnouncement && (
+        <div className="home-overlay" role="dialog" aria-modal="true" aria-label={activeAnnouncement.title} onClick={() => setActiveAnnouncement(null)}>
+          <section className="home-sheet home-announcement-detail" onClick={(event) => event.stopPropagation()}>
+            <div className="home-sheet-header">
+              <div>
+                <small>Mededeling</small>
+                <h2>{activeAnnouncement.title}</h2>
+              </div>
+              <button className="home-sheet-close" type="button" aria-label="Sluit mededeling" onClick={() => setActiveAnnouncement(null)}>
+                <X size={21} />
+              </button>
+            </div>
+            <p>{activeAnnouncement.detail}</p>
+            <Link className="primary-button home-sheet-cta" href={activeAnnouncement.href} onClick={() => setActiveAnnouncement(null)}>
+              {activeAnnouncement.cta} <ChevronRight size={19} />
+            </Link>
+          </section>
+        </div>
+      )}
 
       {memberPassOpen && (
         <div
