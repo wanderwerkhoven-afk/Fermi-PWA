@@ -4962,7 +4962,7 @@ body.member-pass-modal-open {
   display: grid;
   place-items: center;
   padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
-  background: rgba(1, 16, 25, .82);
+  background: rgba(6, 43, 64, .56);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
