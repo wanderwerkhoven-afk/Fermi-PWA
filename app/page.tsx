@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
   Bell,
   CalendarDays,
@@ -14,6 +15,7 @@ import {
   ShoppingBag,
   UserRound,
   UsersRound,
+  X,
 } from "lucide-react";
 
 const upcoming = [
@@ -44,6 +46,24 @@ const upcoming = [
 ];
 
 export default function HomePage() {
+  const [memberPassOpen, setMemberPassOpen] = useState(false);
+
+  useEffect(() => {
+    if (!memberPassOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMemberPassOpen(false);
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.body.classList.add("member-pass-modal-open");
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.classList.remove("member-pass-modal-open");
+    };
+  }, [memberPassOpen]);
+
   return (
     <main className="app-shell">
       <div className="noise" aria-hidden="true" />
@@ -166,7 +186,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        <button className="member-pass-preview">
+        <button
+          className="member-pass-preview"
+          type="button"
+          onClick={() => setMemberPassOpen(true)}
+          aria-haspopup="dialog"
+        >
           <span className="pass-icon"><IdCard size={30} /></span>
           <span className="pass-copy">
             <strong>Digitale ledenpas</strong>
@@ -175,6 +200,36 @@ export default function HomePage() {
           <ChevronRight size={20} />
         </button>
       </section>
+
+      {memberPassOpen && (
+        <div
+          className="member-pass-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Digitale ledenpas"
+          onClick={() => setMemberPassOpen(false)}
+        >
+          <div
+            className="member-pass-modal-card"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              className="member-pass-modal-close"
+              type="button"
+              aria-label="Sluit digitale ledenpas"
+              onClick={() => setMemberPassOpen(false)}
+            >
+              <X size={22} />
+            </button>
+
+            <img
+              className="member-pass-modal-image"
+              src="/Fermi-PWA/images/home/member-pass-popup.png"
+              alt="Digitale ledenpas van SV Fermi"
+            />
+          </div>
+        </div>
+      )}
 
       <nav className="bottom-nav" aria-label="Hoofdnavigatie">
         <Link className="nav-item active" href="/">
