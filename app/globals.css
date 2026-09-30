@@ -4940,11 +4940,11 @@ button {
 }
 
 
-/* Home top collage gutter — same visual background as the Home shell */
+/* Home top collage gutter — always above every Home image/layer */
 .top-hero::after {
   content: "";
   position: absolute;
-  z-index: 30;
+  z-index: 9999;
   inset: 0;
   pointer-events: none;
   background:
