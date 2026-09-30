@@ -729,17 +729,15 @@ button {
 .nav-fermi {
   width: 44px;
   height: 44px;
-  border: 1.5px solid var(--fermi-paper);
-  border-radius: 50%;
   display: grid;
   place-items: center;
-  color: var(--fermi-paper);
-  font-family: Georgia, serif;
-  font-size: 8px;
 }
 
-.nav-fermi > span {
-  margin-top: -11px;
+.nav-fermi img {
+  width: 44px;
+  height: 44px;
+  display: block;
+  object-fit: contain;
 }
 
 @media (min-width: 760px) {
