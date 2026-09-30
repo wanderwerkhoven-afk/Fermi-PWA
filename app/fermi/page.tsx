@@ -16,6 +16,7 @@ import {
   UserRound,
   UsersRound,
 } from "lucide-react";
+import { committees } from "@/data/committees";
 
 const board = [
   {
@@ -62,13 +63,6 @@ function BarChartIcon({ size = 24 }: { size?: number }) {
     </span>
   );
 }
-
-const committees = [
-  { name: "AcCom", description: "Activiteiten en gezelligheid", icon: UsersRound, art: "drinks" },
-  { name: "EduCom", description: "Lezingen, cursussen en studiegerelateerd", icon: GraduationCap, art: "lecture" },
-  { name: "ReisCom", description: "De mooiste studiereizen", icon: Plane, art: "travel" },
-  { name: "PromoCom", description: "Communicatie en externe relaties", icon: Megaphone, art: "promo" },
-];
 
 const documents = [
   { title: "Statuten", subtitle: "De statuten van S.V. Fermi" },
@@ -148,16 +142,29 @@ export default function FermiPage() {
           </div>
 
           <div className="fermi-committee-grid">
-            {committees.map(({ name, description, icon: Icon, art }) => (
-              <button className="fermi-committee-card" key={name}>
-                <span className="fermi-committee-icon"><Icon size={25} /></span>
-                <span className="fermi-committee-copy">
-                  <strong>{name}</strong>
-                  <small>{description}</small>
-                </span>
-                <span className={`fermi-committee-art fermi-committee-${art}`} />
-              </button>
-            ))}
+            {committees.map((committee) => {
+              const Icon =
+                committee.icon === "users" ? UsersRound :
+                committee.icon === "education" ? GraduationCap :
+                committee.icon === "plane" ? Plane :
+                Megaphone;
+
+              return (
+                <Link
+                  className="fermi-committee-card"
+                  href={`/fermi/commissies/${committee.slug}`}
+                  key={committee.slug}
+                  aria-label={`Bekijk ${committee.name}`}
+                >
+                  <span className="fermi-committee-icon"><Icon size={25} /></span>
+                  <span className="fermi-committee-copy">
+                    <strong>{committee.name}</strong>
+                    <small>{committee.description}</small>
+                  </span>
+                  <span className={`fermi-committee-art fermi-committee-${committee.art}`} />
+                </Link>
+              );
+            })}
           </div>
         </section>
 
