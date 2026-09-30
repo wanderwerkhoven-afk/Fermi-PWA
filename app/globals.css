@@ -5069,7 +5069,7 @@ body.member-pass-modal-open {
 }
 
 .mini-event-link {
-  color: inherit;
+  color: var(--fermi-navy-deep);
   text-decoration: none;
 }
 
