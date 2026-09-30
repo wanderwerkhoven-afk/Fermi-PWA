@@ -607,11 +607,16 @@ button {
   border: 0;
   border-radius: 18px;
   background:
-    radial-gradient(circle at 85% 35%, rgba(255,122,26,.16), transparent 90px),
-    var(--fermi-paper);
+    linear-gradient(rgba(244,234,220,.14), rgba(244,234,220,.14)),
+    url("/Fermi-PWA/images/home/home-member-pass-background.png") center / cover no-repeat;
   color: var(--fermi-navy-deep);
   text-align: left;
   cursor: pointer;
+}
+
+.member-pass-preview > * {
+  position: relative;
+  z-index: 2;
 }
 
 .pass-icon {
