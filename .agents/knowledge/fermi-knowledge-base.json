@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-29",
+  "last_updated": "2026-09-30",
   "project": {
     "name": "S.V. Fermi PWA",
     "purpose": "Afgeschermde ledenapp voor leden, commissies en bestuur van S.V. Fermi.",
@@ -157,7 +157,9 @@
     "Digital member card currently uses prototype member data and a visual QR placeholder.",
     "Profile navigation is linked from all implemented primary screens and event detail pages.",
     "Fermi overview must not expand the complete board inline; it previews three roles to preserve the approved mockup.",
-    "Full board information is routed to /fermi/bestuur/."
+    "Full board information is routed to /fermi/bestuur/.",
+    "Agenda month selector is interactive client-side and supports month/year rollover.",
+    "Agenda overview only renders events matching the selected month and year, with an empty-month state when no events exist."
   ],
   "open_decisions": [
     "Final authentication provider.",
