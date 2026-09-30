@@ -11,7 +11,6 @@ import {
   MapPin,
   Megaphone,
   Menu,
-  Orbit,
   ShoppingBag,
   UserRound,
   UsersRound,
@@ -74,11 +73,11 @@ export default function HomePage() {
             <p>Klaar voor de volgende activiteit?</p>
           </div>
 
-          <div className="hero-collage-placeholder" aria-label="Tijdelijke Fermi illustratie">
-            <Orbit className="orbit-icon" />
-            <span className="sun-disc" />
-            <span className="torn torn-a" />
-            <span className="torn torn-b" />
+          <div className="hero-collage-placeholder home-hero-art" aria-hidden="true">
+            <img
+              src="/Fermi-PWA/images/home/home-hero-church.png"
+              alt=""
+            />
           </div>
         </div>
       </section>
@@ -100,12 +99,11 @@ export default function HomePage() {
             </button>
           </div>
 
-          <div className="featured-art placeholder-art beer-art" aria-label="Afbeelding placeholder">
-            <div className="placeholder-label">EVENT ART</div>
-            <div className="glass glass-left" />
-            <div className="glass glass-right" />
-            <div className="burst burst-one" />
-            <div className="burst burst-two" />
+          <div className="featured-art home-featured-art" aria-hidden="true">
+            <img
+              src="/Fermi-PWA/images/home/home-featured-borrel.png"
+              alt=""
+            />
           </div>
         </article>
 
@@ -168,8 +166,11 @@ export default function HomePage() {
             <strong>Digitale ledenpas</strong>
             <small>Toon je ledenpas bij activiteiten en ontvang kortingen</small>
           </span>
-          <span className="pass-art" aria-hidden="true">
-            <span className="pass-orbit" />
+          <span className="pass-art home-pass-art" aria-hidden="true">
+            <img
+              src="/Fermi-PWA/images/home/home-member-pass-atom.png"
+              alt=""
+            />
           </span>
           <ChevronRight size={20} />
         </button>
