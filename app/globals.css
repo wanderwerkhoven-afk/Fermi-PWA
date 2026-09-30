@@ -4627,6 +4627,8 @@ button {
    Keep every supplied PNG fully visible; never crop the artwork. */
 .top-hero {
   padding-bottom: 0;
+  overflow: visible;
+  z-index: 4;
 }
 
 .welcome-row {
@@ -4672,11 +4674,12 @@ button {
   display: block;
   object-fit: contain;
   pointer-events: none;
-  transform: translate(-5px, 10px) scale(1.2);
+  transform: translate(-5px, 10px) scale(1.8);
   transform-origin: center;
 }
 
 .featured-event {
+  z-index: 1;
   min-height: 184px;
   grid-template-columns: 57% 43%;
 }
@@ -4803,7 +4806,7 @@ button {
     bottom: 1px;
     width: 68px;
     height: 68px;
-    transform: translate(-5px, 10px) scale(1.2);
+    transform: translate(-5px, 10px) scale(1.8);
   }
 
   .content {
