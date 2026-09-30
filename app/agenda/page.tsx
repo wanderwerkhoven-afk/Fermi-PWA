@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import {
   Bell,
   CalendarDays,
@@ -17,7 +18,56 @@ import { agendaEvents } from "@/data/agenda-events";
 
 const filters = ["Alles", "Borrel", "Lezingen", "Reizen", "Commissies"];
 
+const months = [
+  { name: "Januari", short: "JAN" },
+  { name: "Februari", short: "FEB" },
+  { name: "Maart", short: "MAR" },
+  { name: "April", short: "APR" },
+  { name: "Mei", short: "MEI" },
+  { name: "Juni", short: "JUN" },
+  { name: "Juli", short: "JUL" },
+  { name: "Augustus", short: "AUG" },
+  { name: "September", short: "SEP" },
+  { name: "Oktober", short: "OKT" },
+  { name: "November", short: "NOV" },
+  { name: "December", short: "DEC" },
+];
+
 export default function AgendaPage() {
+  const [selectedMonth, setSelectedMonth] = useState(10);
+  const [selectedYear, setSelectedYear] = useState(2025);
+
+  const selectedEvents = useMemo(
+    () =>
+      agendaEvents.filter(
+        (event) =>
+          event.showInAgenda !== false &&
+          event.month === months[selectedMonth].short &&
+          Number(event.year) === selectedYear,
+      ),
+    [selectedMonth, selectedYear],
+  );
+
+  function changeMonth(direction: -1 | 1) {
+    setSelectedMonth((currentMonth) => {
+      const nextMonth = currentMonth + direction;
+
+      if (nextMonth < 0) {
+        setSelectedYear((year) => year - 1);
+        return 11;
+      }
+
+      if (nextMonth > 11) {
+        setSelectedYear((year) => year + 1);
+        return 0;
+      }
+
+      return nextMonth;
+    });
+  }
+
+  const monthLabel = `${months[selectedMonth].name} ${selectedYear}`;
+
   return (
     <main className="app-shell agenda-shell">
       <div className="noise" aria-hidden="true" />
@@ -51,7 +101,7 @@ export default function AgendaPage() {
             <span className="agenda-orange-paper" />
             <span className="agenda-calendar-sheet">
               <span className="calendar-rings" />
-              <b>NOVEMBER</b>
+              <b>{months[selectedMonth].name.toUpperCase()}</b>
               <span className="calendar-grid">
                 {Array.from({ length: 20 }).map((_, index) => <i key={index} />)}
               </span>
@@ -61,9 +111,13 @@ export default function AgendaPage() {
         </div>
 
         <div className="month-switcher month-switcher-redesign">
-          <button aria-label="Vorige maand"><ChevronLeft size={23} /></button>
-          <strong>November 2025</strong>
-          <button aria-label="Volgende maand"><ChevronRight size={23} /></button>
+          <button aria-label="Vorige maand" onClick={() => changeMonth(-1)}>
+            <ChevronLeft size={23} />
+          </button>
+          <strong aria-live="polite">{monthLabel}</strong>
+          <button aria-label="Volgende maand" onClick={() => changeMonth(1)}>
+            <ChevronRight size={23} />
+          </button>
         </div>
 
         <div className="agenda-filters agenda-filters-redesign" aria-label="Agenda filters">
@@ -74,7 +128,7 @@ export default function AgendaPage() {
       </section>
 
       <section className="agenda-list agenda-list-redesign">
-        {agendaEvents.filter((event) => event.showInAgenda !== false).map((event) => (
+        {selectedEvents.map((event) => (
           <Link
             href={`/agenda/${event.slug}`}
             className="agenda-card-link"
@@ -108,6 +162,14 @@ export default function AgendaPage() {
             </article>
           </Link>
         ))}
+
+        {selectedEvents.length === 0 && (
+          <div className="agenda-empty-month">
+            <CalendarDays size={30} />
+            <strong>Geen activiteiten in {months[selectedMonth].name}</strong>
+            <span>Gebruik de pijlen om naar een andere maand te gaan.</span>
+          </div>
+        )}
       </section>
 
       <nav className="bottom-nav" aria-label="Hoofdnavigatie">
