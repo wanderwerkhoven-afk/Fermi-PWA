@@ -9,7 +9,6 @@ import {
   Coins,
   Home,
   MapPin,
-  Menu,
   Plane,
   Share2,
   UserRound,
@@ -139,7 +138,9 @@ export default async function EventDetailPage({
           <Link className="nav-item" href="/"><Home size={23} /><span>Home</span></Link>
           <Link className="nav-item active" href="/agenda"><CalendarDays size={23} /><span>Agenda</span><i /></Link>
           <Link className="nav-item center-item" href="/fermi">
-            <span className="nav-fermi"><Menu size={14} /><span>Fermi</span></span>
+            <span className="nav-fermi">
+            <img src="/Fermi-PWA/images/branding/fermi-logo.png" alt="" />
+          </span>
             <span>Fermi</span>
           </Link>
           <Link className="nav-item" href="/community"><UsersRound size={25} /><span>Community</span></Link>
@@ -193,7 +194,9 @@ export default async function EventDetailPage({
         <Link className="nav-item" href="/"><Home size={23} /><span>Home</span></Link>
         <Link className="nav-item active" href="/agenda"><CalendarDays size={23} /><span>Agenda</span><i /></Link>
         <a className="nav-item center-item" href="#">
-          <span className="nav-fermi"><Menu size={14} /><span>Fermi</span></span>
+          <span className="nav-fermi">
+            <img src="/Fermi-PWA/images/branding/fermi-logo.png" alt="" />
+          </span>
           <span>Fermi</span>
         </a>
         <Link className="nav-item" href="/community"><UsersRound size={25} /><span>Community</span></Link>
