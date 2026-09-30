@@ -4727,6 +4727,8 @@ button {
   display: block;
   object-fit: contain;
   object-position: center right;
+  transform: scale(1.5);
+  transform-origin: center right;
 }
 
 .home-pass-art {
