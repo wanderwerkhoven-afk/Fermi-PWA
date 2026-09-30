@@ -4727,7 +4727,7 @@ button {
   display: block;
   object-fit: contain;
   object-position: center right;
-  transform: scale(1.5);
+  transform: translateX(10px) scale(1.5);
   transform-origin: center right;
 }
 
