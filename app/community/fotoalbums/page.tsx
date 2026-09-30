@@ -9,7 +9,6 @@ import {
   ChevronRight,
   Home,
   Image as ImageIcon,
-  Menu,
   Search,
   UserRound,
   UsersRound,
@@ -151,7 +150,9 @@ export default function PhotoAlbumsPage() {
         <Link className="nav-item" href="/"><Home size={23} /><span>Home</span></Link>
         <Link className="nav-item" href="/agenda"><CalendarDays size={23} /><span>Agenda</span></Link>
         <Link className="nav-item center-item" href="/fermi">
-          <span className="nav-fermi"><Menu size={14} /><span>Fermi</span></span>
+          <span className="nav-fermi">
+            <img src="/Fermi-PWA/images/branding/fermi-logo.png" alt="" />
+          </span>
           <span>Fermi</span>
         </Link>
         <Link className="nav-item active" href="/community">
