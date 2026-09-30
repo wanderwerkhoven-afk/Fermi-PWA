@@ -10,7 +10,6 @@ import {
   Clock3,
   Home,
   MapPin,
-  Menu,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -183,7 +182,9 @@ export default function AgendaPage() {
           <i />
         </Link>
         <Link className="nav-item center-item" href="/fermi">
-          <span className="nav-fermi"><Menu size={14} /><span>Fermi</span></span>
+          <span className="nav-fermi">
+            <img src="/Fermi-PWA/images/branding/fermi-logo.png" alt="" />
+          </span>
           <span>Fermi</span>
         </Link>
         <Link className="nav-item" href="/community"><UsersRound size={25} /><span>Community</span></Link>
