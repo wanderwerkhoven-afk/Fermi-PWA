@@ -4947,7 +4947,7 @@ button {
   z-index: 30;
   top: 0;
   right: 0;
-  width: 6px;
+  width: 14px;
   height: 100%;
   pointer-events: none;
   background: var(--fermi-navy);
