@@ -6,7 +6,6 @@ import {
   Coins,
   GraduationCap,
   Home,
-  Menu,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -108,7 +107,9 @@ export default function BoardPage() {
         <Link className="nav-item" href="/"><Home size={23} /><span>Home</span></Link>
         <Link className="nav-item" href="/agenda"><CalendarDays size={23} /><span>Agenda</span></Link>
         <Link className="nav-item center-item active" href="/fermi">
-          <span className="nav-fermi"><Menu size={14} /><span>Fermi</span></span>
+          <span className="nav-fermi">
+            <img src="/Fermi-PWA/images/branding/fermi-logo.png" alt="" />
+          </span>
           <span>Fermi</span><i />
         </Link>
         <Link className="nav-item" href="/community"><UsersRound size={25} /><span>Community</span></Link>
