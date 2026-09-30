@@ -4759,21 +4759,6 @@ button {
   transform-origin: center right;
 }
 
-.home-pass-art {
-  position: relative;
-  align-self: stretch;
-  min-height: 58px;
-  overflow: visible;
-}
-
-.home-pass-art img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: contain;
-  object-position: center;
-}
-
 @media (max-width: 420px) {
   .top-hero {
     padding-inline: 16px;
@@ -4920,7 +4905,7 @@ button {
 
   .member-pass-preview {
     min-height: 72px;
-    grid-template-columns: 42px minmax(0,1fr) 70px auto;
+    grid-template-columns: 42px minmax(0,1fr) auto;
     gap: 8px;
     padding: 8px 10px;
     border-radius: 15px;
@@ -4939,9 +4924,6 @@ button {
     font-size: 8.5px;
   }
 
-  .home-pass-art {
-    min-height: 52px;
-  }
 }
 
 
