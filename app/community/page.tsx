@@ -7,6 +7,7 @@ import {
   CalendarDays,
   ChevronRight,
   Home,
+  Image as ImageIcon,
   Menu,
   Search,
   UserRound,
@@ -68,6 +69,17 @@ export default function CommunityPage() {
             <span className="community-dots" />
           </div>
         </div>
+
+        <nav className="community-tabs" aria-label="Community onderdelen">
+          <Link className="community-tab active" href="/community">
+            <UsersRound size={17} />
+            Leden
+          </Link>
+          <Link className="community-tab" href="/community/fotoalbums">
+            <ImageIcon size={17} />
+            Fotoalbums
+          </Link>
+        </nav>
 
         <label className="community-search">
           <Search size={22} />
