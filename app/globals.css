@@ -608,7 +608,7 @@ button {
   border-radius: 18px;
   background:
     linear-gradient(rgba(244,234,220,.14), rgba(244,234,220,.14)),
-    url("/Fermi-PWA/images/home/home-member-pass-background.png") center / cover no-repeat;
+    url("/Fermi-PWA/images/home/home-member-pass-background.png") center / 120% auto no-repeat;
   color: var(--fermi-navy-deep);
   text-align: left;
   cursor: pointer;
