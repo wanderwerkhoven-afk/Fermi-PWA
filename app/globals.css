@@ -4623,14 +4623,30 @@ button {
 }
 
 
-/* Home — final uploaded artwork */
+/* Home — final uploaded artwork
+   Assets must always remain fully visible: no image cropping. */
+.top-hero {
+  padding-bottom: 0;
+}
+
+.welcome-row {
+  min-height: 142px;
+}
+
+.welcome-row > div:first-child {
+  position: relative;
+  z-index: 5;
+  max-width: 66%;
+}
+
 .home-hero-art {
-  right: -18px;
-  top: -15px;
-  width: 245px;
-  height: 188px;
+  right: -12px;
+  top: -52px;
+  width: 238px;
+  height: 205px;
   opacity: 1;
   overflow: visible;
+  pointer-events: none;
 }
 
 .home-hero-art img {
@@ -4641,51 +4657,198 @@ button {
   object-position: right center;
 }
 
+.featured-event {
+  min-height: 226px;
+  grid-template-columns: 56% 44%;
+}
+
+.featured-copy {
+  padding: 16px 0 16px 17px;
+}
+
+.featured-event h2 {
+  margin: 10px 0 11px;
+  font-size: 30px;
+}
+
+.event-meta {
+  gap: 6px;
+  margin-bottom: 13px;
+}
+
+.event-meta span {
+  gap: 7px;
+  font-size: 12px;
+}
+
+.primary-button {
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
 .home-featured-art {
   min-width: 0;
   min-height: 100%;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  display: grid;
+  place-items: center;
 }
 
 .home-featured-art img {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 226px;
   display: block;
-  object-fit: cover;
-  object-position: center;
+  object-fit: contain;
+  object-position: center right;
 }
 
 .home-pass-art {
   position: relative;
   align-self: stretch;
   min-height: 68px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .home-pass-art img {
-  position: absolute;
-  inset: -6px -10px -6px -8px;
-  width: calc(100% + 18px);
-  height: calc(100% + 12px);
+  width: 100%;
+  height: 100%;
   display: block;
   object-fit: contain;
   object-position: center;
 }
 
 @media (max-width: 420px) {
-  .home-hero-art {
-    right: -35px;
-    top: -8px;
-    width: 225px;
-    height: 172px;
+  .top-hero {
+    padding-inline: 16px;
   }
 
-  .home-pass-art img {
-    inset: -4px -9px -4px -6px;
-    width: calc(100% + 15px);
-    height: calc(100% + 8px);
+  .welcome-row {
+    min-height: 132px;
+  }
+
+  .welcome-row > div:first-child {
+    max-width: 69%;
+  }
+
+  .welcome-row h1 {
+    margin-top: 17px;
+    font-size: 44px;
+  }
+
+  .welcome-row p {
+    margin-top: 7px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .home-hero-art {
+    right: -20px;
+    top: -58px;
+    width: 210px;
+    height: 190px;
+  }
+
+  .content {
+    gap: 18px;
+    padding-inline: 14px;
+  }
+
+  .featured-event {
+    min-height: 210px;
+    grid-template-columns: 57% 43%;
+    border-radius: 22px;
+  }
+
+  .featured-copy {
+    padding: 14px 0 14px 14px;
+  }
+
+  .eyebrow {
+    padding: 6px 9px 5px;
+    font-size: 9px;
+  }
+
+  .featured-event h2 {
+    margin: 9px 0 10px;
+    font-size: 27px;
+  }
+
+  .event-meta {
+    gap: 5px;
+    margin-bottom: 11px;
+  }
+
+  .event-meta span {
+    gap: 6px;
+    font-size: 10.5px;
+  }
+
+  .event-meta svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .primary-button {
+    min-height: 40px;
+    padding: 0 13px;
+    border-radius: 12px;
+    font-size: 11px;
+  }
+
+  .primary-button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .home-featured-art img {
+    max-height: 210px;
+  }
+
+  .section-heading h2 {
+    font-size: 28px;
+  }
+
+  .text-link {
+    font-size: 11px;
+  }
+
+  .mini-art {
+    height: 88px;
+  }
+
+  .mini-event h3 {
+    font-size: 15px;
+  }
+
+  .mini-event p {
+    font-size: 9.5px;
+  }
+
+  .member-pass-preview {
+    min-height: 82px;
+    grid-template-columns: 46px minmax(0,1fr) 78px auto;
+    padding: 10px 12px;
+  }
+
+  .pass-icon {
+    width: 43px;
+    height: 43px;
+  }
+
+  .pass-copy strong {
+    font-size: 16px;
+  }
+
+  .pass-copy small {
+    font-size: 9.5px;
+  }
+
+  .home-pass-art {
+    min-height: 60px;
   }
 }
+
