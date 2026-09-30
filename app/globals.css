@@ -4940,15 +4940,15 @@ button {
 }
 
 
-/* Home top collage gutter */
+/* Home top collage gutter — same visual background as the Home shell */
 .top-hero::after {
   content: "";
   position: absolute;
   z-index: 30;
-  top: 0;
-  right: 0;
-  width: 14px;
-  height: 100%;
+  inset: 0;
   pointer-events: none;
-  background: var(--fermi-navy);
+  background:
+    radial-gradient(circle at 110% 5%, rgba(22,99,138,.4), transparent 25rem),
+    linear-gradient(180deg, #062b40 0%, var(--fermi-navy) 45%, #042437 100%);
+  clip-path: inset(0 0 0 calc(100% - 14px));
 }
