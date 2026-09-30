@@ -4336,3 +4336,288 @@ button {
     display: none;
   }
 }
+
+
+/* Team Fermi — Community tabs + photo albums */
+.community-tabs {
+  position: relative;
+  z-index: 9;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin: 4px 0 13px;
+  padding: 5px;
+  border: 1px solid rgba(132,184,212,.25);
+  border-radius: 999px;
+  background: rgba(3,29,44,.62);
+}
+
+.community-tab {
+  min-height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: 999px;
+  color: #cbd7dd;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
+  transition: background .16s ease, color .16s ease, transform .16s ease;
+}
+
+.community-tab.active {
+  background: var(--fermi-orange);
+  color: var(--fermi-navy-deep);
+  box-shadow: 0 7px 18px rgba(146,62,4,.18);
+}
+
+.community-tab:active {
+  transform: scale(.98);
+}
+
+.photoalbums-title-row {
+  min-height: 174px;
+}
+
+.photoalbums-title-art {
+  position: absolute;
+  right: -4px;
+  top: 1px;
+  width: 220px;
+  height: 160px;
+}
+
+.photoalbums-polaroid {
+  position: absolute;
+  width: 102px;
+  height: 126px;
+  padding: 7px 7px 22px;
+  background: var(--fermi-paper);
+  box-shadow: 0 9px 20px rgba(0,0,0,.2);
+}
+
+.photoalbums-polaroid::before {
+  content: "";
+  position: absolute;
+  inset: 7px 7px 22px;
+  background:
+    linear-gradient(145deg,rgba(255,122,26,.55),rgba(3,29,44,.78)),
+    url("/Fermi-PWA/images/community/community-hero.svg") center/cover;
+  filter: grayscale(.35);
+}
+
+.photoalbums-polaroid-a {
+  right: 72px;
+  top: 15px;
+  transform: rotate(-11deg);
+}
+
+.photoalbums-polaroid-b {
+  right: 2px;
+  top: 27px;
+  transform: rotate(9deg);
+}
+
+.photoalbums-polaroid-b::before {
+  background:
+    linear-gradient(145deg,rgba(3,29,44,.12),rgba(255,122,26,.38)),
+    url("/Fermi-PWA/images/community/community-join.svg") center/cover;
+}
+
+.photoalbums-orange-tape {
+  position: absolute;
+  z-index: 4;
+  right: 72px;
+  top: 6px;
+  width: 58px;
+  height: 18px;
+  background: rgba(255,122,26,.92);
+  transform: rotate(8deg);
+}
+
+.photoalbums-camera-icon {
+  position: absolute;
+  z-index: 5;
+  right: 8px;
+  bottom: 0;
+  color: var(--fermi-orange);
+}
+
+.photoalbums-content {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  gap: 14px;
+  padding: 0 14px 30px;
+}
+
+.photoalbums-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.community-label {
+  color: var(--fermi-orange);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.photoalbums-heading h2 {
+  margin: 4px 0 0;
+  font: 800 29px/1 Georgia,"Times New Roman",serif;
+}
+
+.photoalbums-heading > span {
+  color: var(--fermi-muted);
+  font-size: 11px;
+}
+
+.photoalbum-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.photoalbum-card {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--fermi-paper);
+  color: var(--fermi-navy-deep);
+  box-shadow: 0 10px 23px rgba(0,0,0,.14);
+}
+
+.photoalbum-card-art {
+  position: relative;
+  min-height: 150px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+
+.photoalbum-borrel .photoalbum-card-art {
+  background:
+    linear-gradient(145deg,rgba(255,122,26,.20),rgba(3,29,44,.28)),
+    url("/Fermi-PWA/images/community/community-join.svg") center/cover;
+}
+
+.photoalbum-budapest .photoalbum-card-art {
+  background:
+    linear-gradient(145deg,rgba(3,29,44,.18),rgba(255,122,26,.22)),
+    url("/Fermi-PWA/images/community/community-hero.svg") center/cover;
+}
+
+.photoalbum-intro .photoalbum-card-art {
+  background:
+    linear-gradient(145deg,rgba(255,122,26,.26),rgba(3,29,44,.20)),
+    url("/Fermi-PWA/images/community/member-emma.svg") center/cover;
+}
+
+.photoalbum-winter .photoalbum-card-art {
+  background:
+    linear-gradient(145deg,rgba(3,29,44,.34),rgba(244,234,220,.15)),
+    url("/Fermi-PWA/images/community/member-daan.svg") center/cover;
+}
+
+.photoalbum-count {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  min-height: 29px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: rgba(3,29,44,.82);
+  color: var(--fermi-paper);
+  font-size: 10px;
+  font-weight: 800;
+  backdrop-filter: blur(7px);
+}
+
+.photoalbum-index {
+  position: absolute;
+  right: 8px;
+  bottom: -7px;
+  font: 800 50px/.9 Georgia,serif;
+  color: rgba(244,234,220,.86);
+  text-shadow: 0 3px 10px rgba(0,0,0,.18);
+}
+
+.photoalbum-card-copy {
+  padding: 12px;
+}
+
+.photoalbum-category {
+  color: var(--fermi-orange-dark);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.photoalbum-card-copy h3 {
+  margin: 5px 0 5px;
+  font: 800 18px/1.03 Georgia,"Times New Roman",serif;
+}
+
+.photoalbum-card-copy p {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.photoalbum-card-copy small {
+  display: block;
+  margin-top: 8px;
+  min-height: 43px;
+  font-size: 9.5px;
+  line-height: 1.35;
+  color: #365064;
+}
+
+.photoalbum-open {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--fermi-orange-dark);
+  font-size: 10.5px;
+  font-weight: 900;
+}
+
+@media (max-width: 420px) {
+  .community-tabs {
+    margin-top: 1px;
+  }
+
+  .photoalbums-title-row {
+    min-height: 162px;
+  }
+
+  .photoalbums-title-art {
+    right: -31px;
+    transform: scale(.88);
+  }
+
+  .photoalbum-grid {
+    gap: 8px;
+  }
+
+  .photoalbum-card-art {
+    min-height: 132px;
+  }
+
+  .photoalbum-card-copy {
+    padding: 10px;
+  }
+
+  .photoalbum-card-copy h3 {
+    font-size: 16px;
+  }
+}
