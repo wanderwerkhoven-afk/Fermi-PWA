@@ -2538,6 +2538,7 @@ button {
 
 .fermi-committee-card {
   position: relative;
+  text-decoration: none;
   min-height: 107px;
   overflow: hidden;
   display: grid;
@@ -4014,4 +4015,304 @@ button {
   max-width: 250px;
   font-size: 12px;
   line-height: 1.4;
+}
+
+
+/* Team Fermi — committee detail pages */
+.committee-detail-shell {
+  background:
+    radial-gradient(circle at 86% 4%, rgba(255,122,26,.13), transparent 22rem),
+    linear-gradient(180deg,#062b40 0%,#06283b 50%,#032235 100%);
+}
+
+.committee-detail-hero {
+  position: relative;
+  padding: max(22px, env(safe-area-inset-top)) 16px 12px;
+  overflow: hidden;
+}
+
+.committee-detail-topbar {
+  position: relative;
+  z-index: 8;
+  display: grid;
+  grid-template-columns: 46px 1fr 46px;
+  gap: 10px;
+  align-items: center;
+}
+
+.committee-detail-brand {
+  justify-self: center;
+  font-size: 21px;
+}
+
+.committee-detail-brand .fermi-mark {
+  width: 48px;
+}
+
+.committee-detail-title {
+  position: relative;
+  min-height: 235px;
+  padding-top: 43px;
+}
+
+.committee-detail-kicker,
+.committee-label {
+  color: var(--fermi-orange);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .09em;
+}
+
+.committee-detail-title h1 {
+  position: relative;
+  z-index: 4;
+  margin: 7px 0 4px;
+  font: 800 clamp(58px,15vw,76px)/.9 Georgia,"Times New Roman",serif;
+  letter-spacing: -.05em;
+}
+
+.committee-detail-title > p {
+  position: relative;
+  z-index: 4;
+  margin: 0;
+  color: #d4dee4;
+  font-size: 17px;
+}
+
+.committee-detail-art {
+  position: absolute;
+  right: -28px;
+  top: 22px;
+  width: 235px;
+  height: 205px;
+}
+
+.committee-detail-orange-disc {
+  position: absolute;
+  right: 14px;
+  top: 24px;
+  width: 160px;
+  height: 150px;
+  border-radius: 48% 52% 44% 56%;
+  background: var(--fermi-orange);
+  clip-path: polygon(8% 12%,82% 0,100% 28%,91% 83%,55% 100%,12% 87%,0 43%);
+}
+
+.committee-detail-icon {
+  position: absolute;
+  z-index: 3;
+  right: 66px;
+  top: 69px;
+  width: 82px;
+  height: 82px;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--fermi-paper);
+  border-radius: 50%;
+  background: var(--fermi-navy-deep);
+  color: var(--fermi-paper);
+  box-shadow: 0 10px 22px rgba(0,0,0,.2);
+}
+
+.committee-detail-dots {
+  position: absolute;
+  z-index: 4;
+  right: 0;
+  bottom: 4px;
+  width: 105px;
+  height: 75px;
+  background-image: radial-gradient(circle,#ff7a1a 0 3px,transparent 3.5px);
+  background-size: 15px 15px;
+}
+
+.committee-detail-content {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 14px;
+  padding: 0 14px 30px;
+}
+
+.committee-intro-card,
+.committee-detail-section,
+.committee-commitment-card {
+  border: 1px solid rgba(132,184,212,.28);
+  border-radius: 18px;
+  background: rgba(7,48,72,.70);
+}
+
+.committee-intro-card {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 12px;
+  padding: 17px;
+}
+
+.committee-intro-icon {
+  width: 51px;
+  height: 51px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--fermi-orange);
+  color: var(--fermi-navy-deep);
+}
+
+.committee-intro-card h2,
+.committee-detail-section h2 {
+  margin: 6px 0 9px;
+  font: 800 25px/1 Georgia,"Times New Roman",serif;
+}
+
+.committee-intro-card p,
+.committee-detail-section p,
+.committee-commitment-card p {
+  margin: 0;
+  color: #d5dfe4;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.committee-signup-wrap {
+  display: grid;
+  gap: 7px;
+}
+
+.committee-signup-button {
+  width: 100%;
+  min-height: 57px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--fermi-orange);
+  color: #23160d;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(159,68,7,.18);
+}
+
+.committee-signup-button.signed-up {
+  background: var(--fermi-paper);
+  color: var(--fermi-navy-deep);
+}
+
+.committee-signup-wrap small {
+  color: var(--fermi-muted);
+  text-align: center;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+.committee-detail-section {
+  padding: 18px;
+}
+
+.committee-check-list {
+  display: grid;
+  gap: 11px;
+  margin-top: 13px;
+}
+
+.committee-check-list > div {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 9px;
+  align-items: start;
+  color: #d9e2e7;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.committee-check-list svg {
+  color: var(--fermi-orange);
+}
+
+.committee-skills-section {
+  background:
+    radial-gradient(circle at 93% 8%,rgba(255,122,26,.18),transparent 90px),
+    var(--fermi-paper);
+  color: var(--fermi-navy-deep);
+}
+
+.committee-skills-section .committee-label {
+  color: var(--fermi-orange-dark);
+}
+
+.committee-skill-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.committee-skill-grid span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 11px;
+  border-radius: 999px;
+  background: var(--fermi-navy);
+  color: var(--fermi-paper);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.committee-skill-grid svg {
+  color: var(--fermi-orange);
+}
+
+.committee-commitment-card {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 11px;
+  align-items: start;
+  padding: 16px;
+}
+
+.committee-commitment-card > svg {
+  color: var(--fermi-orange);
+}
+
+.fermi-committee-card:active {
+  transform: scale(.985);
+}
+
+@media (min-width: 760px) {
+  .fermi-committee-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,122,26,.65);
+  }
+}
+
+@media (max-width: 420px) {
+  .committee-detail-title {
+    min-height: 215px;
+  }
+
+  .committee-detail-title h1 {
+    font-size: 56px;
+  }
+
+  .committee-detail-title > p {
+    max-width: 58%;
+    font-size: 15px;
+  }
+
+  .committee-detail-art {
+    right: -48px;
+    transform: scale(.9);
+  }
+
+  .committee-intro-card {
+    grid-template-columns: 48px 1fr;
+    padding: 15px;
+  }
+
+  .committee-intro-icon {
+    width: 46px;
+    height: 46px;
+  }
 }
