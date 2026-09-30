@@ -4316,3 +4316,23 @@ button {
     height: 46px;
   }
 }
+
+
+/* PWA standalone: keep scrolling, hide visible scrollbars */
+@media (display-mode: standalone) {
+  html,
+  body,
+  .app-shell {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  .app-shell::-webkit-scrollbar,
+  *::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+}
