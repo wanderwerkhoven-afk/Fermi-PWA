@@ -82,6 +82,12 @@
       "route": "/fermi/bestuur/",
       "status": "implemented",
       "reference": "Full five-person board detail page; overview remains visually compact."
+    },
+    {
+      "id": "committee-detail",
+      "route": "/fermi/commissies/[slug]/",
+      "status": "implemented",
+      "reference": "Committee detail pages with description, activities, skills, fit, time commitment and signup CTA."
     }
   ],
   "design_system": {
@@ -159,7 +165,10 @@
     "Fermi overview must not expand the complete board inline; it previews three roles to preserve the approved mockup.",
     "Full board information is routed to /fermi/bestuur/.",
     "Agenda month selector is interactive client-side and supports month/year rollover.",
-    "Agenda overview only renders events matching the selected month and year, with an empty-month state when no events exist."
+    "Agenda overview only renders events matching the selected month and year, with an empty-month state when no events exist.",
+    "Fermi committee tiles are fully clickable and route to /fermi/commissies/[slug]/.",
+    "Committee data is centralized in data/committees.ts.",
+    "Committee signup buttons use local prototype state until a backend/member workflow is connected."
   ],
   "open_decisions": [
     "Final authentication provider.",
