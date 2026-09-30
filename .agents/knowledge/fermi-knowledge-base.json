@@ -176,7 +176,9 @@
     "Committee data is centralized in data/committees.ts.",
     "Committee signup buttons use local prototype state until a backend/member workflow is connected.",
     "Community uses top-level Leden and Fotoalbums tabs so photo albums are not buried below the long member list.",
-    "Photo albums live at /community/fotoalbums/ and use centralized prototype data from data/photo-albums.ts."
+    "Photo albums live at /community/fotoalbums/ and use centralized prototype data from data/photo-albums.ts.",
+    "Home uses uploaded local artwork from public/images/home/ for the hero church collage, featured borrel illustration and digital member pass atom artwork.",
+    "Home artwork filenames are home-hero-church.png, home-featured-borrel.png and home-member-pass-atom.png."
   ],
   "open_decisions": [
     "Final authentication provider.",
