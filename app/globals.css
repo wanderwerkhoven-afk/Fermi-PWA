@@ -4664,7 +4664,7 @@ button {
 
 .home-hero-atom {
   position: absolute;
-  z-index: 3;
+  z-index: 8;
   right: 2px;
   bottom: 2px;
   width: 82px;
@@ -4672,6 +4672,8 @@ button {
   display: block;
   object-fit: contain;
   pointer-events: none;
+  transform: translate(-5px, 10px) scale(1.2);
+  transform-origin: center;
 }
 
 .featured-event {
@@ -4739,7 +4741,7 @@ button {
   display: block;
   object-fit: contain;
   object-position: center right;
-  transform: translateX(10px) scale(1.5);
+  transform: translateX(20px) scale(1.5);
   transform-origin: center right;
 }
 
@@ -4801,6 +4803,7 @@ button {
     bottom: 1px;
     width: 68px;
     height: 68px;
+    transform: translate(-5px, 10px) scale(1.2);
   }
 
   .content {
