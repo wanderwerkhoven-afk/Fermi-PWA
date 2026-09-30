@@ -63,7 +63,7 @@
       "id": "community",
       "route": "/community/",
       "status": "implemented",
-      "reference": "Approved Community mockup: dark collage hero, member search, filter pills, 'Word ACTiEF!' committee CTA and cream member directory rows with badges."
+      "reference": "Community is a hub with Leden and Fotoalbums tabs. Members stay on /community/; albums live on /community/fotoalbums/."
     },
     {
       "id": "profile",
@@ -88,6 +88,12 @@
       "route": "/fermi/commissies/[slug]/",
       "status": "implemented",
       "reference": "Committee detail pages with description, activities, skills, fit, time commitment and signup CTA."
+    },
+    {
+      "id": "photo-albums",
+      "route": "/community/fotoalbums/",
+      "status": "implemented",
+      "reference": "Photo album overview with Community tabs, search, category filters and collage-style album cards."
     }
   ],
   "design_system": {
@@ -168,7 +174,9 @@
     "Agenda overview only renders events matching the selected month and year, with an empty-month state when no events exist.",
     "Fermi committee tiles are fully clickable and route to /fermi/commissies/[slug]/.",
     "Committee data is centralized in data/committees.ts.",
-    "Committee signup buttons use local prototype state until a backend/member workflow is connected."
+    "Committee signup buttons use local prototype state until a backend/member workflow is connected.",
+    "Community uses top-level Leden and Fotoalbums tabs so photo albums are not buried below the long member list.",
+    "Photo albums live at /community/fotoalbums/ and use centralized prototype data from data/photo-albums.ts."
   ],
   "open_decisions": [
     "Final authentication provider.",
