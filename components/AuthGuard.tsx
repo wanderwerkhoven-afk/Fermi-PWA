@@ -7,8 +7,8 @@ import { auth } from "../lib/firebase";
 import { getMembershipAccess } from "../lib/services/memberships";
 import { getUserProfile } from "../lib/services/users";
 
-const PUBLIC_ROUTES = ["/login"];
-type AccessState = "loading" | "unauthenticated" | "pending-account" | "suspended" | "member" | "membership-pending" | "archive" | "missing-profile" | "error";
+const PUBLIC_ROUTES = ["/login", "/register"];
+type AccessState = "loading" | "unauthenticated" | "verify-email" | "suspended" | "member" | "membership-pending" | "archive" | "missing-profile" | "error";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -36,8 +36,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           setAccess("missing-profile");
           return;
         }
-        if (profile.status === "pending") {
-          setAccess("pending-account");
+        if (!user.emailVerified) {
+          setAccess("verify-email");
           return;
         }
         if (profile.status === "suspended") {
@@ -79,8 +79,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     return <AccessLoading text={access === "loading" ? "Fermi wordt geladen…" : "Je wordt doorgestuurd…"} />;
   }
 
-  if (access === "pending-account") {
-    return <AccessCard title="Bijna binnen!" body="Je account is aangemaakt en wacht nog op activatie door S.V. Fermi." previewBypass />;
+  if (access === "verify-email") {
+    return <AccessCard title="Check je HvA-mail" body="We hebben een verificatielink naar je HvA-mailadres gestuurd. Open die link en log daarna opnieuw in." previewBypass />;
   }
 
   if (access === "suspended") {
