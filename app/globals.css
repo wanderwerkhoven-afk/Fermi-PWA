@@ -5257,22 +5257,23 @@ body.member-pass-modal-open {
 /* Preview-only access bypass */
 .preview-bypass-star {
   position: fixed;
-  z-index: 1000;
-  left: max(14px, env(safe-area-inset-left));
-  bottom: max(14px, env(safe-area-inset-bottom));
-  width: 30px;
-  height: 30px;
+  z-index: 2147483647;
+  left: max(12px, env(safe-area-inset-left));
+  bottom: calc(96px + env(safe-area-inset-bottom));
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: rgba(244, 234, 220, .34);
-  font-size: 17px;
+  color: rgba(244, 234, 220, .48);
+  font-size: 20px;
   line-height: 1;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.28));
   transition: color .16s ease, transform .16s ease, opacity .16s ease;
 }
 
