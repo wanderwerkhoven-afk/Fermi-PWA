@@ -5547,10 +5547,11 @@ body.member-admin-modal-open{overflow:hidden}
   text-overflow:ellipsis;
 }
 
+
 /* Canonical member number and validity placement */
 .member-pass-live-number{
-  transform:translateY(-15px);
+  transform:translateY(-30px);
 }
 .member-pass-live-valid{
-  transform:translateY(-15px);
+  transform:translateY(-30px);
 }
