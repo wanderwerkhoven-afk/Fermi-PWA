@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../lib/firebase";
-import { signInWithEmail, signInWithGoogle } from "../../lib/services/auth";
+import { signInWithEmail } from "../../lib/services/auth";
 import styles from "./login.module.css";
 
 export default function LoginPage() {
@@ -69,16 +69,12 @@ export default function LoginPage() {
           <button className={styles.loginButton} disabled={busy}>Inloggen <ArrowRight /></button>
 
           <button type="button" className={styles.forgot} onClick={resetPassword}>Wachtwoord vergeten?</button>
-
-          <button type="button" className={styles.hvaButton} disabled={busy} onClick={() => void finishLogin(signInWithGoogle)}>
-            <span aria-hidden="true">G</span><span>Doorgaan met Google</span><ArrowRight />
-          </button>
           {message && <p className={styles.message} role="status">{message}</p>}
         </form>
 
         <div className={styles.join}>
           <div><span /><Atom /><span /></div>
-          <p>Nog geen lid? <Link href="/">Word lid <ArrowRight /></Link></p>
+          <p>Nog geen account? <Link href="/register">Account maken <ArrowRight /></Link></p>
         </div>
       </section>
     </main>
