@@ -103,6 +103,7 @@ export async function registerForEventAtomic(
 
     if (registrationSnap.exists()) {
       transaction.update(registrationRef, {
+        membershipId,
         status: "registered",
         cancelledAt: null,
       });
