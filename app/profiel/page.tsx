@@ -21,6 +21,7 @@ import {
   UserRound,
   UsersRound,
   UserCog,
+  CalendarCog,
 } from "lucide-react";
 
 const menuItems = [
@@ -103,6 +104,12 @@ export default function ProfilePage() {
           subtitle: "Leden aanmelden, afmelden en beheren",
           icon: UserCog,
           href: "/profiel/leden-admin",
+        },
+        {
+          title: "Activiteiten admin",
+          subtitle: "Agenda en activiteitsgegevens beheren",
+          icon: CalendarCog,
+          href: "/profiel/activiteiten-admin",
         },
       ]
     : menuItems;
