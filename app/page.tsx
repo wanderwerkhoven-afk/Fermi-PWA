@@ -159,7 +159,7 @@ export default function HomePage() {
         <div className="welcome-row">
           <div>
             <h1>
-              Hoi <span>Wander</span>
+              Hoi <span>{fermiUser?.profile.firstName || "Fermi-lid"}</span>
             </h1>
             <p>Klaar voor de volgende activiteit?</p>
           </div>
