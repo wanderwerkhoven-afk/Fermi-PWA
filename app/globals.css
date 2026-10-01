@@ -5531,3 +5531,9 @@ body.member-admin-modal-open{overflow:hidden}
   transform:none;
   text-align:left;
 }
+
+/* Fine-tune member pass QR */
+.member-pass-live-qr{
+  top:24.5%;
+  width:37%;
+}
