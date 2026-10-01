@@ -5256,3 +5256,6 @@ body.member-pass-modal-open {
 
 /* Membership renewal feedback */
 .pending-card button:disabled{opacity:.58;cursor:wait}.pending-card .pending-error{margin:12px 0 0;color:#9b341d;font:700 13px/1.45 Arial,sans-serif}.pending-card button+button{margin-left:10px}@media(max-width:420px){.pending-card button{width:100%}.pending-card button+button{margin:10px 0 0}}
+
+/* Temporary pending-account preview shortcut */
+.pending-preview-star{position:fixed;z-index:10010;left:max(14px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom));width:38px;height:38px;display:grid;place-items:center;border:1px solid rgba(255,122,26,.55);border-radius:50%;background:rgba(3,29,44,.88);color:#ff7a1a;text-decoration:none;font-size:18px;box-shadow:0 8px 24px rgba(0,0,0,.22);cursor:pointer}
