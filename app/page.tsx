@@ -407,7 +407,7 @@ export default function HomePage() {
                 <MemberQrCode
                   cardId={membership?.digitalCard?.cardId}
                   enabled={Boolean(membership?.digitalCard?.enabled)}
-                  size={118}
+                  size={142}
                 />
               </div>
             </div>
