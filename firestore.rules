@@ -24,6 +24,7 @@ service cloud.firestore {
         && currentUser().data.role in roles;
     }
 
+
     match /users/{uid} {
       allow create: if isOwner(uid)
         && request.resource.data.uid == request.auth.uid
@@ -58,6 +59,9 @@ service cloud.firestore {
       allow create: if hasProfile()
         && currentUser().data.status == "active"
         && request.resource.data.userId == request.auth.uid
+        && request.resource.data.membershipId is string
+        && get(/databases/$(database)/documents/memberships/$(request.resource.data.membershipId)).data.userId == request.auth.uid
+        && get(/databases/$(database)/documents/memberships/$(request.resource.data.membershipId)).data.status == "active"
         && request.resource.data.status == "registered";
       allow update: if hasProfile()
         && currentUser().data.status == "active"
