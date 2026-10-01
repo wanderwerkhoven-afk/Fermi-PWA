@@ -23,6 +23,7 @@ export interface DirectoryMember {
   role: UserRole;
   linkedUserId: string | null;
   createdAt?: unknown;
+  endDate?: string;
   updatedAt?: unknown;
 }
 
@@ -38,6 +39,7 @@ export interface AdminMemberRow {
   status: AdminMemberLifecycle;
   role: UserRole;
   membershipId: string | null;
+  endDate: string;
 }
 
 function normalizeEmail(email: string) {
@@ -50,7 +52,6 @@ function directoryId(email: string) {
 
 function lifecycleFor(user: FermiUser, membership?: Membership): AdminMemberLifecycle {
   if (user.status === "suspended") return "suspended";
-  if (user.status === "pending") return "pending";
   if (membership?.status === "active") return "active";
   if (membership?.status === "pending") return "pending";
   return "archived";
@@ -104,6 +105,7 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
       status: lifecycleFor(user, membership),
       role: user.role,
       membershipId: membership?.id ?? null,
+      endDate: membership?.endDate ?? directory?.endDate ?? "",
     };
   });
 
@@ -121,6 +123,7 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
       status: record.status,
       role: record.role,
       membershipId: null,
+      endDate: record.endDate ?? "",
     }));
 
   return [...accountRows, ...directoryRows].sort((a, b) =>
@@ -207,4 +210,83 @@ export async function setAdminMemberRole(row: AdminMemberRow, role: UserRole) {
   }
   if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
   await updateDoc(doc(db, "users", row.uid), { role, updatedAt: serverTimestamp() });
+}
+
+
+export interface AdminMemberDetailsInput {
+  firstName: string;
+  lastName: string;
+  email: string;
+  memberNumber: string;
+  academicYear: string;
+  endDate: string;
+  status: AdminMemberLifecycle;
+  role: UserRole;
+}
+
+export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMemberDetailsInput) {
+  const normalized = normalizeEmail(input.email);
+  if (!normalized) throw new Error("E-mailadres ontbreekt.");
+
+  if (row.source === "directory") {
+    await setDoc(doc(db, "memberDirectory", row.id), {
+      firstName: input.firstName.trim(),
+      lastName: input.lastName.trim(),
+      email: normalized,
+      memberNumber: input.memberNumber.trim(),
+      academicYear: input.academicYear.trim(),
+      endDate: input.endDate,
+      status: input.status,
+      role: input.role,
+      linkedUserId: row.uid,
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+    return;
+  }
+
+  if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
+
+  await updateDoc(doc(db, "users", row.uid), {
+    "profile.firstName": input.firstName.trim(),
+    "profile.lastName": input.lastName.trim(),
+    "profile.email": normalized,
+    role: input.role,
+    status: input.status === "suspended" ? "suspended" : "active",
+    updatedAt: serverTimestamp(),
+  });
+
+  const membershipStatus =
+    input.status === "active" ? "active"
+    : input.status === "pending" ? "pending"
+    : "expired";
+
+  if (row.membershipId) {
+    await updateDoc(doc(db, "memberships", row.membershipId), {
+      academicYear: input.academicYear.trim(),
+      memberNumber: input.memberNumber.trim(),
+      endDate: input.endDate,
+      status: membershipStatus,
+      digitalCard: {
+        enabled: input.status === "active",
+        cardId: `card-${row.uid}`,
+      },
+      updatedAt: serverTimestamp(),
+    });
+    return;
+  }
+
+  if (input.status === "archived" || input.status === "suspended") return;
+
+  await addDoc(collection(db, "memberships"), {
+    userId: row.uid,
+    academicYear: input.academicYear.trim() || "2026/2027",
+    membershipType: "student",
+    status: membershipStatus,
+    memberNumber: input.memberNumber.trim(),
+    startDate: "2026-09-01",
+    endDate: input.endDate || "2027-08-31",
+    digitalCard: { enabled: input.status === "active", cardId: `card-${row.uid}` },
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
 }
