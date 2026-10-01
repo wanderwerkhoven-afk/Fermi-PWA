@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-09-30",
+  "last_updated": "2026-10-01",
   "project": {
     "name": "S.V. Fermi PWA",
     "purpose": "Afgeschermde ledenapp voor leden, commissies en bestuur van S.V. Fermi.",
@@ -14,7 +14,8 @@
     "pwa": true,
     "deployment": "GitHub Pages via GitHub Actions",
     "static_export": true,
-    "github_pages_base_path": "/Fermi-PWA/"
+    "github_pages_base_path": "/Fermi-PWA/",
+    "backend": "Firebase Authentication + Cloud Firestore + Firebase Storage"
   },
   "navigation": {
     "type": "fixed bottom navigation",
@@ -157,7 +158,6 @@
     "Agenda event cards use relevant stock photography as temporary imagery until final Fermi artwork is available.",
     "Agenda events use one canonical typed data source in data/agenda-events.ts.",
     "Agenda event detail routes are statically generated for GitHub Pages compatibility.",
-    "Prototype event registration is local UI state only until authentication/backend are connected.",
     "Study-trip event details use a dedicated travel visual variant within the shared /agenda/[slug]/ route.",
     "Studiereis Budapest ’25 exists as a hidden-from-November-overview demo/detail route at /agenda/studiereis-budapest-25/.",
     "Fermi primary tab is implemented at /fermi/.",
@@ -178,11 +178,16 @@
     "Community uses top-level Leden and Fotoalbums tabs so photo albums are not buried below the long member list.",
     "Photo albums live at /community/fotoalbums/ and use centralized prototype data from data/photo-albums.ts.",
     "Home uses uploaded local artwork from public/images/home/ for the hero church collage, featured borrel illustration and digital member pass atom artwork.",
-    "Home artwork filenames are home-hero-church.png, home-featured-borrel.png and home-member-pass-atom.png."
+    "Home artwork filenames are home-hero-church.png, home-featured-borrel.png and home-member-pass-atom.png.",
+    "Firebase is the selected backend: Authentication, Cloud Firestore and Storage.",
+    "Authentication providers are Email/Password and Google.",
+    "Firestore region is EU.",
+    "Authentication identifies the account; Firestore user status and membership determine Fermi access.",
+    "New authenticated users bootstrap as role member with status pending; board/admin activation is separate.",
+    "Backend domain models live in lib/models/backend.ts and Firebase access is isolated in lib/services.",
+    "Firestore collections planned: users, memberships, events, registrations, committees, announcements, notifications and appConfig."
   ],
   "open_decisions": [
-    "Final authentication provider.",
-    "Final backend/database provider.",
     "Official production member administration integration.",
     "Final custom image asset set."
   ]
