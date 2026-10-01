@@ -1,6 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../lib/firebase";
+import { getUserProfile } from "../../lib/services/users";
 import {
   Bell,
   CalendarDays,
@@ -13,6 +17,7 @@ import {
   ShieldCheck,
   UserRound,
   UsersRound,
+  UserCog,
 } from "lucide-react";
 
 const menuItems = [
@@ -82,6 +87,35 @@ function FakeQr() {
 }
 
 export default function ProfilePage() {
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+      try {
+        const profile = await getUserProfile(user.uid);
+        setIsAdmin(profile?.status === "active" && profile.role === "admin");
+      } catch {
+        setIsAdmin(false);
+      }
+    });
+  }, []);
+
+  const visibleMenuItems = isAdmin
+    ? [
+        ...menuItems,
+        {
+          title: "Leden admin",
+          subtitle: "Leden aanmelden, afmelden en beheren",
+          icon: UserCog,
+          href: "/profiel/leden-admin",
+        },
+      ]
+    : menuItems;
+
   return (
     <main className="app-shell profile-page-shell">
       <div className="noise" aria-hidden="true" />
@@ -182,7 +216,7 @@ export default function ProfilePage() {
           <h2>Mijn Fermi</h2>
 
           <div className="profile-menu-list">
-            {menuItems.map(({ title, subtitle, icon: Icon, href }) => (
+            {visibleMenuItems.map(({ title, subtitle, icon: Icon, href }) => (
               <Link className="profile-menu-row" href={href} key={title}>
                 <span className="profile-menu-icon"><Icon size={23} /></span>
                 <span className="profile-menu-copy">
