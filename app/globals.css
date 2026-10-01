@@ -1263,8 +1263,8 @@ button {
 
 /* Team Fermi — Agenda mockup fidelity pass */
 .agenda-hero-redesign {
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 16px;
+  padding-right: 16px;
   padding-bottom: 14px;
 }
 
@@ -1361,7 +1361,7 @@ button {
 
 .agenda-list-redesign {
   gap: 10px;
-  padding: 0 13px 26px;
+  padding: 0 14px 26px;
 }
 
 .agenda-card-redesign {
@@ -1519,8 +1519,8 @@ button {
 
 @media (max-width: 420px) {
   .agenda-hero-redesign {
-    padding-left: 13px;
-    padding-right: 13px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   .agenda-title-copy {
@@ -5538,7 +5538,7 @@ body.member-admin-modal-open{overflow:hidden}
 
 /* Agenda — uploaded hero illustration */
 .agenda-hero-image-wrap {
-  right: -18px;
+  right: -20px;
   top: -3px;
   width: 222px;
   height: 164px;
@@ -5557,7 +5557,7 @@ body.member-admin-modal-open{overflow:hidden}
 
 @media (max-width: 420px) {
   .agenda-hero-image-wrap {
-    right: -42px;
+    right: -44px;
     transform: scale(.9);
     transform-origin: center right;
   }
