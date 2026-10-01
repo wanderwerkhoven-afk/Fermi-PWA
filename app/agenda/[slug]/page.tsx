@@ -24,11 +24,11 @@ export function generateStaticParams() {
 
 function FermiMark() {
   return (
-    <div className="fermi-mark event-fermi-mark" aria-hidden="true">
-      <span className="fermi-mark-line line-one" />
-      <span className="fermi-mark-line line-two" />
-      <span className="fermi-mark-circle">Fermi</span>
-    </div>
+    <img
+      className="fermi-logo-image event-fermi-mark"
+      src="/Fermi-PWA/images/branding/fermi-logo.png"
+      alt="SV Fermi"
+    />
   );
 }
 
