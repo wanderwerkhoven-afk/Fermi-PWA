@@ -95,6 +95,12 @@
       "route": "/community/fotoalbums/",
       "status": "implemented",
       "reference": "Photo album overview with Community tabs, search, category filters and collage-style album cards."
+    },
+    {
+      "id": "login",
+      "route": "/login/",
+      "status": "implemented",
+      "reference": "Approved Fermi login mockup: navy editorial collage, cream auth card, email/password login, password reset and Google/HvA sign-in."
     }
   ],
   "design_system": {
@@ -185,7 +191,8 @@
     "Authentication identifies the account; Firestore user status and membership determine Fermi access.",
     "New authenticated users bootstrap as role member with status pending; board/admin activation is separate.",
     "Backend domain models live in lib/models/backend.ts and Firebase access is isolated in lib/services.",
-    "Firestore collections planned: users, memberships, events, registrations, committees, announcements, notifications and appConfig."
+    "Firestore collections planned: users, memberships, events, registrations, committees, announcements, notifications and appConfig.",
+    "Login route /login/ uses Firebase Email/Password and Google authentication while preserving static GitHub Pages compatibility."
   ],
   "open_decisions": [
     "Official production member administration integration.",
