@@ -16,7 +16,25 @@ import {
 import { agendaEvents, type AgendaEvent } from "@/data/agenda-events";
 import { listActivities } from "@/lib/services/activities";
 
-const filters = ["Alles", "Borrel", "Lezingen", "Reizen", "Commissies"];
+const filters = ["Alles", "Borrel", "Lezingen", "Reizen", "Commissies"] as const;
+type AgendaFilter = (typeof filters)[number];
+
+function matchesAgendaFilter(event: AgendaEvent, filter: AgendaFilter) {
+  const type = event.type.trim().toLowerCase();
+
+  switch (filter) {
+    case "Borrel":
+      return type.includes("borrel");
+    case "Lezingen":
+      return type.includes("lezing") || type.includes("cursus");
+    case "Reizen":
+      return type.includes("reis");
+    case "Commissies":
+      return type.includes("commissie");
+    default:
+      return true;
+  }
+}
 
 const months = [
   { name: "Januari", short: "JAN" },
@@ -37,6 +55,7 @@ export default function AgendaPage() {
   const [selectedMonth, setSelectedMonth] = useState(10);
   const [selectedYear, setSelectedYear] = useState(2025);
   const [events, setEvents] = useState<AgendaEvent[]>(agendaEvents);
+  const [activeFilter, setActiveFilter] = useState<AgendaFilter>("Alles");
 
   useEffect(() => {
     let active = true;
@@ -56,9 +75,10 @@ export default function AgendaPage() {
         (event) =>
           event.showInAgenda !== false &&
           event.month === months[selectedMonth].short &&
-          Number(event.year) === selectedYear,
+          Number(event.year) === selectedYear &&
+          matchesAgendaFilter(event, activeFilter),
       ),
-    [events, selectedMonth, selectedYear],
+    [events, selectedMonth, selectedYear, activeFilter],
   );
 
   function changeMonth(direction: -1 | 1) {
@@ -128,8 +148,16 @@ export default function AgendaPage() {
         </div>
 
         <div className="agenda-filters agenda-filters-redesign" aria-label="Agenda filters">
-          {filters.map((filter, index) => (
-            <button key={filter} className={index === 0 ? "active" : ""}>{filter}</button>
+          {filters.map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              className={activeFilter === filter ? "active" : ""}
+              aria-pressed={activeFilter === filter}
+              onClick={() => setActiveFilter(filter)}
+            >
+              {filter}
+            </button>
           ))}
         </div>
       </section>
@@ -173,8 +201,16 @@ export default function AgendaPage() {
         {selectedEvents.length === 0 && (
           <div className="agenda-empty-month">
             <CalendarDays size={30} />
-            <strong>Geen activiteiten in {months[selectedMonth].name}</strong>
-            <span>Gebruik de pijlen om naar een andere maand te gaan.</span>
+            <strong>
+              {activeFilter === "Alles"
+                ? `Geen activiteiten in ${months[selectedMonth].name}`
+                : `Geen ${activeFilter.toLowerCase()} in ${months[selectedMonth].name}`}
+            </strong>
+            <span>
+              {activeFilter === "Alles"
+                ? "Gebruik de pijlen om naar een andere maand te gaan."
+                : "Kies een ander filter of blader naar een andere maand."}
+            </span>
           </div>
         )}
       </section>
