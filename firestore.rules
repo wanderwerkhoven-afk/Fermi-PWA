@@ -57,9 +57,90 @@ service cloud.firestore {
       allow create, update, delete: if hasRole(["board", "admin"]);
     }
 
+    function registrationDocId(activityId) {
+      return activityId + "__" + request.auth.uid;
+    }
+
+    function registrationAfter(activityId) {
+      return getAfter(
+        /databases/$(database)/documents/registrations/$(registrationDocId(activityId))
+      );
+    }
+
+    function registrationBefore(activityId) {
+      return get(
+        /databases/$(database)/documents/registrations/$(registrationDocId(activityId))
+      );
+    }
+
+    function statsAfter(activityId) {
+      return getAfter(
+        /databases/$(database)/documents/activityStats/$(activityId)
+      );
+    }
+
+    function statsBefore(activityId) {
+      return get(
+        /databases/$(database)/documents/activityStats/$(activityId)
+      );
+    }
+
     match /activities/{activityId} {
       allow read: if signedIn();
       allow create, update, delete: if hasRole(["admin"]);
+    }
+
+    match /activityStats/{activityId} {
+      allow read: if signedIn();
+
+      allow create: if hasRole(["admin"])
+        || (
+          signedIn()
+          && request.resource.data.eventId == activityId
+          && request.resource.data.registeredCount is int
+          && request.resource.data.registeredCount >= 0
+          && (
+            (
+              registrationAfter(activityId).data.status == "registered"
+              && request.resource.data.registeredCount
+                == get(/databases/$(database)/documents/activities/$(activityId)).data.registered + 1
+            )
+            || (
+              registrationAfter(activityId).data.status == "cancelled"
+              && request.resource.data.registeredCount
+                == (
+                  get(/databases/$(database)/documents/activities/$(activityId)).data.registered > 0
+                    ? get(/databases/$(database)/documents/activities/$(activityId)).data.registered - 1
+                    : 0
+                )
+            )
+          )
+        );
+
+      allow update: if hasRole(["admin"])
+        || (
+          signedIn()
+          && request.resource.data.eventId == resource.data.eventId
+          && request.resource.data.eventId == activityId
+          && request.resource.data
+            .diff(resource.data)
+            .affectedKeys()
+            .hasOnly(["registeredCount", "updatedAt"])
+          && request.resource.data.registeredCount is int
+          && request.resource.data.registeredCount >= 0
+          && (
+            (
+              request.resource.data.registeredCount == resource.data.registeredCount + 1
+              && registrationAfter(activityId).data.status == "registered"
+            )
+            || (
+              request.resource.data.registeredCount == resource.data.registeredCount - 1
+              && registrationAfter(activityId).data.status == "cancelled"
+            )
+          )
+        );
+
+      allow delete: if hasRole(["admin"]);
     }
 
     match /registrations/{registrationId} {
@@ -68,19 +149,49 @@ service cloud.firestore {
       allow create: if hasProfile()
         && currentUser().data.status == "active"
         && request.resource.data.userId == request.auth.uid
+        && registrationId == request.resource.data.eventId + "__" + request.auth.uid
         && request.resource.data.membershipId is string
         && get(/databases/$(database)/documents/memberships/$(request.resource.data.membershipId)).data.userId == request.auth.uid
         && get(/databases/$(database)/documents/memberships/$(request.resource.data.membershipId)).data.status == "active"
-        && request.resource.data.status == "registered";
+        && request.resource.data.status == "registered"
+        && statsAfter(request.resource.data.eventId).data.registeredCount >= 1
+        && (
+          (
+            exists(/databases/$(database)/documents/activityStats/$(request.resource.data.eventId))
+            && statsAfter(request.resource.data.eventId).data.registeredCount
+              == statsBefore(request.resource.data.eventId).data.registeredCount + 1
+          )
+          || (
+            !exists(/databases/$(database)/documents/activityStats/$(request.resource.data.eventId))
+            && statsAfter(request.resource.data.eventId).data.registeredCount
+              == get(/databases/$(database)/documents/activities/$(request.resource.data.eventId)).data.registered + 1
+          )
+        );
       allow update: if hasProfile()
         && currentUser().data.status == "active"
         && resource.data.userId == request.auth.uid
+        && registrationId == resource.data.eventId + "__" + request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "cancelledAt"])
         && request.resource.data.userId == resource.data.userId
         && request.resource.data.eventId == resource.data.eventId
+        && request.resource.data.membershipId == resource.data.membershipId
         && request.resource.data.payment == resource.data.payment
         && request.resource.data.registeredAt == resource.data.registeredAt
-        && request.resource.data.status in ["registered", "cancelled"];
+        && request.resource.data.status in ["registered", "cancelled"]
+        && (
+          (
+            resource.data.status == "cancelled"
+            && request.resource.data.status == "registered"
+            && statsAfter(resource.data.eventId).data.registeredCount
+              == statsBefore(resource.data.eventId).data.registeredCount + 1
+          )
+          || (
+            resource.data.status == "registered"
+            && request.resource.data.status == "cancelled"
+            && statsAfter(resource.data.eventId).data.registeredCount
+              == statsBefore(resource.data.eventId).data.registeredCount - 1
+          )
+        );
       allow delete: if hasRole(["board", "admin"]);
     }
 
