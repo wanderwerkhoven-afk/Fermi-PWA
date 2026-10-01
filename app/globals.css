@@ -5288,9 +5288,55 @@ body.member-pass-modal-open {
 
 /* Live Firebase data on digital member pass */
 .member-pass-live{position:relative;width:100%;display:grid;place-items:center}
-.member-pass-live-data{position:absolute;z-index:2;left:10%;right:10%;bottom:12%;display:grid;gap:3px;color:var(--fermi-white);text-shadow:0 1px 4px rgba(0,0,0,.34);pointer-events:none}
-.member-pass-live-data strong{font:800 clamp(18px,5vw,25px)/1.05 Georgia,"Times New Roman",serif}
-.member-pass-live-data span{font:700 clamp(9px,2.7vw,12px)/1.25 Inter,ui-sans-serif,sans-serif}
+.member-pass-live-data{
+  position:absolute;
+  z-index:2;
+  left:10.5%;
+  right:10.5%;
+  bottom:7.4%;
+  height:16.5%;
+  color:var(--fermi-navy);
+  pointer-events:none;
+  text-shadow:none;
+}
+.member-pass-live-data *{
+  color:var(--fermi-navy);
+  text-shadow:none;
+}
+.member-pass-live-name{
+  position:absolute;
+  top:3%;
+  left:3%;
+  right:3%;
+  margin:0;
+  text-align:center;
+  font:800 clamp(17px,4.8vw,24px)/1.04 Georgia,"Times New Roman",serif;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.member-pass-live-role{
+  position:absolute;
+  top:31%;
+  left:5%;
+  right:5%;
+  text-align:center;
+  font:700 clamp(8px,2.3vw,11px)/1.1 Inter,ui-sans-serif,sans-serif;
+  opacity:.78;
+}
+.member-pass-live-number,
+.member-pass-live-valid{
+  position:absolute;
+  left:46%;
+  right:4%;
+  text-align:left;
+  font:700 clamp(9px,2.65vw,12px)/1.15 Inter,ui-sans-serif,sans-serif;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.member-pass-live-number{top:55%}
+.member-pass-live-valid{top:76%}
 
 
 /* Team Fermi — admin-only member administration */
