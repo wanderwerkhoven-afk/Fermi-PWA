@@ -5,13 +5,18 @@ import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import {
   ArrowLeft,
+  CalendarDays,
   CheckCircle2,
-  ChevronDown,
+  ChevronRight,
   FileUp,
+  IdCard,
+  Mail,
+  Save,
   Search,
   ShieldAlert,
   UserPlus,
   UsersRound,
+  X,
 } from "lucide-react";
 import { auth } from "../../../lib/firebase";
 import { getUserProfile } from "../../../lib/services/users";
@@ -19,8 +24,7 @@ import {
   AdminMemberLifecycle,
   AdminMemberRow,
   listAdminMembers,
-  setAdminMemberLifecycle,
-  setAdminMemberRole,
+  saveAdminMemberDetails,
   upsertDirectoryMember,
   upsertDirectoryMembers,
 } from "../../../lib/services/memberAdmin";
@@ -31,6 +35,13 @@ const lifecycleLabels: Record<AdminMemberLifecycle, string> = {
   pending: "In overgang",
   suspended: "Geblokkeerd",
   archived: "Archief",
+};
+
+const roleLabels: Record<UserRole, string> = {
+  member: "Lid",
+  committee: "Commissie",
+  board: "Bestuur",
+  admin: "Admin",
 };
 
 function splitCsvLine(line: string, separator: string) {
@@ -92,6 +103,7 @@ function parseMemberCsv(text: string) {
       email: values[emailIndex] || "",
       memberNumber: memberNumberIndex >= 0 ? values[memberNumberIndex] || "" : "",
       academicYear: "2026/2027",
+      endDate: "2027-08-31",
       status,
       role,
       linkedUserId: null,
@@ -106,6 +118,17 @@ export default function LedenAdminPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
   const [showAdd, setShowAdd] = useState(false);
+  const [selected, setSelected] = useState<AdminMemberRow | null>(null);
+  const [edit, setEdit] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    memberNumber: "",
+    academicYear: "2026/2027",
+    endDate: "2027-08-31",
+    status: "active" as AdminMemberLifecycle,
+    role: "member" as UserRole,
+  });
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -138,6 +161,11 @@ export default function LedenAdminPage() {
     });
   }, []);
 
+  useEffect(() => {
+    document.body.classList.toggle("member-admin-modal-open", Boolean(selected));
+    return () => document.body.classList.remove("member-admin-modal-open");
+  }, [selected]);
+
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     if (!needle) return members;
@@ -155,31 +183,32 @@ export default function LedenAdminPage() {
     archived: members.filter((member) => member.status === "archived").length,
   }), [members]);
 
-  async function changeLifecycle(member: AdminMemberRow, status: AdminMemberLifecycle) {
-    setBusyId(member.id);
+  function openMember(member: AdminMemberRow) {
+    setSelected(member);
+    setEdit({
+      firstName: member.firstName,
+      lastName: member.lastName,
+      email: member.email,
+      memberNumber: member.memberNumber,
+      academicYear: member.academicYear || "2026/2027",
+      endDate: member.endDate || "2027-08-31",
+      status: member.status,
+      role: member.role,
+    });
     setNotice("");
-    try {
-      await setAdminMemberLifecycle(member, status);
-      await refresh();
-      setNotice(`${member.firstName || member.email} staat nu op ${lifecycleLabels[status].toLowerCase()}.`);
-    } catch (error) {
-      console.error(error);
-      setNotice("Status aanpassen is niet gelukt.");
-    } finally {
-      setBusyId(null);
-    }
   }
 
-  async function changeRole(member: AdminMemberRow, role: UserRole) {
-    setBusyId(member.id);
-    setNotice("");
+  async function saveMember() {
+    if (!selected) return;
+    setBusyId(selected.id);
     try {
-      await setAdminMemberRole(member, role);
+      await saveAdminMemberDetails(selected, edit);
       await refresh();
-      setNotice("Rol bijgewerkt.");
+      setSelected(null);
+      setNotice(`${edit.firstName || edit.email} is bijgewerkt.`);
     } catch (error) {
       console.error(error);
-      setNotice("Rol aanpassen is niet gelukt.");
+      setNotice("Lidgegevens opslaan is niet gelukt.");
     } finally {
       setBusyId(null);
     }
@@ -195,6 +224,7 @@ export default function LedenAdminPage() {
       await upsertDirectoryMember({
         ...form,
         academicYear: "2026/2027",
+        endDate: "2027-08-31",
         role: "member",
         linkedUserId: null,
       });
@@ -300,20 +330,13 @@ export default function LedenAdminPage() {
 
         <div className="member-admin-search">
           <Search size={18} />
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Zoek op naam, e-mail of lidnummer"
-            aria-label="Leden zoeken"
-          />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Zoek op naam, e-mail of lidnummer" aria-label="Leden zoeken" />
         </div>
 
         <section className="member-admin-list">
           {filtered.map((member) => (
-            <article className="member-admin-row" key={member.source + member.id}>
-              <div className="member-admin-avatar">
-                {(member.firstName[0] || member.email[0] || "?").toUpperCase()}
-              </div>
+            <button className="member-admin-row member-admin-row-button" type="button" key={member.source + member.id} onClick={() => openMember(member)}>
+              <div className="member-admin-avatar">{(member.firstName[0] || member.email[0] || "?").toUpperCase()}</div>
               <div className="member-admin-person">
                 <strong>{[member.firstName, member.lastName].filter(Boolean).join(" ") || "Naam ontbreekt"}</strong>
                 <span>{member.email}</span>
@@ -322,43 +345,15 @@ export default function LedenAdminPage() {
                   {" · "}{member.source === "account" ? "Account gekoppeld" : "Ledenlijst"}
                 </small>
               </div>
-              <div className="member-admin-controls">
-                <label>
-                  <span>Status</span>
-                  <div className="member-admin-select">
-                    <select
-                      value={member.status}
-                      disabled={busyId === member.id}
-                      onChange={(event) => changeLifecycle(member, event.target.value as AdminMemberLifecycle)}
-                    >
-                      {Object.entries(lifecycleLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
-                    </select>
-                    <ChevronDown size={14} />
-                  </div>
-                </label>
-                <label>
-                  <span>Rol</span>
-                  <div className="member-admin-select">
-                    <select
-                      value={member.role}
-                      disabled={busyId === member.id}
-                      onChange={(event) => changeRole(member, event.target.value as UserRole)}
-                    >
-                      <option value="member">Lid</option>
-                      <option value="committee">Commissie</option>
-                      <option value="board">Bestuur</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                    <ChevronDown size={14} />
-                  </div>
-                </label>
+              <div className="member-admin-row-meta">
+                <span>{lifecycleLabels[member.status]}</span>
+                <span>{roleLabels[member.role]}</span>
               </div>
-            </article>
+              <ChevronRight className="member-admin-row-chevron" size={19} />
+            </button>
           ))}
 
-          {!filtered.length && (
-            <div className="member-admin-empty">Geen leden gevonden.</div>
-          )}
+          {!filtered.length && <div className="member-admin-empty">Geen leden gevonden.</div>}
         </section>
 
         <p className="member-admin-import-help">
@@ -366,6 +361,57 @@ export default function LedenAdminPage() {
           Puntkomma en komma worden beide ondersteund.
         </p>
       </section>
+
+      {selected && (
+        <div className="member-admin-modal-backdrop" role="presentation" onClick={() => setSelected(null)}>
+          <section className="member-admin-modal" role="dialog" aria-modal="true" aria-label="Lidprofiel bewerken" onClick={(event) => event.stopPropagation()}>
+            <header className="member-admin-modal-header">
+              <div className="member-admin-modal-avatar">{(edit.firstName[0] || edit.email[0] || "?").toUpperCase()}</div>
+              <div>
+                <small>LIDPROFIEL</small>
+                <h2>{[edit.firstName, edit.lastName].filter(Boolean).join(" ") || "Naam ontbreekt"}</h2>
+                <p>{selected.source === "account" ? "Account gekoppeld" : "Nog geen account gekoppeld"}</p>
+              </div>
+              <button type="button" aria-label="Sluiten" onClick={() => setSelected(null)}><X size={20} /></button>
+            </header>
+
+            <div className="member-admin-modal-body">
+              <section className="member-admin-modal-section">
+                <h3>Persoon</h3>
+                <div className="member-admin-modal-grid two">
+                  <label>Voornaam<input value={edit.firstName} onChange={(e) => setEdit({ ...edit, firstName: e.target.value })} /></label>
+                  <label>Achternaam<input value={edit.lastName} onChange={(e) => setEdit({ ...edit, lastName: e.target.value })} /></label>
+                </div>
+                <label><span><Mail size={14} /> E-mailadres</span><input type="email" value={edit.email} onChange={(e) => setEdit({ ...edit, email: e.target.value })} /></label>
+              </section>
+
+              <section className="member-admin-modal-section">
+                <h3>Lidmaatschap</h3>
+                <div className="member-admin-modal-grid two">
+                  <label><span><IdCard size={14} /> Lidnummer</span><input value={edit.memberNumber} onChange={(e) => setEdit({ ...edit, memberNumber: e.target.value })} placeholder="Bijv. FERMI-1042" /></label>
+                  <label>Verenigingsjaar<input value={edit.academicYear} onChange={(e) => setEdit({ ...edit, academicYear: e.target.value })} placeholder="2026/2027" /></label>
+                </div>
+                <label><span><CalendarDays size={14} /> Einddatum lidmaatschap</span><input type="date" value={edit.endDate} onChange={(e) => setEdit({ ...edit, endDate: e.target.value })} /></label>
+              </section>
+
+              <section className="member-admin-modal-section">
+                <h3>Status & rol</h3>
+                <div className="member-admin-choice-grid">
+                  <label>Status<select value={edit.status} onChange={(e) => setEdit({ ...edit, status: e.target.value as AdminMemberLifecycle })}>{Object.entries(lifecycleLabels).map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+                  <label>Rol<select value={edit.role} onChange={(e) => setEdit({ ...edit, role: e.target.value as UserRole })}>{Object.entries(roleLabels).map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+                </div>
+              </section>
+            </div>
+
+            <footer className="member-admin-modal-footer">
+              <button type="button" className="secondary" onClick={() => setSelected(null)}>Annuleren</button>
+              <button type="button" className="primary" disabled={busyId === selected.id} onClick={() => void saveMember()}>
+                <Save size={17} /> {busyId === selected.id ? "Opslaan…" : "Wijzigingen opslaan"}
+              </button>
+            </footer>
+          </section>
+        </div>
+      )}
     </main>
   );
 }
