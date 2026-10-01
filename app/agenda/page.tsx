@@ -51,6 +51,43 @@ const months = [
   { name: "December", short: "DEC" },
 ];
 
+const agendaCardStyle = {
+  standard: "agenda-card agenda-card-redesign",
+  nextUpcoming: "agenda-card agenda-card-redesign featured",
+} as const;
+
+function getEventDateParts(event: AgendaEvent) {
+  const monthIndex = months.findIndex((month) => month.short === event.month);
+  const year = Number(event.year);
+  const day = Number(event.day);
+
+  if (monthIndex < 0 || !Number.isFinite(year) || !Number.isFinite(day)) return null;
+  return { year, monthIndex, day };
+}
+
+function getEventStart(event: AgendaEvent) {
+  const parts = getEventDateParts(event);
+  if (!parts) return Number.POSITIVE_INFINITY;
+
+  const firstTime = event.time.match(/(\d{1,2}):(\d{2})/);
+  const hour = firstTime ? Number(firstTime[1]) : 0;
+  const minute = firstTime ? Number(firstTime[2]) : 0;
+
+  return new Date(parts.year, parts.monthIndex, parts.day, hour, minute).getTime();
+}
+
+function getEventEnd(event: AgendaEvent) {
+  const parts = getEventDateParts(event);
+  if (!parts) return Number.NEGATIVE_INFINITY;
+
+  const times = [...event.time.matchAll(/(\d{1,2}):(\d{2})/g)];
+  const lastTime = times.at(-1);
+  const hour = lastTime ? Number(lastTime[1]) : 23;
+  const minute = lastTime ? Number(lastTime[2]) : 59;
+
+  return new Date(parts.year, parts.monthIndex, parts.day, hour, minute, 59, 999).getTime();
+}
+
 export default function AgendaPage() {
   const [selectedMonth, setSelectedMonth] = useState(10);
   const [selectedYear, setSelectedYear] = useState(2025);
@@ -68,6 +105,14 @@ export default function AgendaPage() {
       active = false;
     };
   }, []);
+
+  const nextUpcomingSlug = useMemo(() => {
+    const now = Date.now();
+
+    return events
+      .filter((event) => event.showInAgenda !== false && getEventEnd(event) >= now)
+      .sort((a, b) => getEventStart(a) - getEventStart(b))[0]?.slug ?? null;
+  }, [events]);
 
   const selectedEvents = useMemo(
     () =>
@@ -163,14 +208,17 @@ export default function AgendaPage() {
       </section>
 
       <section className="agenda-list agenda-list-redesign">
-        {selectedEvents.map((event) => (
+        {selectedEvents.map((event) => {
+          const isNextUpcoming = event.slug === nextUpcomingSlug;
+
+          return (
           <Link
             href={`/agenda/${event.slug}`}
             className="agenda-card-link"
             key={event.slug}
             aria-label={`Bekijk ${event.title}`}
           >
-            <article className={`agenda-card agenda-card-redesign ${event.featured ? "featured" : ""}`}>
+            <article className={isNextUpcoming ? agendaCardStyle.nextUpcoming : agendaCardStyle.standard}>
               <div className="agenda-date agenda-date-redesign">
                 <strong>{event.day}</strong>
                 <span>{event.month}</span>
@@ -182,7 +230,7 @@ export default function AgendaPage() {
                 <p><Clock3 size={16} /> {event.time}</p>
                 <p><MapPin size={16} /> {event.location}</p>
 
-                {event.featured && (
+                {isNextUpcoming && (
                   <span className="agenda-detail-button">
                     Bekijk details <ChevronRight size={19} />
                   </span>
@@ -193,10 +241,11 @@ export default function AgendaPage() {
                 <span className="agenda-photo-overlay" />
               </div>
 
-              {!event.featured && <ChevronRight className="agenda-card-chevron" size={22} />}
+              {!isNextUpcoming && <ChevronRight className="agenda-card-chevron" size={22} />}
             </article>
           </Link>
-        ))}
+          );
+        })}
 
         {selectedEvents.length === 0 && (
           <div className="agenda-empty-month">
