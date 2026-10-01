@@ -5285,3 +5285,9 @@ body.member-pass-modal-open {
 .preview-bypass-star:active {
   transform: scale(.86);
 }
+
+/* Live Firebase data on digital member pass */
+.member-pass-live{position:relative;width:100%;display:grid;place-items:center}
+.member-pass-live-data{position:absolute;z-index:2;left:10%;right:10%;bottom:12%;display:grid;gap:3px;color:var(--fermi-white);text-shadow:0 1px 4px rgba(0,0,0,.34);pointer-events:none}
+.member-pass-live-data strong{font:800 clamp(18px,5vw,25px)/1.05 Georgia,"Times New Roman",serif}
+.member-pass-live-data span{font:700 clamp(9px,2.7vw,12px)/1.25 Inter,ui-sans-serif,sans-serif}
