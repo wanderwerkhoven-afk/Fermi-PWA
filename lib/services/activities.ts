@@ -40,13 +40,28 @@ export async function seedActivitiesIfMissing(): Promise<void> {
   await Promise.all(
     agendaEvents.map(async (event) => {
       const ref = doc(db, "activities", event.slug);
-      const existing = await getDoc(ref);
-      if (existing.exists()) return;
-      await setDoc(ref, {
-        ...cleanForFirestore(event),
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
+      const statsRef = doc(db, "activityStats", event.slug);
+      const [existing, existingStats] = await Promise.all([
+        getDoc(ref),
+        getDoc(statsRef),
+      ]);
+
+      if (!existing.exists()) {
+        await setDoc(ref, {
+          ...cleanForFirestore(event),
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+      }
+
+      if (!existingStats.exists()) {
+        const source = existing.exists() ? existing.data() : event;
+        await setDoc(statsRef, {
+          eventId: event.slug,
+          registeredCount: Math.max(0, Number(source.registered) || 0),
+          updatedAt: serverTimestamp(),
+        });
+      }
     }),
   );
 }
