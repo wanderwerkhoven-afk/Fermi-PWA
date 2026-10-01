@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { ArrowRight, Atom, Eye, EyeOff, GraduationCap, LockKeyhole, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import { signInWithEmail, signInWithGoogle } from "../../lib/services/auth";
@@ -77,7 +78,7 @@ export default function LoginPage() {
 
         <div className={styles.join}>
           <div><span /><Atom /><span /></div>
-          <p>Nog geen lid? <a href="https://svfermi.nl">Word lid <ArrowRight /></a></p>
+          <p>Nog geen lid? <Link href="/">Word lid <ArrowRight /></Link></p>
         </div>
       </section>
     </main>
