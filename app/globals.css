@@ -5286,46 +5286,6 @@ body.member-pass-modal-open {
   transform: scale(.86);
 }
 
-/* Live Firebase data on digital member pass */
-.member-pass-live{position:relative;width:100%;display:grid;place-items:center}
-.member-pass-live-data{
-  position:absolute;
-  z-index:2;
-  left:10.5%;
-  right:10.5%;
-  bottom:7.4%;
-  height:16.5%;
-  color:var(--fermi-navy);
-  pointer-events:none;
-  text-shadow:none;
-}
-.member-pass-live-data *{
-  color:var(--fermi-navy);
-  text-shadow:none;
-}
-.member-pass-live-role{
-  display:none;
-}
-.member-pass-live-number,
-.member-pass-live-valid{
-  position:absolute;
-  right:4%;
-  text-align:left;
-  font:700 clamp(9px,2.65vw,12px)/1.15 Inter,ui-sans-serif,sans-serif;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.member-pass-live-number{
-  top:calc(55% - 50px);
-  left:calc(46% + 32px);
-}
-.member-pass-live-valid{
-  top:calc(76% - 50px);
-  left:calc(46% + 42px);
-}
-
-
 /* Team Fermi — admin-only member administration */
 .member-admin-shell{padding-bottom:max(32px,env(safe-area-inset-bottom));background:linear-gradient(180deg,#072d43 0,#06283b 36%,#031d2c 100%)}
 .member-admin-header{position:relative;display:grid;grid-template-columns:42px minmax(0,1fr) 48px;gap:12px;align-items:start;padding:max(22px,env(safe-area-inset-top)) 18px 18px;border-bottom:1px solid rgba(132,184,212,.2)}
@@ -5440,49 +5400,14 @@ body.member-admin-modal-open{overflow:hidden}
   .member-admin-modal-grid.two,.member-admin-choice-grid{grid-template-columns:1fr 1fr}
 }
 
-/* Real member-card QR codes */
-.member-qr-code{display:grid;place-items:center;background:var(--fermi-white);border-radius:10px;padding:4px;overflow:hidden}
-.member-qr-code svg{display:block;width:100%;height:auto;max-width:100%}
-.member-qr-unavailable{display:grid;place-items:center;width:96px;aspect-ratio:1;border:1px dashed rgba(6,40,59,.3);border-radius:10px;background:rgba(255,249,240,.72);color:var(--fermi-navy);font-size:9px;font-weight:800;text-align:center;padding:8px}
-.member-pass-live-qr{position:absolute;z-index:3;right:12.5%;top:18.8%;width:31%;max-width:124px;pointer-events:none}
-.member-pass-live-qr .member-qr-code{width:100%;padding:4px;border-radius:10px}
-.member-card-right .member-qr-code{width:96px;max-width:100%;margin:0 auto}
-@media(max-width:420px){
-  .member-pass-live-qr{right:12%;top:18%;width:30%}
-  .member-card-right .member-qr-code{width:82px}
-  .member-card-right .member-qr-unavailable{width:82px}
+/* Digital member pass — canonical live data + QR alignment */
+.member-pass-live{
+  position:relative;
+  width:100%;
+  display:grid;
+  place-items:center;
 }
 
-/* Member pass alignment calibrated from current card artwork */
-.member-pass-live-qr{
-  left:33%;
-  right:auto;
-  top:23%;
-  width:34%;
-  max-width:none;
-}
-.member-pass-live-number{
-  top:81%;
-  left:calc(58% + 10px);
-  right:4%;
-  transform:none;
-}
-.member-pass-live-valid{
-  top:85.5%;
-  left:58%;
-  right:4%;
-  transform:none;
-}
-@media(max-width:420px){
-  .member-pass-live-qr{
-    left:33%;
-    right:auto;
-    top:23%;
-    width:34%;
-  }
-}
-
-/* Member pass live data — align values to printed fields */
 .member-pass-live-data{
   position:absolute;
   z-index:2;
@@ -5491,47 +5416,14 @@ body.member-admin-modal-open{overflow:hidden}
   height:100%;
   color:var(--fermi-navy);
   pointer-events:none;
-}
-.member-pass-live-number{
-  position:absolute;
-  top:86.25%;
-  left:58.5%;
-  right:7%;
-  transform:none;
-  text-align:left;
-}
-.member-pass-live-valid{
-  position:absolute;
-  top:90.55%;
-  left:58.5%;
-  right:7%;
-  transform:none;
-  text-align:left;
+  text-shadow:none;
 }
 
-/* Fine-tune member pass QR */
-.member-pass-live-qr{
-  top:24.5%;
-  width:44.4%;
-}
-
-/* Fine-tune member name on pass */
-/* Fine-tune member name position */
-/* Fine-tune member name position */
-/* Keep member number clearly visible on the printed member-number row */
-.member-pass-live-number{
-  top:86.2%;
-  left:56%;
-  right:5%;
-  z-index:4;
-  font-size:clamp(10px,2.9vw,13px);
-  font-weight:800;
+.member-pass-live-data *{
   color:var(--fermi-navy);
-  overflow:visible;
-  text-overflow:clip;
+  text-shadow:none;
 }
 
-/* Canonical member name placement on digital member pass */
 .member-pass-live-name{
   position:absolute;
   top:77.8%;
@@ -5547,17 +5439,98 @@ body.member-admin-modal-open{overflow:hidden}
   text-overflow:ellipsis;
 }
 
-
-
-/* Canonical member number and validity placement */
-.member-pass-live-number{
-  transform:translateY(-38px);
-}
+.member-pass-live-number,
 .member-pass-live-valid{
-  transform:translateY(-33px);
+  position:absolute;
+  text-align:left;
+  font-family:Inter,ui-sans-serif,sans-serif;
+  line-height:1.15;
+  white-space:nowrap;
+  color:var(--fermi-navy);
 }
 
-/* Fine-tune member pass QR position */
-.member-pass-live-qr{
-  transform:translate(-18px,-8px);
+.member-pass-live-number{
+  z-index:4;
+  top:86.2%;
+  left:56%;
+  right:5%;
+  transform:translateY(-38px);
+  font-size:clamp(10px,2.9vw,13px);
+  font-weight:800;
+  overflow:visible;
+  text-overflow:clip;
 }
+
+.member-pass-live-valid{
+  top:90.55%;
+  left:58.5%;
+  right:7%;
+  transform:translateY(-33px);
+  font-size:clamp(9px,2.65vw,12px);
+  font-weight:700;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.member-qr-code{
+  display:grid;
+  place-items:center;
+  background:var(--fermi-white);
+  border-radius:10px;
+  padding:4px;
+  overflow:hidden;
+}
+
+.member-qr-code svg{
+  display:block;
+  width:100%;
+  height:auto;
+  max-width:100%;
+}
+
+.member-qr-unavailable{
+  display:grid;
+  place-items:center;
+  width:96px;
+  aspect-ratio:1;
+  border:1px dashed rgba(6,40,59,.3);
+  border-radius:10px;
+  background:rgba(255,249,240,.72);
+  color:var(--fermi-navy);
+  font-size:9px;
+  font-weight:800;
+  text-align:center;
+  padding:8px;
+}
+
+.member-pass-live-qr{
+  position:absolute;
+  z-index:3;
+  left:33%;
+  right:auto;
+  top:24.5%;
+  width:44.4%;
+  max-width:none;
+  transform:translate(-18px,-8px);
+  pointer-events:none;
+}
+
+.member-pass-live-qr .member-qr-code{
+  width:100%;
+  padding:4px;
+  border-radius:10px;
+}
+
+.member-card-right .member-qr-code{
+  width:96px;
+  max-width:100%;
+  margin:0 auto;
+}
+
+@media(max-width:420px){
+  .member-card-right .member-qr-code,
+  .member-card-right .member-qr-unavailable{
+    width:82px;
+  }
+}
+
