@@ -14,8 +14,14 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(request.auth.uid));
     }
 
+    function hasProfile() {
+      return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
     function hasRole(roles) {
-      return signedIn() && currentUser().data.status == "active" && currentUser().data.role in roles;
+      return hasProfile()
+        && currentUser().data.status == "active"
+        && currentUser().data.role in roles;
     }
 
     match /users/{uid} {
@@ -27,6 +33,7 @@ service cloud.firestore {
       allow read: if isOwner(uid) || hasRole(["board", "admin"]);
 
       allow update: if isOwner(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["profile", "lastLoginAt", "updatedAt"])
         && request.resource.data.uid == resource.data.uid
         && request.resource.data.role == resource.data.role
         && request.resource.data.status == resource.data.status;
@@ -48,13 +55,19 @@ service cloud.firestore {
     match /registrations/{registrationId} {
       allow read: if signedIn() &&
         (resource.data.userId == request.auth.uid || hasRole(["board", "admin"]));
-      allow create: if signedIn()
+      allow create: if hasProfile()
+        && currentUser().data.status == "active"
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.status == "registered";
-      allow update: if signedIn()
+      allow update: if hasProfile()
+        && currentUser().data.status == "active"
         && resource.data.userId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "cancelledAt"])
         && request.resource.data.userId == resource.data.userId
-        && request.resource.data.eventId == resource.data.eventId;
+        && request.resource.data.eventId == resource.data.eventId
+        && request.resource.data.payment == resource.data.payment
+        && request.resource.data.registeredAt == resource.data.registeredAt
+        && request.resource.data.status in ["registered", "cancelled"];
       allow delete: if hasRole(["board", "admin"]);
     }
 
@@ -69,7 +82,11 @@ service cloud.firestore {
     }
 
     match /notifications/{notificationId} {
-      allow read, update: if signedIn() && resource.data.userId == request.auth.uid;
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow update: if signedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["read", "readAt"])
+        && request.resource.data.userId == resource.data.userId;
       allow create, delete: if hasRole(["board", "admin"]);
     }
 
