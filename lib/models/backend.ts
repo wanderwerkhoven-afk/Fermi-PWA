@@ -10,6 +10,7 @@ export interface UserProfile {
   email: string;
   photoUrl: string | null;
   phone: string | null;
+  city?: string | null;
   study: string | null;
   studyYear: number | null;
   bio: string | null;
@@ -33,6 +34,7 @@ export interface Membership {
   status: MembershipStatus;
   memberNumber: string;
   startDate: string;
+  startYear?: number | null;
   endDate: string;
   digitalCard: { enabled: boolean; cardId: string };
   createdAt?: unknown;

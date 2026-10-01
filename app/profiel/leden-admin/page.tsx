@@ -11,6 +11,8 @@ import {
   FileUp,
   IdCard,
   Mail,
+  MapPin,
+  Phone,
   Save,
   Search,
   ShieldAlert,
@@ -79,6 +81,9 @@ function parseMemberCsv(text: string) {
   const lastNameIndex = find("achternaam", "lastname", "last name");
   const emailIndex = find("email", "e-mail", "mail");
   const memberNumberIndex = find("lidnummer", "membernumber", "member number");
+  const phoneIndex = find("telefoonnummer", "telefoon", "phone", "phone number");
+  const cityIndex = find("woonplaats", "plaats", "city");
+  const startYearIndex = find("startjaar", "start jaar", "lid sinds", "member since", "startyear");
   const statusIndex = find("status");
   const roleIndex = find("rol", "role");
 
@@ -102,6 +107,9 @@ function parseMemberCsv(text: string) {
       lastName: lastNameIndex >= 0 ? values[lastNameIndex] || "" : "",
       email: values[emailIndex] || "",
       memberNumber: memberNumberIndex >= 0 ? values[memberNumberIndex] || "" : "",
+      phone: phoneIndex >= 0 ? values[phoneIndex] || "" : "",
+      city: cityIndex >= 0 ? values[cityIndex] || "" : "",
+      startYear: startYearIndex >= 0 && values[startYearIndex] ? Number(values[startYearIndex]) || null : null,
       academicYear: "2026/2027",
       endDate: "2027-08-31",
       status,
@@ -124,6 +132,9 @@ export default function LedenAdminPage() {
     lastName: "",
     email: "",
     memberNumber: "",
+    phone: "",
+    city: "",
+    startYear: null as number | null,
     academicYear: "2026/2027",
     endDate: "2027-08-31",
     status: "active" as AdminMemberLifecycle,
@@ -134,6 +145,9 @@ export default function LedenAdminPage() {
     lastName: "",
     email: "",
     memberNumber: "",
+    phone: "",
+    city: "",
+    startYear: null as number | null,
     status: "active" as AdminMemberLifecycle,
   });
 
@@ -190,6 +204,9 @@ export default function LedenAdminPage() {
       lastName: member.lastName,
       email: member.email,
       memberNumber: member.memberNumber,
+      phone: member.phone,
+      city: member.city,
+      startYear: member.startYear,
       academicYear: member.academicYear || "2026/2027",
       endDate: member.endDate || "2027-08-31",
       status: member.status,
@@ -224,11 +241,14 @@ export default function LedenAdminPage() {
       await upsertDirectoryMember({
         ...form,
         academicYear: "2026/2027",
+        phone: form.phone,
+        city: form.city,
+        startYear: form.startYear,
         endDate: "2027-08-31",
         role: "member",
         linkedUserId: null,
       });
-      setForm({ firstName: "", lastName: "", email: "", memberNumber: "", status: "active" });
+      setForm({ firstName: "", lastName: "", email: "", memberNumber: "", phone: "", city: "", startYear: null, status: "active" });
       setShowAdd(false);
       await refresh();
       setNotice("Lid toegevoegd aan de ledenadministratie.");
@@ -313,6 +333,14 @@ export default function LedenAdminPage() {
             </div>
             <label>E-mail<input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} /></label>
             <div>
+              <label>Telefoonnummer<input type="tel" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} /></label>
+              <label>Woonplaats<input value={form.city} onChange={(event) => setForm({ ...form, city: event.target.value })} /></label>
+            </div>
+            <div>
+              <label>Startjaar<input type="number" min="1900" max="2100" value={form.startYear ?? ""} onChange={(event) => setForm({ ...form, startYear: event.target.value ? Number(event.target.value) : null })} /></label>
+              <span />
+            </div>
+            <div>
               <label>Lidnummer<input value={form.memberNumber} onChange={(event) => setForm({ ...form, memberNumber: event.target.value })} /></label>
               <label>Status
                 <select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value as AdminMemberLifecycle })}>
@@ -357,7 +385,7 @@ export default function LedenAdminPage() {
         </section>
 
         <p className="member-admin-import-help">
-          CSV-kolommen: <strong>voornaam, achternaam, email, lidnummer, status, rol</strong>.
+          CSV-kolommen: <strong>voornaam, achternaam, email, telefoonnummer, woonplaats, lidnummer, startjaar, status, rol</strong>.
           Puntkomma en komma worden beide ondersteund.
         </p>
       </section>
@@ -383,6 +411,10 @@ export default function LedenAdminPage() {
                   <label>Achternaam<input value={edit.lastName} onChange={(e) => setEdit({ ...edit, lastName: e.target.value })} /></label>
                 </div>
                 <label><span><Mail size={14} /> E-mailadres</span><input type="email" value={edit.email} onChange={(e) => setEdit({ ...edit, email: e.target.value })} /></label>
+                <div className="member-admin-modal-grid two">
+                  <label><span><Phone size={14} /> Telefoonnummer</span><input type="tel" value={edit.phone} onChange={(e) => setEdit({ ...edit, phone: e.target.value })} placeholder="06 12345678" /></label>
+                  <label><span><MapPin size={14} /> Woonplaats</span><input value={edit.city} onChange={(e) => setEdit({ ...edit, city: e.target.value })} placeholder="Bijv. Haarlem" /></label>
+                </div>
               </section>
 
               <section className="member-admin-modal-section">
@@ -390,6 +422,10 @@ export default function LedenAdminPage() {
                 <div className="member-admin-modal-grid two">
                   <label><span><IdCard size={14} /> Lidnummer</span><input value={edit.memberNumber} onChange={(e) => setEdit({ ...edit, memberNumber: e.target.value })} placeholder="Bijv. FERMI-1042" /></label>
                   <label>Verenigingsjaar<input value={edit.academicYear} onChange={(e) => setEdit({ ...edit, academicYear: e.target.value })} placeholder="2026/2027" /></label>
+                </div>
+                <div className="member-admin-modal-grid two">
+                  <label><span><CalendarDays size={14} /> Startjaar</span><input type="number" min="1900" max="2100" value={edit.startYear ?? ""} onChange={(e) => setEdit({ ...edit, startYear: e.target.value ? Number(e.target.value) : null })} placeholder="2024" /></label>
+                  <span />
                 </div>
                 <label><span><CalendarDays size={14} /> Einddatum lidmaatschap</span><input type="date" value={edit.endDate} onChange={(e) => setEdit({ ...edit, endDate: e.target.value })} /></label>
               </section>

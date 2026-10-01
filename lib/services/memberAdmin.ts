@@ -19,6 +19,9 @@ export interface DirectoryMember {
   email: string;
   memberNumber: string;
   academicYear: string;
+  phone: string;
+  city: string;
+  startYear: number | null;
   status: AdminMemberLifecycle;
   role: UserRole;
   linkedUserId: string | null;
@@ -36,6 +39,9 @@ export interface AdminMemberRow {
   email: string;
   memberNumber: string;
   academicYear: string;
+  phone: string;
+  city: string;
+  startYear: number | null;
   status: AdminMemberLifecycle;
   role: UserRole;
   membershipId: string | null;
@@ -112,6 +118,9 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
       email,
       memberNumber: membership?.memberNumber ?? directory?.memberNumber ?? "",
       academicYear: membership?.academicYear ?? directory?.academicYear ?? "2026/2027",
+      phone: user.profile?.phone ?? directory?.phone ?? "",
+      city: user.profile?.city ?? directory?.city ?? "",
+      startYear: membership?.startYear ?? (membership?.startDate ? Number(membership.startDate.slice(0, 4)) : directory?.startYear ?? null),
       status: lifecycleFor(user, membership),
       role: user.role,
       membershipId: membership?.id ?? null,
@@ -132,6 +141,9 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
       email: normalizeEmail(record.email),
       memberNumber: record.memberNumber,
       academicYear: record.academicYear,
+      phone: record.phone ?? "",
+      city: record.city ?? "",
+      startYear: record.startYear ?? null,
       status: record.status,
       role: record.role,
       membershipId: null,
@@ -213,7 +225,8 @@ export async function setAdminMemberLifecycle(row: AdminMemberRow, status: Admin
     membershipType: "student",
     status: status === "active" ? "active" : "pending",
     memberNumber: row.memberNumber || `FERMI-${row.uid.slice(0, 6).toUpperCase()}`,
-    startDate: "2026-09-01",
+    startDate: row.startYear ? `${row.startYear}-09-01` : "2026-09-01",
+    startYear: row.startYear ?? 2026,
     endDate: "2027-08-31",
     digitalCard: { enabled: status === "active", cardId: newDigitalCardId() },
     createdAt: serverTimestamp(),
@@ -237,6 +250,9 @@ export interface AdminMemberDetailsInput {
   email: string;
   memberNumber: string;
   academicYear: string;
+  phone: string;
+  city: string;
+  startYear: number | null;
   endDate: string;
   status: AdminMemberLifecycle;
   role: UserRole;
@@ -253,6 +269,9 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
       email: normalized,
       memberNumber: input.memberNumber.trim(),
       academicYear: input.academicYear.trim(),
+      phone: input.phone.trim(),
+      city: input.city.trim(),
+      startYear: input.startYear,
       endDate: input.endDate,
       status: input.status,
       role: input.role,
@@ -268,6 +287,8 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
     "profile.firstName": input.firstName.trim(),
     "profile.lastName": input.lastName.trim(),
     "profile.email": normalized,
+    "profile.phone": input.phone.trim() || null,
+    "profile.city": input.city.trim() || null,
     role: input.role,
     status: input.status === "suspended" ? "suspended" : "active",
     updatedAt: serverTimestamp(),
@@ -282,6 +303,7 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
     await updateDoc(doc(db, "memberships", row.membershipId), {
       academicYear: input.academicYear.trim(),
       memberNumber: input.memberNumber.trim(),
+      startYear: input.startYear,
       endDate: input.endDate,
       status: membershipStatus,
       digitalCard: {
@@ -301,7 +323,8 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
     membershipType: "student",
     status: membershipStatus,
     memberNumber: input.memberNumber.trim(),
-    startDate: "2026-09-01",
+    startDate: input.startYear ? `${input.startYear}-09-01` : "2026-09-01",
+    startYear: input.startYear,
     endDate: input.endDate || "2027-08-31",
     digitalCard: { enabled: input.status === "active", cardId: newDigitalCardId() },
     createdAt: serverTimestamp(),
