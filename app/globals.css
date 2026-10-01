@@ -5305,7 +5305,7 @@ body.member-pass-modal-open {
 }
 .member-pass-live-name{
   position:absolute;
-  top:calc(3% - 10px);
+  top:calc(3% - 18px);
   left:50%;
   transform:translateX(-50%);
   width:min(400px,calc(100% - 16px));
@@ -5330,12 +5330,12 @@ body.member-pass-modal-open {
   text-overflow:ellipsis;
 }
 .member-pass-live-number{
-  top:calc(55% - 40px);
-  left:calc(46% + 20px);
+  top:calc(55% - 50px);
+  left:calc(46% + 32px);
 }
 .member-pass-live-valid{
-  top:calc(76% - 40px);
-  left:calc(46% + 30px);
+  top:calc(76% - 50px);
+  left:calc(46% + 42px);
 }
 
 
