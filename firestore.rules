@@ -45,7 +45,26 @@ service cloud.firestore {
     match /memberships/{membershipId} {
       allow read: if signedIn() &&
         (resource.data.userId == request.auth.uid || hasRole(["board", "admin"]));
-      allow create, update, delete: if hasRole(["board", "admin"]);
+      allow create: if hasRole(["board", "admin"])
+        || (
+          hasProfile()
+          && currentUser().data.status == "active"
+          && request.resource.data.keys().hasOnly([
+            "userId", "academicYear", "membershipType", "status", "memberNumber",
+            "startDate", "endDate", "digitalCard", "createdAt", "updatedAt"
+          ])
+          && request.resource.data.userId == request.auth.uid
+          && request.resource.data.academicYear is string
+          && membershipId == request.auth.uid + "_" + request.resource.data.academicYear
+          && request.resource.data.membershipType == "student"
+          && request.resource.data.status == "pending"
+          && request.resource.data.memberNumber == ""
+          && request.resource.data.startDate is string
+          && request.resource.data.endDate is string
+          && request.resource.data.digitalCard.enabled == false
+          && request.resource.data.digitalCard.cardId == ""
+        );
+      allow update, delete: if hasRole(["board", "admin"]);
     }
 
     match /events/{eventId} {
