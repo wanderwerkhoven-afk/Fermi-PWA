@@ -5549,3 +5549,8 @@ body.member-admin-modal-open{overflow:hidden}
 .member-pass-live-name{
   transform:translateY(-40px);
 }
+
+/* Fine-tune member name position */
+.member-pass-live-name{
+  transform:translateY(-25px);
+}
