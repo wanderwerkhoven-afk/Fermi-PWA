@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
 import { auth } from "../lib/firebase";
+import { resendVerificationEmail } from "../lib/services/auth";
 import { getMembershipAccess } from "../lib/services/memberships";
 import { getUserProfile } from "../lib/services/users";
 
@@ -15,6 +16,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [access, setAccess] = useState<AccessState>("loading");
   const [previewBypass, setPreviewBypass] = useState(false);
+  const [verifyMessage, setVerifyMessage] = useState("");
+  const [verifyBusy, setVerifyBusy] = useState(false);
   const isPublic = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
 
   useEffect(() => {
@@ -80,7 +83,22 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   if (access === "verify-email") {
-    return <AccessCard title="Check je HvA-mail" body="We hebben een verificatielink naar je HvA-mailadres gestuurd. Open die link en log daarna opnieuw in." previewBypass />;
+    const resend = async () => {
+      const user = auth.currentUser;
+      if (!user || verifyBusy) return;
+      setVerifyBusy(true);
+      setVerifyMessage("");
+      try {
+        await resendVerificationEmail(user);
+        setVerifyMessage("Nieuwe verificatiemail verstuurd. Controleer ook je ongewenste e-mail.");
+      } catch (error) {
+        console.error("Verification email resend failed", error);
+        setVerifyMessage("Verificatiemail versturen is niet gelukt. Probeer het over een minuut opnieuw.");
+      } finally {
+        setVerifyBusy(false);
+      }
+    };
+    return <AccessCard title="Check je HvA-mail" body="We hebben een verificatielink naar je HvA-mailadres gestuurd. Open die link en log daarna opnieuw in." actionLabel={verifyBusy ? "Versturen…" : "Verificatiemail opnieuw sturen"} onAction={() => void resend()} actionDisabled={verifyBusy} message={verifyMessage} previewBypass />;
   }
 
   if (access === "suspended") {
@@ -116,7 +134,7 @@ function AccessLoading({ text }: { text: string }) {
   );
 }
 
-function AccessCard({ title, body, retry = false, actionLabel, previewBypass = false }: { title: string; body: string; retry?: boolean; actionLabel?: string; previewBypass?: boolean }) {
+function AccessCard({ title, body, retry = false, actionLabel, previewBypass = false, onAction, actionDisabled = false, message }: { title: string; body: string; retry?: boolean; actionLabel?: string; previewBypass?: boolean; onAction?: () => void; actionDisabled?: boolean; message?: string }) {
   return (
     <main className="pending-access">
       <div className="pending-card">
@@ -125,7 +143,8 @@ function AccessCard({ title, body, retry = false, actionLabel, previewBypass = f
         <h1>{title}</h1>
         <p>{body}</p>
         <div className="pending-email">{auth.currentUser?.email}</div>
-        {actionLabel && <button type="button" disabled title="Herinschrijving wordt in de volgende stap gekoppeld">{actionLabel}</button>}
+        {actionLabel && <button type="button" onClick={onAction} disabled={actionDisabled}>{actionLabel}</button>}
+        {message && <p className="pending-card-message" role="status">{message}</p>}
         {retry && <button onClick={() => window.location.reload()}>Opnieuw proberen</button>}
         <button onClick={() => auth.signOut()}>Uitloggen</button>
       </div>
