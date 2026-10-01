@@ -864,7 +864,7 @@ button {
 .agenda-hero { position: relative; padding: max(24px, env(safe-area-inset-top)) 18px 18px; overflow: hidden; }
 .agenda-title-row { position: relative; min-height: 150px; margin-top: 18px; display: flex; align-items: center; }
 .agenda-title-row h1 { position: relative; z-index: 2; margin: 0; font: 800 clamp(53px, 14vw, 72px)/.95 Georgia, "Times New Roman", serif; color: var(--fermi-paper); letter-spacing: -.045em; }
-.agenda-title-row h1::after { content: ""; position: absolute; width: 40px; height: 17px; right: -47px; top: 12px; border-top: 5px solid var(--fermi-orange); border-bottom: 5px solid var(--fermi-orange); transform: rotate(-28deg); }
+.agenda-title-row h1::after { content: none; }
 .agenda-title-row p { position: relative; z-index: 2; margin: 8px 0 0; color: #d0d9de; font-size: 17px; }
 .agenda-collage { position: absolute; right: -18px; top: -12px; width: 220px; height: 165px; }
 .agenda-orange-paper { position: absolute; right: 0; top: 36px; width: 135px; height: 102px; background: var(--fermi-orange); clip-path: polygon(8% 9%,90% 0,100% 83%,12% 100%,0 33%); opacity: .92; transform: rotate(7deg); }
@@ -948,12 +948,7 @@ button {
 }
 
 .agenda-title-redesign h1::after {
-  right: -38px;
-  top: 4px;
-  width: 34px;
-  height: 25px;
-  border-top-width: 4px;
-  border-bottom-width: 4px;
+  content: none;
 }
 
 .agenda-title-redesign p {
@@ -5589,12 +5584,7 @@ body.member-admin-modal-open{overflow:hidden}
 }
 
 .agenda-title-redesign h1::after {
-  right: -31px;
-  top: 5px;
-  width: 28px;
-  height: 19px;
-  border-top-width: 4px;
-  border-bottom-width: 4px;
+  content: none;
 }
 
 .agenda-title-redesign p {
