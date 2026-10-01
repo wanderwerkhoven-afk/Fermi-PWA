@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Bell,
   CalendarDays,
@@ -13,7 +13,8 @@ import {
   UserRound,
   UsersRound,
 } from "lucide-react";
-import { agendaEvents } from "@/data/agenda-events";
+import { agendaEvents, type AgendaEvent } from "@/data/agenda-events";
+import { listActivities } from "@/lib/services/activities";
 
 const filters = ["Alles", "Borrel", "Lezingen", "Reizen", "Commissies"];
 
@@ -35,16 +36,29 @@ const months = [
 export default function AgendaPage() {
   const [selectedMonth, setSelectedMonth] = useState(10);
   const [selectedYear, setSelectedYear] = useState(2025);
+  const [events, setEvents] = useState<AgendaEvent[]>(agendaEvents);
+
+  useEffect(() => {
+    let active = true;
+    listActivities()
+      .then((items) => {
+        if (active) setEvents(items);
+      })
+      .catch((error) => console.error("Activiteiten laden uit Firebase mislukt", error));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const selectedEvents = useMemo(
     () =>
-      agendaEvents.filter(
+      events.filter(
         (event) =>
           event.showInAgenda !== false &&
           event.month === months[selectedMonth].short &&
           Number(event.year) === selectedYear,
       ),
-    [selectedMonth, selectedYear],
+    [events, selectedMonth, selectedYear],
   );
 
   function changeMonth(direction: -1 | 1) {
