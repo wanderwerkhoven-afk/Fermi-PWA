@@ -5465,3 +5465,32 @@ body.member-admin-modal-open{overflow:hidden}
   .member-card-right .member-qr-code{width:82px}
   .member-card-right .member-qr-unavailable{width:82px}
 }
+
+/* Member pass alignment calibrated from current card artwork */
+.member-pass-live-qr{
+  left:33%;
+  right:auto;
+  top:23%;
+  width:34%;
+  max-width:none;
+}
+.member-pass-live-number{
+  top:81%;
+  left:calc(58% + 10px);
+  right:4%;
+  transform:none;
+}
+.member-pass-live-valid{
+  top:85.5%;
+  left:58%;
+  right:4%;
+  transform:none;
+}
+@media(max-width:420px){
+  .member-pass-live-qr{
+    left:33%;
+    right:auto;
+    top:23%;
+    width:34%;
+  }
+}
