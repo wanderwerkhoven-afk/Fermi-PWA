@@ -1,5 +1,5 @@
 export type UserRole = "member" | "committee" | "board" | "admin";
-export type AccountStatus = "active" | "pending" | "suspended" | "archived";
+export type AccountStatus = "active" | "pending" | "suspended";
 export type MembershipStatus = "active" | "expired" | "cancelled" | "pending";
 
 export interface UserProfile {
