@@ -5539,7 +5539,7 @@ body.member-admin-modal-open{overflow:hidden}
   right:13%;
   width:auto;
   margin:0;
-  transform:translateY(-15px);
+  transform:translateY(-20px);
   text-align:center;
   font:800 clamp(20px,5.6vw,29px)/1 Georgia,"Times New Roman",serif;
   white-space:nowrap;
