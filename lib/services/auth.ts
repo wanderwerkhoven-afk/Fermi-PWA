@@ -6,6 +6,11 @@ import {
   type User,
 } from "firebase/auth";
 import { auth } from "../firebase";
+
+const verificationActionCodeSettings = {
+  url: "https://wanderwerkhoven-afk.github.io/Fermi-PWA/login/",
+  handleCodeInApp: false,
+};
 import { ensureUserProfile, createRegisteredUserProfile, type RegistrationProfileInput } from "./users";
 
 export function isHvaEmail(email: string) {
@@ -18,8 +23,14 @@ export async function registerWithEmail(email: string, password: string, profile
   if (!isHvaEmail(normalizedEmail)) throw new Error("auth/non-hva-email");
   const result = await createUserWithEmailAndPassword(auth, normalizedEmail, password);
   await createRegisteredUserProfile(result.user, { ...profile, email: normalizedEmail });
-  await sendEmailVerification(result.user);
+  auth.languageCode = "nl";
+  await sendEmailVerification(result.user, verificationActionCodeSettings);
   return result.user;
+}
+
+export async function resendVerificationEmail(user: User) {
+  auth.languageCode = "nl";
+  await sendEmailVerification(user, verificationActionCodeSettings);
 }
 
 export async function signInWithEmail(email: string, password: string): Promise<User> {
