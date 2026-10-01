@@ -5494,3 +5494,40 @@ body.member-admin-modal-open{overflow:hidden}
     width:34%;
   }
 }
+
+/* Member pass live data — align values to printed fields */
+.member-pass-live-data{
+  position:absolute;
+  z-index:2;
+  inset:0;
+  width:100%;
+  height:100%;
+  color:var(--fermi-navy);
+  pointer-events:none;
+}
+.member-pass-live-name{
+  position:absolute;
+  top:80.2%;
+  left:13%;
+  right:13%;
+  width:auto;
+  transform:none;
+  margin:0;
+  text-align:center;
+}
+.member-pass-live-number{
+  position:absolute;
+  top:86.25%;
+  left:58.5%;
+  right:7%;
+  transform:none;
+  text-align:left;
+}
+.member-pass-live-valid{
+  position:absolute;
+  top:90.55%;
+  left:58.5%;
+  right:7%;
+  transform:none;
+  text-align:left;
+}
