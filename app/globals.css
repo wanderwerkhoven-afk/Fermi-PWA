@@ -5551,10 +5551,10 @@ body.member-admin-modal-open{overflow:hidden}
 
 /* Canonical member number and validity placement */
 .member-pass-live-number{
-  transform:translateY(-40px);
+  transform:translateY(-38px);
 }
 .member-pass-live-valid{
-  transform:translateY(-35px);
+  transform:translateY(-33px);
 }
 
 /* Fine-tune member pass QR position */
