@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
 import { auth } from "../lib/firebase";
-import { getMembershipAccess } from "../lib/services/memberships";
+import { getMembershipAccess, requestMembershipRenewal } from "../lib/services/memberships";
 import { getUserProfile } from "../lib/services/users";
 
 const PUBLIC_ROUTES = ["/login"];
@@ -14,6 +14,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [access, setAccess] = useState<AccessState>("loading");
+  const [actionBusy, setActionBusy] = useState(false);
+  const [actionError, setActionError] = useState("");
   const isPublic = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
 
   useEffect(() => {
@@ -75,7 +77,21 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   if (access === "archive") {
-    return <AccessCard title="Welkom terug" body="Je hebt momenteel geen actief Fermi-lidmaatschap. Je account en eerdere Fermi-geschiedenis blijven bewaard. Meld je opnieuw aan om voor het nieuwe verenigingsjaar weer volledige toegang te krijgen." actionLabel="Opnieuw lid worden" />;
+    const renew = async () => {
+      if (!auth.currentUser || actionBusy) return;
+      setActionBusy(true);
+      setActionError("");
+      try {
+        await requestMembershipRenewal(auth.currentUser.uid);
+        setAccess("membership-pending");
+      } catch (error) {
+        console.error("Membership renewal failed", error);
+        setActionError("Aanmelden is niet gelukt. Probeer het opnieuw of neem contact op met S.V. Fermi.");
+      } finally {
+        setActionBusy(false);
+      }
+    };
+    return <AccessCard title="Welkom terug" body="Je hebt momenteel geen actief Fermi-lidmaatschap. Je account en eerdere Fermi-geschiedenis blijven bewaard. Meld je opnieuw aan om voor het nieuwe verenigingsjaar weer volledige toegang te krijgen." actionLabel={actionBusy ? "Aanmelden…" : "Opnieuw lid worden"} onAction={() => void renew()} actionDisabled={actionBusy} error={actionError} />;
   }
 
   if (access === "missing-profile" || access === "error") {
@@ -89,7 +105,7 @@ function AccessLoading({ text }: { text: string }) {
   return <div className="auth-loading" role="status" aria-live="polite"><div className="auth-loader-mark">⚛</div><p>{text}</p></div>;
 }
 
-function AccessCard({ title, body, retry = false, actionLabel }: { title: string; body: string; retry?: boolean; actionLabel?: string }) {
+function AccessCard({ title, body, retry = false, actionLabel, onAction, actionDisabled = false, error }: { title: string; body: string; retry?: boolean; actionLabel?: string; onAction?: () => void; actionDisabled?: boolean; error?: string }) {
   return (
     <main className="pending-access">
       <div className="pending-card">
@@ -98,7 +114,8 @@ function AccessCard({ title, body, retry = false, actionLabel }: { title: string
         <h1>{title}</h1>
         <p>{body}</p>
         <div className="pending-email">{auth.currentUser?.email}</div>
-        {actionLabel && <button type="button" disabled title="Herinschrijving wordt in de volgende stap gekoppeld">{actionLabel}</button>}
+        {actionLabel && <button type="button" onClick={onAction} disabled={actionDisabled}>{actionLabel}</button>}
+        {error && <p className="pending-error" role="alert">{error}</p>}
         {retry && <button onClick={() => window.location.reload()}>Opnieuw proberen</button>}
         <button onClick={() => auth.signOut()}>Uitloggen</button>
       </div>
