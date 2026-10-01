@@ -5305,9 +5305,10 @@ body.member-pass-modal-open {
 }
 .member-pass-live-name{
   position:absolute;
-  top:3%;
-  left:3%;
-  right:3%;
+  top:calc(3% - 10px);
+  left:50%;
+  transform:translateX(-50%);
+  width:min(400px,calc(100% - 16px));
   margin:0;
   text-align:center;
   font:800 clamp(17px,4.8vw,24px)/1.04 Georgia,"Times New Roman",serif;
@@ -5316,18 +5317,11 @@ body.member-pass-modal-open {
   text-overflow:ellipsis;
 }
 .member-pass-live-role{
-  position:absolute;
-  top:31%;
-  left:5%;
-  right:5%;
-  text-align:center;
-  font:700 clamp(8px,2.3vw,11px)/1.1 Inter,ui-sans-serif,sans-serif;
-  opacity:.78;
+  display:none;
 }
 .member-pass-live-number,
 .member-pass-live-valid{
   position:absolute;
-  left:46%;
   right:4%;
   text-align:left;
   font:700 clamp(9px,2.65vw,12px)/1.15 Inter,ui-sans-serif,sans-serif;
@@ -5335,8 +5329,14 @@ body.member-pass-modal-open {
   overflow:hidden;
   text-overflow:ellipsis;
 }
-.member-pass-live-number{top:55%}
-.member-pass-live-valid{top:76%}
+.member-pass-live-number{
+  top:calc(55% - 40px);
+  left:calc(46% + 20px);
+}
+.member-pass-live-valid{
+  top:calc(76% - 40px);
+  left:calc(46% + 30px);
+}
 
 
 /* Team Fermi — admin-only member administration */
