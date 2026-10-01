@@ -7,10 +7,11 @@ export async function getMyRegistrations(userId: string): Promise<EventRegistrat
   return snapshot.docs.map((item) => ({ id: item.id, ...item.data() }) as EventRegistration);
 }
 
-export async function registerForEvent(eventId: string, userId: string) {
+export async function registerForEvent(eventId: string, userId: string, membershipId: string) {
   return addDoc(collection(db, "registrations"), {
     eventId,
     userId,
+    membershipId,
     status: "registered",
     payment: { required: false, status: "not_required" },
     registeredAt: serverTimestamp(),
