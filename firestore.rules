@@ -73,6 +73,17 @@ service cloud.firestore {
       );
     }
 
+    function registrationExists(activityId) {
+      return exists(
+        /databases/$(database)/documents/registrations/$(registrationDocId(activityId))
+      );
+    }
+
+    function activityCapacityAllows(activityId, count) {
+      return get(/databases/$(database)/documents/activities/$(activityId)).data.capacity <= 0
+        || count <= get(/databases/$(database)/documents/activities/$(activityId)).data.capacity;
+    }
+
     function statsAfter(activityId) {
       return getAfter(
         /databases/$(database)/documents/activityStats/$(activityId)
@@ -99,20 +110,28 @@ service cloud.firestore {
           && request.resource.data.eventId == activityId
           && request.resource.data.registeredCount is int
           && request.resource.data.registeredCount >= 0
+          && activityCapacityAllows(activityId, request.resource.data.registeredCount)
           && (
             (
-              registrationAfter(activityId).data.status == "registered"
+              !registrationExists(activityId)
+              && registrationAfter(activityId).data.status == "registered"
               && request.resource.data.registeredCount
                 == get(/databases/$(database)/documents/activities/$(activityId)).data.registered + 1
             )
             || (
-              registrationAfter(activityId).data.status == "cancelled"
+              registrationExists(activityId)
+              && registrationBefore(activityId).data.status == "cancelled"
+              && registrationAfter(activityId).data.status == "registered"
               && request.resource.data.registeredCount
-                == (
-                  get(/databases/$(database)/documents/activities/$(activityId)).data.registered > 0
-                    ? get(/databases/$(database)/documents/activities/$(activityId)).data.registered - 1
-                    : 0
-                )
+                == get(/databases/$(database)/documents/activities/$(activityId)).data.registered + 1
+            )
+            || (
+              registrationExists(activityId)
+              && registrationBefore(activityId).data.status == "registered"
+              && registrationAfter(activityId).data.status == "cancelled"
+              && request.resource.data.registeredCount
+                == get(/databases/$(database)/documents/activities/$(activityId)).data.registered - 1
+              && request.resource.data.registeredCount >= 0
             )
           )
         );
@@ -128,13 +147,20 @@ service cloud.firestore {
             .hasOnly(["registeredCount", "updatedAt"])
           && request.resource.data.registeredCount is int
           && request.resource.data.registeredCount >= 0
+          && activityCapacityAllows(activityId, request.resource.data.registeredCount)
           && (
             (
               request.resource.data.registeredCount == resource.data.registeredCount + 1
+              && (
+                !registrationExists(activityId)
+                || registrationBefore(activityId).data.status == "cancelled"
+              )
               && registrationAfter(activityId).data.status == "registered"
             )
             || (
               request.resource.data.registeredCount == resource.data.registeredCount - 1
+              && registrationExists(activityId)
+              && registrationBefore(activityId).data.status == "registered"
               && registrationAfter(activityId).data.status == "cancelled"
             )
           )
@@ -171,10 +197,9 @@ service cloud.firestore {
         && currentUser().data.status == "active"
         && resource.data.userId == request.auth.uid
         && registrationId == resource.data.eventId + "__" + request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "cancelledAt"])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["membershipId", "status", "cancelledAt"])
         && request.resource.data.userId == resource.data.userId
         && request.resource.data.eventId == resource.data.eventId
-        && request.resource.data.membershipId == resource.data.membershipId
         && request.resource.data.payment == resource.data.payment
         && request.resource.data.registeredAt == resource.data.registeredAt
         && request.resource.data.status in ["registered", "cancelled"]
@@ -182,12 +207,16 @@ service cloud.firestore {
           (
             resource.data.status == "cancelled"
             && request.resource.data.status == "registered"
+            && request.resource.data.membershipId is string
+            && get(/databases/$(database)/documents/memberships/$(request.resource.data.membershipId)).data.userId == request.auth.uid
+            && get(/databases/$(database)/documents/memberships/$(request.resource.data.membershipId)).data.status == "active"
             && statsAfter(resource.data.eventId).data.registeredCount
               == statsBefore(resource.data.eventId).data.registeredCount + 1
           )
           || (
             resource.data.status == "registered"
             && request.resource.data.status == "cancelled"
+            && request.resource.data.membershipId == resource.data.membershipId
             && statsAfter(resource.data.eventId).data.registeredCount
               == statsBefore(resource.data.eventId).data.registeredCount - 1
           )
