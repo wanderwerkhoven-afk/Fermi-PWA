@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import { getUserProfile } from "../../lib/services/users";
+import { getActiveMembership } from "../../lib/services/memberships";
+import MemberQrCode from "../../components/MemberQrCode";
+import type { FermiUser, Membership } from "../../lib/models/backend";
 import {
   Bell,
   CalendarDays,
@@ -63,31 +66,10 @@ function FermiMark() {
   );
 }
 
-function FakeQr() {
-  const cells = [
-    0,1,2,4,6,7,8,10,12,13,14,
-    15,17,19,20,21,23,25,27,29,
-    30,31,32,34,36,38,39,40,42,
-    45,47,48,50,52,54,56,58,59,
-    60,62,64,65,67,69,71,73,74,
-    75,76,77,79,81,83,84,86,88,
-    90,92,94,96,98,99,100,102,104,
-    105,107,109,110,112,114,116,118,119,
-    120,121,122,124,126,128,129,130,132,134,
-    135,137,139,140,142,144,146,148,149,
-  ];
-
-  return (
-    <div className="profile-qr" aria-label="QR-code placeholder">
-      {Array.from({ length: 150 }).map((_, index) => (
-        <i key={index} className={cells.includes(index) ? "filled" : ""} />
-      ))}
-    </div>
-  );
-}
-
 export default function ProfilePage() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [fermiUser, setFermiUser] = useState<FermiUser | null>(null);
+  const [membership, setMembership] = useState<Membership | null>(null);
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
@@ -96,13 +78,22 @@ export default function ProfilePage() {
         return;
       }
       try {
-        const profile = await getUserProfile(user.uid);
+        const [profile, activeMembership] = await Promise.all([
+          getUserProfile(user.uid),
+          getActiveMembership(user.uid),
+        ]);
+        setFermiUser(profile);
+        setMembership(activeMembership);
         setIsAdmin(profile?.status === "active" && profile.role === "admin");
       } catch {
         setIsAdmin(false);
       }
     });
   }, []);
+
+  const memberName = [fermiUser?.profile.firstName, fermiUser?.profile.prefix, fermiUser?.profile.lastName].filter(Boolean).join(" ") || "Fermi-lid";
+  const roleLabel = fermiUser?.role === "admin" ? "Admin" : fermiUser?.role === "board" ? "Bestuur" : fermiUser?.role === "committee" ? "Commissie" : "Lid";
+  const validUntil = membership?.endDate ? new Intl.DateTimeFormat("nl-NL", { day: "numeric", month: "short", year: "numeric" }).format(new Date(`${membership.endDate}T12:00:00`)) : "Niet bekend";
 
   const visibleMenuItems = isAdmin
     ? [
@@ -152,9 +143,9 @@ export default function ProfilePage() {
           </div>
 
           <div className="profile-member-copy">
-            <h2>Wander Werkhoven</h2>
-            <p>Lid <span>•</span> Sinds september 2024</p>
-            <p><GraduationCap size={17} /> Natuurkunde (BSc)</p>
+            <h2>{memberName}</h2>
+            <p>{roleLabel} <span>•</span> {membership?.status === "active" ? "Actief lid" : "Geen actief lidmaatschap"}</p>
+            <p><GraduationCap size={17} /> {fermiUser?.profile.study || "Opleiding niet ingevuld"}</p>
             <p><MapPin size={17} /> Haarlem</p>
           </div>
 
@@ -173,17 +164,17 @@ export default function ProfilePage() {
               <FermiMark />
               <div>
                 <strong>SV Fermi</strong>
-                <span>Lidmaatschap 2026/2027</span>
+                <span>Lidmaatschap {membership?.academicYear || "—"}</span>
               </div>
             </div>
 
-            <div className="member-card-name">Wander Werkhoven</div>
-            <div className="member-card-meta">Lidnummer: 2025-1042</div>
-            <div className="member-card-meta">Geldig t/m 31 aug 2027</div>
+            <div className="member-card-name">{memberName}</div>
+            <div className="member-card-meta">Lidnummer: {membership?.memberNumber || "—"}</div>
+            <div className="member-card-meta">Geldig t/m {validUntil}</div>
           </div>
 
           <div className="member-card-right">
-            <FakeQr />
+            <MemberQrCode cardId={membership?.digitalCard?.cardId} enabled={Boolean(membership?.digitalCard?.enabled)} size={96} />
             <small>Toon bij activiteitscheck-in<br />en kortingen</small>
           </div>
         </section>
