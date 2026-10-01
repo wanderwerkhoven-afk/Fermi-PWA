@@ -57,6 +57,11 @@ service cloud.firestore {
       allow create, update, delete: if hasRole(["board", "admin"]);
     }
 
+    match /activities/{activityId} {
+      allow read: if signedIn();
+      allow create, update, delete: if hasRole(["admin"]);
+    }
+
     match /registrations/{registrationId} {
       allow read: if signedIn() &&
         (resource.data.userId == request.auth.uid || hasRole(["board", "admin"]));
