@@ -5559,5 +5559,5 @@ body.member-admin-modal-open{overflow:hidden}
 
 /* Fine-tune member pass QR position */
 .member-pass-live-qr{
-  transform:translate(-15px,-5px);
+  transform:translate(-18px,-8px);
 }
