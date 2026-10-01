@@ -89,7 +89,7 @@ export default function EventDetailClient({ initialEvent }: { initialEvent: Agen
             <article><span className="travel-icon-bubble"><CalendarDays size={24} /></span><div><h3>Inschrijfdeadline</h3><p>{travel.signupDeadline}</p></div></article>
           </div>
 
-          <EventActions initialRegistered={event.registered} capacity={event.capacity} shareTitle={event.title} />
+          <EventActions eventId={event.slug} initialRegistered={event.registered} capacity={event.capacity} shareTitle={event.title} />
 
           <section className="travel-expectations">
             <h2>Wat kun je verwachten?<span aria-hidden="true">✦</span></h2>
@@ -132,7 +132,7 @@ export default function EventDetailClient({ initialEvent }: { initialEvent: Agen
           <div><MapPin size={20} /><span><small>Locatie</small><strong>{event.location}</strong></span></div>
         </div>
 
-        <EventActions initialRegistered={event.registered} capacity={event.capacity} shareTitle={event.title} />
+        <EventActions eventId={event.slug} initialRegistered={event.registered} capacity={event.capacity} shareTitle={event.title} />
 
         <section className="event-detail-section">
           <span className="event-detail-kicker">OVER DE ACTIVITEIT</span>
