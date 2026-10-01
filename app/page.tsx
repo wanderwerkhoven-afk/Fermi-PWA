@@ -105,6 +105,8 @@ export default function HomePage() {
 
   const memberName = [fermiUser?.profile.firstName, fermiUser?.profile.lastName].filter(Boolean).join(" ");
   const memberRole = fermiUser?.role === "admin" ? "Admin" : fermiUser?.role === "board" ? "Bestuur" : fermiUser?.role === "committee" ? "Commissie" : "Lid";
+  const memberNumber = membership?.memberNumber || "Nog niet toegewezen";
+  const memberValidUntil = membership?.endDate || membership?.academicYear || "Nog niet bekend";
 
   useEffect(() => {
     if (!overlayOpen) return;
@@ -396,10 +398,10 @@ export default function HomePage() {
                 alt="Digitale ledenpas van SV Fermi"
               />
               <div className="member-pass-live-data">
-                <strong>{memberName || fermiUser?.profile.email || "S.V. Fermi-lid"}</strong>
-                <span>{memberRole}</span>
-                <span>{membership?.memberNumber ? `Lidnr. ${membership.memberNumber}` : "Lidnummer nog niet toegewezen"}</span>
-                <span>{membership?.academicYear ?? "Geen actief lidmaatschap"}</span>
+                <strong className="member-pass-live-name">{memberName || fermiUser?.profile.email || "S.V. Fermi-lid"}</strong>
+                <span className="member-pass-live-role">{memberRole}</span>
+                <span className="member-pass-live-number">{memberNumber}</span>
+                <span className="member-pass-live-valid">{memberValidUntil}</span>
               </div>
             </div>
           </div>
