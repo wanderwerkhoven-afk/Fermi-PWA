@@ -399,7 +399,6 @@ export default function HomePage() {
               />
               <div className="member-pass-live-data">
                 <strong className="member-pass-live-name">{memberName || fermiUser?.profile.email || "S.V. Fermi-lid"}</strong>
-                <span className="member-pass-live-role">{memberRole}</span>
                 <span className="member-pass-live-number">{memberNumber}</span>
                 <span className="member-pass-live-valid">{memberValidUntil}</span>
               </div>
