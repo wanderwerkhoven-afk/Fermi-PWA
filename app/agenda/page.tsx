@@ -94,18 +94,12 @@ export default function AgendaPage() {
             <p>Wat staat er op de planning?</p>
           </div>
 
-          <div className="agenda-collage agenda-collage-redesign" aria-hidden="true">
-            <span className="agenda-paper-plane">➤</span>
-            <span className="agenda-route-line" />
-            <span className="agenda-orange-paper" />
-            <span className="agenda-calendar-sheet">
-              <span className="calendar-rings" />
-              <b>{months[selectedMonth].name.toUpperCase()}</b>
-              <span className="calendar-grid">
-                {Array.from({ length: 20 }).map((_, index) => <i key={index} />)}
-              </span>
-              <span className="calendar-circle" />
-            </span>
+          <div className="agenda-collage agenda-collage-redesign agenda-hero-image-wrap" aria-hidden="true">
+            <img
+              className="agenda-hero-image"
+              src="/Fermi-PWA/images/agenda/agenda-hero-illustration.png"
+              alt=""
+            />
           </div>
         </div>
 
