@@ -24,6 +24,12 @@ service cloud.firestore {
         && currentUser().data.role in roles;
     }
 
+    function hasActiveMembership() {
+      return hasProfile()
+        && currentUser().data.status == "active"
+        && exists(/databases/$(database)/documents/memberships/$(request.auth.uid + "_active"));
+    }
+
     match /users/{uid} {
       allow create: if isOwner(uid)
         && request.resource.data.uid == request.auth.uid
@@ -55,12 +61,10 @@ service cloud.firestore {
     match /registrations/{registrationId} {
       allow read: if signedIn() &&
         (resource.data.userId == request.auth.uid || hasRole(["board", "admin"]));
-      allow create: if hasProfile()
-        && currentUser().data.status == "active"
+      allow create: if hasActiveMembership()
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.status == "registered";
-      allow update: if hasProfile()
-        && currentUser().data.status == "active"
+      allow update: if hasActiveMembership()
         && resource.data.userId == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "cancelledAt"])
         && request.resource.data.userId == resource.data.userId
