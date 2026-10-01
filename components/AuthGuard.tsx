@@ -14,7 +14,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [access, setAccess] = useState<AccessState>("loading");
+  const [previewBypass, setPreviewBypass] = useState(false);
   const isPublic = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
+
+  useEffect(() => {
+    setPreviewBypass(window.sessionStorage.getItem("fermi-preview-bypass") === "1");
+  }, []);
 
   useEffect(() => {
     setAccess("loading");
@@ -51,6 +56,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     return unsubscribe;
   }, [isPublic, pathname, router]);
 
+  if (previewBypass && !isPublic) {
+    return <>{children}</>;
+  }
+
   if (isPublic) {
     if (access === "member" || access === "membership-pending" || access === "archive") {
       return <AccessLoading text="Je wordt doorgestuurd…" />;
@@ -63,23 +72,23 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   if (access === "pending-account") {
-    return <AccessCard title="Bijna binnen!" body="Je account is aangemaakt en wacht nog op activatie door S.V. Fermi." />;
+    return <AccessCard title="Bijna binnen!" body="Je account is aangemaakt en wacht nog op activatie door S.V. Fermi." previewBypass />;
   }
 
   if (access === "suspended") {
-    return <AccessCard title="Account niet actief" body="Je account is momenteel niet actief. Denk je dat dit niet klopt? Neem dan contact op met S.V. Fermi." />;
+    return <AccessCard title="Account niet actief" body="Je account is momenteel niet actief. Denk je dat dit niet klopt? Neem dan contact op met S.V. Fermi." previewBypass />;
   }
 
   if (access === "membership-pending") {
-    return <AccessCard title="Aanmelding ontvangen" body="Je nieuwe lidmaatschapsaanmelding is ontvangen en wordt nog verwerkt. Je eerdere Fermi-geschiedenis blijft bewaard." />;
+    return <AccessCard title="Aanmelding ontvangen" body="Je nieuwe lidmaatschapsaanmelding is ontvangen en wordt nog verwerkt. Je eerdere Fermi-geschiedenis blijft bewaard." previewBypass />;
   }
 
   if (access === "archive") {
-    return <AccessCard title="Welkom terug" body="Je hebt momenteel geen actief Fermi-lidmaatschap. Je account en eerdere Fermi-geschiedenis blijven bewaard. Meld je opnieuw aan om voor het nieuwe verenigingsjaar weer volledige toegang te krijgen." actionLabel="Opnieuw lid worden" />;
+    return <AccessCard title="Welkom terug" body="Je hebt momenteel geen actief Fermi-lidmaatschap. Je account en eerdere Fermi-geschiedenis blijven bewaard. Meld je opnieuw aan om voor het nieuwe verenigingsjaar weer volledige toegang te krijgen." actionLabel="Opnieuw lid worden" previewBypass />;
   }
 
   if (access === "missing-profile" || access === "error") {
-    return <AccessCard title="Toegang controleren mislukt" body="We konden je Fermi-profiel niet veilig controleren. Er is daarom geen toegang verleend. Probeer opnieuw of neem contact op met het bestuur." retry />;
+    return <AccessCard title="Toegang controleren mislukt" body="We konden je Fermi-profiel niet veilig controleren. Er is daarom geen toegang verleend. Probeer opnieuw of neem contact op met het bestuur." retry previewBypass />;
   }
 
   return <>{children}</>;
@@ -99,7 +108,7 @@ function AccessLoading({ text }: { text: string }) {
   );
 }
 
-function AccessCard({ title, body, retry = false, actionLabel }: { title: string; body: string; retry?: boolean; actionLabel?: string }) {
+function AccessCard({ title, body, retry = false, actionLabel, previewBypass = false }: { title: string; body: string; retry?: boolean; actionLabel?: string; previewBypass?: boolean }) {
   return (
     <main className="pending-access">
       <div className="pending-card">
@@ -112,6 +121,21 @@ function AccessCard({ title, body, retry = false, actionLabel }: { title: string
         {retry && <button onClick={() => window.location.reload()}>Opnieuw proberen</button>}
         <button onClick={() => auth.signOut()}>Uitloggen</button>
       </div>
+
+      {previewBypass && (
+        <button
+          className="preview-bypass-star"
+          type="button"
+          aria-label="Preview bypass"
+          title="Preview bypass"
+          onClick={() => {
+            window.sessionStorage.setItem("fermi-preview-bypass", "1");
+            window.location.reload();
+          }}
+        >
+          ★
+        </button>
+      )}
     </main>
   );
 }
