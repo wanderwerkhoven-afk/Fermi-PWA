@@ -106,7 +106,7 @@ export default function HomePage() {
 
   const memberName = [fermiUser?.profile.firstName, fermiUser?.profile.lastName].filter(Boolean).join(" ");
   const memberRole = fermiUser?.role === "admin" ? "Admin" : fermiUser?.role === "board" ? "Bestuur" : fermiUser?.role === "committee" ? "Commissie" : "Lid";
-  const memberNumber = membership?.memberNumber || "Nog niet toegewezen";
+  const memberNumber = membership?.memberNumber?.trim() || (membership?.digitalCard?.cardId ? `FERMI-${membership.digitalCard.cardId.slice(0, 6).toUpperCase()}` : "Nog niet toegewezen");
   const memberValidUntil = membership?.endDate || membership?.academicYear || "Nog niet bekend";
 
   useEffect(() => {
