@@ -5245,3 +5245,10 @@ body.member-pass-modal-open {
     transform: translateY(0) scale(1);
   }
 }
+
+
+/* Firebase authentication states */
+.auth-loading,.pending-access{min-height:100svh;background:#06283b;color:#fff9f0;display:grid;place-items:center;padding:24px;text-align:center}
+.auth-loading{align-content:center;gap:12px;font-family:Arial,sans-serif}.auth-loader-mark{font-size:48px;color:#ff7a1a;animation:fermi-spin 2.4s linear infinite}.auth-loading p{margin:0;color:#a8b6c0}
+@keyframes fermi-spin{to{transform:rotate(360deg)}}
+.pending-card{width:min(100%,440px);background:#f4eadc;color:#06283b;border-radius:28px;padding:42px 30px;box-shadow:0 22px 70px rgba(0,0,0,.25);position:relative;overflow:hidden}.pending-card:before{content:"";position:absolute;inset:0 0 auto;height:8px;background:#ff7a1a}.pending-atom{font-size:48px;color:#ff7a1a}.pending-kicker{text-transform:uppercase;letter-spacing:3px;font:700 12px Arial,sans-serif;margin:15px 0 8px}.pending-card h1{font:700 42px/1 Georgia,serif;margin:0 0 18px}.pending-card>p:not(.pending-kicker){font:16px/1.55 Arial,sans-serif;color:#315062}.pending-email{margin:24px 0;padding:13px 16px;border:1px solid rgba(6,40,59,.18);border-radius:12px;font:600 14px Arial,sans-serif;overflow-wrap:anywhere}.pending-card button{border:0;border-radius:12px;background:#06283b;color:#fff9f0;padding:14px 26px;font:700 15px Arial,sans-serif;cursor:pointer}
