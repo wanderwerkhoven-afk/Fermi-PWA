@@ -201,7 +201,8 @@
     "Login route /login/ uses Firebase Email/Password and Google authentication while preserving static GitHub Pages compatibility.",
     "Profile shows Leden admin only to active users with role admin.",
     "Member administration supports lifecycle states active, pending/in overgang, suspended and archived; linked accounts update users/memberships while imported members live in memberDirectory.",
-    "Bulk member import uses CSV with comma or semicolon separators and common Dutch/English column names."
+    "Bulk member import uses CSV with comma or semicolon separators and common Dutch/English column names.",
+    "Leden admin beheert naast naam/e-mail ook telefoonnummer, woonplaats en startjaar; deze velden worden meegenomen in handmatige invoer, detailbewerking en CSV-import."
   ],
   "open_decisions": [
     "Final custom image asset set."
