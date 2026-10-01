@@ -86,7 +86,17 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 }
 
 function AccessLoading({ text }: { text: string }) {
-  return <div className="auth-loading" role="status" aria-live="polite"><div className="auth-loader-mark">⚛</div><p>{text}</p></div>;
+  return (
+    <div className="auth-loading" role="status" aria-live="polite">
+      <img
+        className="auth-loader-mark"
+        src="/Fermi-PWA/images/branding/atoom-loader.png"
+        alt=""
+        aria-hidden="true"
+      />
+      <p>{text}</p>
+    </div>
+  );
 }
 
 function AccessCard({ title, body, retry = false, actionLabel }: { title: string; body: string; retry?: boolean; actionLabel?: string }) {
