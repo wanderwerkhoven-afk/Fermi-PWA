@@ -5303,19 +5303,6 @@ body.member-pass-modal-open {
   color:var(--fermi-navy);
   text-shadow:none;
 }
-.member-pass-live-name{
-  position:absolute;
-  top:calc(3% - 18px);
-  left:50%;
-  transform:translateX(-50%);
-  width:min(400px,calc(100% - 16px));
-  margin:0;
-  text-align:center;
-  font:800 clamp(17px,4.8vw,24px)/1.04 Georgia,"Times New Roman",serif;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
 .member-pass-live-role{
   display:none;
 }
@@ -5505,16 +5492,6 @@ body.member-admin-modal-open{overflow:hidden}
   color:var(--fermi-navy);
   pointer-events:none;
 }
-.member-pass-live-name{
-  position:absolute;
-  top:80.2%;
-  left:13%;
-  right:13%;
-  width:auto;
-  transform:none;
-  margin:0;
-  text-align:center;
-}
 .member-pass-live-number{
   position:absolute;
   top:86.25%;
@@ -5539,22 +5516,8 @@ body.member-admin-modal-open{overflow:hidden}
 }
 
 /* Fine-tune member name on pass */
-.member-pass-live-name{
-  top:77.8%;
-  font-size:clamp(20px,5.6vw,29px);
-  line-height:1;
-}
-
 /* Fine-tune member name position */
-.member-pass-live-name{
-  transform:translateY(-40px);
-}
-
 /* Fine-tune member name position */
-.member-pass-live-name{
-  transform:translateY(-25px);
-}
-
 /* Keep member number clearly visible on the printed member-number row */
 .member-pass-live-number{
   top:86.2%;
@@ -5566,4 +5529,20 @@ body.member-admin-modal-open{overflow:hidden}
   color:var(--fermi-navy);
   overflow:visible;
   text-overflow:clip;
+}
+
+/* Canonical member name placement on digital member pass */
+.member-pass-live-name{
+  position:absolute;
+  top:77.8%;
+  left:13%;
+  right:13%;
+  width:auto;
+  margin:0;
+  transform:translateY(-15px);
+  text-align:center;
+  font:800 clamp(20px,5.6vw,29px)/1 Georgia,"Times New Roman",serif;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
