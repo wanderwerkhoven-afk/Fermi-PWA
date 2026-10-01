@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
 import { auth } from "../lib/firebase";
 import { getMembershipAccess, requestMembershipRenewal } from "../lib/services/memberships";
 import { getUserProfile } from "../lib/services/users";
@@ -17,6 +16,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [access, setAccess] = useState<AccessState>("loading");
   const [actionBusy, setActionBusy] = useState(false);
   const [actionError, setActionError] = useState("");
+  const [previewBypass, setPreviewBypass] = useState(false);
   const isPublic = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
 
   useEffect(() => {
@@ -65,8 +65,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     return <AccessLoading text={access === "loading" ? "Fermi wordt geladen…" : "Je wordt doorgestuurd…"} />;
   }
 
-  if (access === "pending-account") {
-    return <AccessCard title="Bijna binnen!" body="Je account is aangemaakt en wacht nog op activatie door S.V. Fermi." preview />;
+  if (access === "pending-account" && !previewBypass) {
+    return <AccessCard title="Bijna binnen!" body="Je account is aangemaakt en wacht nog op activatie door S.V. Fermi." preview onPreview={() => setPreviewBypass(true)} />;
+  }
+
+  if (previewBypass && access === "pending-account") {
+    return <>{children}</>;
   }
 
   if (access === "suspended") {
@@ -106,10 +110,10 @@ function AccessLoading({ text }: { text: string }) {
   return <div className="auth-loading" role="status" aria-live="polite"><div className="auth-loader-mark">⚛</div><p>{text}</p></div>;
 }
 
-function AccessCard({ title, body, retry = false, actionLabel, onAction, actionDisabled = false, error, preview = false }: { title: string; body: string; retry?: boolean; actionLabel?: string; onAction?: () => void; actionDisabled?: boolean; error?: string; preview?: boolean }) {
+function AccessCard({ title, body, retry = false, actionLabel, onAction, actionDisabled = false, error, preview = false, onPreview }: { title: string; body: string; retry?: boolean; actionLabel?: string; onAction?: () => void; actionDisabled?: boolean; error?: string; preview?: boolean; onPreview?: () => void }) {
   return (
     <main className="pending-access">
-      {preview && <Link href="/" className="pending-preview-star" title="Tijdelijk naar de site" aria-label="Tijdelijk naar de Fermi-site">★</Link>}
+      {preview && <button type="button" className="pending-preview-star" onClick={onPreview} title="Preview van de app openen" aria-label="Preview van de Fermi-app openen">★</button>}
       <div className="pending-card">
         <div className="pending-atom">⚛</div>
         <p className="pending-kicker">S.V. Fermi</p>
