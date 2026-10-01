@@ -5562,3 +5562,255 @@ body.member-admin-modal-open{overflow:hidden}
     transform-origin: center right;
   }
 }
+
+
+/* Team Fermi — Agenda reference fidelity pass 2026-10-02 */
+.agenda-hero-redesign {
+  padding-top: max(24px, env(safe-area-inset-top));
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 12px;
+}
+
+.agenda-title-redesign {
+  min-height: 132px;
+  margin-top: 2px;
+  align-items: center;
+}
+
+.agenda-title-copy {
+  max-width: 61%;
+}
+
+.agenda-title-redesign h1 {
+  font-size: clamp(48px, 12.5vw, 64px);
+  line-height: .92;
+  letter-spacing: -.05em;
+}
+
+.agenda-title-redesign h1::after {
+  right: -31px;
+  top: 5px;
+  width: 28px;
+  height: 19px;
+  border-top-width: 4px;
+  border-bottom-width: 4px;
+}
+
+.agenda-title-redesign p {
+  margin-top: 7px;
+  font-size: 15px;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.agenda-hero-image-wrap {
+  right: -16px;
+  top: 0;
+  width: 184px;
+  height: 138px;
+  transform: none;
+  transform-origin: center right;
+}
+
+.month-switcher-redesign {
+  width: 58%;
+  min-height: 48px;
+  grid-template-columns: 42px 1fr 42px;
+  border-radius: 17px;
+}
+
+.month-switcher-redesign strong {
+  font-size: 16px;
+}
+
+.month-switcher-redesign button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.agenda-filters-redesign {
+  margin-top: 12px;
+  gap: 6px;
+}
+
+.agenda-filters-redesign button {
+  min-height: 38px;
+  padding: 0 7px;
+  font-size: 10.5px;
+}
+
+.agenda-list-redesign {
+  gap: 8px;
+  padding: 0 14px 24px;
+}
+
+.agenda-card-redesign {
+  min-height: 98px;
+  grid-template-columns: 64px minmax(0,1.28fr) minmax(96px,.82fr);
+  border-radius: 15px;
+}
+
+.agenda-card-redesign.featured {
+  min-height: 178px;
+  grid-template-columns: 67px minmax(0,1.23fr) minmax(128px,.92fr);
+  border-radius: 16px;
+}
+
+.agenda-date-redesign {
+  width: 51px;
+  height: 62px;
+  margin: 9px 0 0 8px;
+  border-radius: 9px;
+}
+
+.agenda-date-redesign strong {
+  font-size: 27px;
+}
+
+.agenda-date-redesign span {
+  margin-top: 4px;
+  font-size: 9px;
+}
+
+.agenda-card-copy-redesign {
+  padding: 8px 5px 8px 0;
+}
+
+.agenda-card-redesign .agenda-type {
+  padding: 3px 8px;
+  font-size: 8.5px;
+}
+
+.agenda-card-redesign h2 {
+  margin: 4px 0 5px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.agenda-card-redesign.featured h2 {
+  margin: 6px 0 6px;
+  font-size: 27px;
+}
+
+.agenda-card-redesign p {
+  margin: 3px 0;
+  gap: 5px;
+  font-size: 9.5px;
+  line-height: 1.12;
+}
+
+.agenda-card-redesign p svg {
+  width: 14px;
+  height: 14px;
+}
+
+.agenda-detail-button {
+  min-height: 36px;
+  margin-top: 7px;
+  padding: 0 12px;
+  border-radius: 11px;
+  font-size: 11px;
+}
+
+.agenda-detail-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.agenda-photo::before {
+  width: 25px;
+}
+
+.featured .agenda-photo::before {
+  width: 31px;
+}
+
+.agenda-card-redesign .agenda-card-chevron {
+  right: 6px;
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 420px) {
+  .agenda-hero-redesign {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .agenda-title-redesign {
+    min-height: 128px;
+  }
+
+  .agenda-title-redesign h1 {
+    font-size: 49px;
+  }
+
+  .agenda-title-redesign p {
+    font-size: 13.5px;
+  }
+
+  .agenda-hero-image-wrap {
+    right: -18px;
+    top: 1px;
+    width: 174px;
+    height: 132px;
+    transform: none;
+  }
+
+  .month-switcher-redesign {
+    width: 60%;
+    min-height: 47px;
+  }
+
+  .month-switcher-redesign strong {
+    font-size: 15px;
+  }
+
+  .agenda-filters-redesign {
+    gap: 5px;
+  }
+
+  .agenda-filters-redesign button {
+    min-height: 37px;
+    padding-inline: 5px;
+    font-size: 9.8px;
+  }
+
+  .agenda-card-redesign {
+    min-height: 96px;
+    grid-template-columns: 60px minmax(0,1.3fr) minmax(92px,.8fr);
+  }
+
+  .agenda-card-redesign.featured {
+    min-height: 174px;
+    grid-template-columns: 62px minmax(0,1.28fr) minmax(121px,.9fr);
+  }
+
+  .agenda-date-redesign {
+    width: 48px;
+    height: 59px;
+    margin-left: 7px;
+  }
+
+  .agenda-date-redesign strong {
+    font-size: 25px;
+  }
+
+  .agenda-card-redesign h2 {
+    font-size: 15px;
+  }
+
+  .agenda-card-redesign.featured h2 {
+    font-size: 25px;
+  }
+
+  .agenda-card-redesign p {
+    font-size: 9px;
+  }
+
+  .agenda-detail-button {
+    min-height: 34px;
+    font-size: 10.5px;
+  }
+}
