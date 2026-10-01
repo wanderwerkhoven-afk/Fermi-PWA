@@ -7,6 +7,7 @@ import { auth } from "../lib/firebase";
 import { getUserProfile } from "../lib/services/users";
 import { getActiveMembership } from "../lib/services/memberships";
 import type { FermiUser, Membership } from "../lib/models/backend";
+import MemberQrCode from "../components/MemberQrCode";
 import {
   Bell,
   CalendarDays,
@@ -401,6 +402,13 @@ export default function HomePage() {
                 <strong className="member-pass-live-name">{memberName || fermiUser?.profile.email || "S.V. Fermi-lid"}</strong>
                 <span className="member-pass-live-number">{memberNumber}</span>
                 <span className="member-pass-live-valid">{memberValidUntil}</span>
+              </div>
+              <div className="member-pass-live-qr">
+                <MemberQrCode
+                  cardId={membership?.digitalCard?.cardId}
+                  enabled={Boolean(membership?.digitalCard?.enabled)}
+                  size={104}
+                />
               </div>
             </div>
           </div>
