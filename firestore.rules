@@ -210,15 +210,35 @@ service cloud.firestore {
             && request.resource.data.membershipId is string
             && get(/databases/$(database)/documents/memberships/$(request.resource.data.membershipId)).data.userId == request.auth.uid
             && get(/databases/$(database)/documents/memberships/$(request.resource.data.membershipId)).data.status == "active"
-            && statsAfter(resource.data.eventId).data.registeredCount
-              == statsBefore(resource.data.eventId).data.registeredCount + 1
+            && (
+              (
+                exists(/databases/$(database)/documents/activityStats/$(resource.data.eventId))
+                && statsAfter(resource.data.eventId).data.registeredCount
+                  == statsBefore(resource.data.eventId).data.registeredCount + 1
+              )
+              || (
+                !exists(/databases/$(database)/documents/activityStats/$(resource.data.eventId))
+                && statsAfter(resource.data.eventId).data.registeredCount
+                  == get(/databases/$(database)/documents/activities/$(resource.data.eventId)).data.registered + 1
+              )
+            )
           )
           || (
             resource.data.status == "registered"
             && request.resource.data.status == "cancelled"
             && request.resource.data.membershipId == resource.data.membershipId
-            && statsAfter(resource.data.eventId).data.registeredCount
-              == statsBefore(resource.data.eventId).data.registeredCount - 1
+            && (
+              (
+                exists(/databases/$(database)/documents/activityStats/$(resource.data.eventId))
+                && statsAfter(resource.data.eventId).data.registeredCount
+                  == statsBefore(resource.data.eventId).data.registeredCount - 1
+              )
+              || (
+                !exists(/databases/$(database)/documents/activityStats/$(resource.data.eventId))
+                && statsAfter(resource.data.eventId).data.registeredCount
+                  == get(/databases/$(database)/documents/activities/$(resource.data.eventId)).data.registered - 1
+              )
+            )
           )
         );
       allow delete: if hasRole(["board", "admin"]);
