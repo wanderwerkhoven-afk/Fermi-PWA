@@ -1,0 +1,85 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function currentUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function hasRole(roles) {
+      return signedIn() && currentUser().data.status == "active" && currentUser().data.role in roles;
+    }
+
+    match /users/{uid} {
+      allow create: if isOwner(uid)
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.role == "member"
+        && request.resource.data.status == "pending";
+
+      allow read: if isOwner(uid) || hasRole(["board", "admin"]);
+
+      allow update: if isOwner(uid)
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.status == resource.data.status;
+
+      allow update, delete: if hasRole(["board", "admin"]);
+    }
+
+    match /memberships/{membershipId} {
+      allow read: if signedIn() &&
+        (resource.data.userId == request.auth.uid || hasRole(["board", "admin"]));
+      allow create, update, delete: if hasRole(["board", "admin"]);
+    }
+
+    match /events/{eventId} {
+      allow read: if signedIn();
+      allow create, update, delete: if hasRole(["board", "admin"]);
+    }
+
+    match /registrations/{registrationId} {
+      allow read: if signedIn() &&
+        (resource.data.userId == request.auth.uid || hasRole(["board", "admin"]));
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == "registered";
+      allow update: if signedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.eventId == resource.data.eventId;
+      allow delete: if hasRole(["board", "admin"]);
+    }
+
+    match /committees/{committeeId} {
+      allow read: if signedIn();
+      allow create, update, delete: if hasRole(["board", "admin"]);
+    }
+
+    match /announcements/{announcementId} {
+      allow read: if signedIn();
+      allow create, update, delete: if hasRole(["board", "admin"]);
+    }
+
+    match /notifications/{notificationId} {
+      allow read, update: if signedIn() && resource.data.userId == request.auth.uid;
+      allow create, delete: if hasRole(["board", "admin"]);
+    }
+
+    match /appConfig/{document=**} {
+      allow read: if signedIn();
+      allow write: if hasRole(["admin"]);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
