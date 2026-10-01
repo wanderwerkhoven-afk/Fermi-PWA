@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { ArrowRight, Atom, Eye, EyeOff, GraduationCap, LockKeyhole, UserRound } from "lucide-react";
+import { ArrowRight, Atom, Eye, EyeOff, LockKeyhole, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { sendPasswordResetEmail } from "firebase/auth";
@@ -71,7 +71,7 @@ export default function LoginPage() {
           <button type="button" className={styles.forgot} onClick={resetPassword}>Wachtwoord vergeten?</button>
 
           <button type="button" className={styles.hvaButton} disabled={busy} onClick={() => void finishLogin(signInWithGoogle)}>
-            <GraduationCap /><span>Log in met HvA-mail</span><ArrowRight />
+            <span aria-hidden="true">G</span><span>Doorgaan met Google</span><ArrowRight />
           </button>
           {message && <p className={styles.message} role="status">{message}</p>}
         </form>
