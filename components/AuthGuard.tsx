@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import { auth } from "../lib/firebase";
 import { getMembershipAccess, requestMembershipRenewal } from "../lib/services/memberships";
 import { getUserProfile } from "../lib/services/users";
@@ -65,7 +66,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   if (access === "pending-account") {
-    return <AccessCard title="Bijna binnen!" body="Je account is aangemaakt en wacht nog op activatie door S.V. Fermi." />;
+    return <AccessCard title="Bijna binnen!" body="Je account is aangemaakt en wacht nog op activatie door S.V. Fermi." preview />;
   }
 
   if (access === "suspended") {
@@ -105,9 +106,10 @@ function AccessLoading({ text }: { text: string }) {
   return <div className="auth-loading" role="status" aria-live="polite"><div className="auth-loader-mark">⚛</div><p>{text}</p></div>;
 }
 
-function AccessCard({ title, body, retry = false, actionLabel, onAction, actionDisabled = false, error }: { title: string; body: string; retry?: boolean; actionLabel?: string; onAction?: () => void; actionDisabled?: boolean; error?: string }) {
+function AccessCard({ title, body, retry = false, actionLabel, onAction, actionDisabled = false, error, preview = false }: { title: string; body: string; retry?: boolean; actionLabel?: string; onAction?: () => void; actionDisabled?: boolean; error?: string; preview?: boolean }) {
   return (
     <main className="pending-access">
+      {preview && <Link href="/" className="pending-preview-star" title="Tijdelijk naar de site" aria-label="Tijdelijk naar de Fermi-site">★</Link>}
       <div className="pending-card">
         <div className="pending-atom">⚛</div>
         <p className="pending-kicker">S.V. Fermi</p>
