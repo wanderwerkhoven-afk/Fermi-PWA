@@ -2,6 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../lib/firebase";
+import { getUserProfile } from "../lib/services/users";
+import { getActiveMembership } from "../lib/services/memberships";
+import type { FermiUser, Membership } from "../lib/models/backend";
 import {
   Bell,
   CalendarDays,
@@ -70,11 +75,36 @@ const announcements = [
 
 export default function HomePage() {
   const [memberPassOpen, setMemberPassOpen] = useState(false);
+  const [fermiUser, setFermiUser] = useState<FermiUser | null>(null);
+  const [membership, setMembership] = useState<Membership | null>(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [announcementsOpen, setAnnouncementsOpen] = useState(false);
   const [activeAnnouncement, setActiveAnnouncement] = useState<(typeof announcements)[number] | null>(null);
 
   const overlayOpen = memberPassOpen || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setFermiUser(null);
+        setMembership(null);
+        return;
+      }
+      try {
+        const [profile, activeMembership] = await Promise.all([
+          getUserProfile(user.uid),
+          getActiveMembership(user.uid),
+        ]);
+        setFermiUser(profile);
+        setMembership(activeMembership);
+      } catch (error) {
+        console.error("Member pass data could not be loaded", error);
+      }
+    });
+  }, []);
+
+  const memberName = [fermiUser?.profile.firstName, fermiUser?.profile.lastName].filter(Boolean).join(" ");
+  const memberRole = fermiUser?.role === "admin" ? "Admin" : fermiUser?.role === "board" ? "Bestuur" : fermiUser?.role === "committee" ? "Commissie" : "Lid";
 
   useEffect(() => {
     if (!overlayOpen) return;
@@ -359,11 +389,19 @@ export default function HomePage() {
               <X size={22} />
             </button>
 
-            <img
-              className="member-pass-modal-image"
-              src="/Fermi-PWA/images/home/member-pass-popup.png"
-              alt="Digitale ledenpas van SV Fermi"
-            />
+            <div className="member-pass-live">
+              <img
+                className="member-pass-modal-image"
+                src="/Fermi-PWA/images/home/member-pass-popup.png"
+                alt="Digitale ledenpas van SV Fermi"
+              />
+              <div className="member-pass-live-data">
+                <strong>{memberName || fermiUser?.profile.email || "S.V. Fermi-lid"}</strong>
+                <span>{memberRole}</span>
+                <span>{membership?.memberNumber ? `Lidnr. ${membership.memberNumber}` : "Lidnummer nog niet toegewezen"}</span>
+                <span>{membership?.academicYear ?? "Geen actief lidmaatschap"}</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
