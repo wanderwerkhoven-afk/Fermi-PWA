@@ -40,6 +40,8 @@ export interface AdminMemberRow {
   role: UserRole;
   membershipId: string | null;
   endDate: string;
+  digitalCardId: string;
+  digitalCardEnabled: boolean;
 }
 
 function normalizeEmail(email: string) {
@@ -48,6 +50,14 @@ function normalizeEmail(email: string) {
 
 function directoryId(email: string) {
   return encodeURIComponent(normalizeEmail(email));
+}
+
+function newDigitalCardId() {
+  return crypto.randomUUID();
+}
+
+function usableDigitalCardId(value: string | null | undefined) {
+  return value && !value.startsWith("card-") ? value : newDigitalCardId();
 }
 
 function lifecycleFor(user: FermiUser, membership?: Membership): AdminMemberLifecycle {
@@ -106,6 +116,8 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
       role: user.role,
       membershipId: membership?.id ?? null,
       endDate: membership?.endDate ?? directory?.endDate ?? "",
+      digitalCardId: membership?.digitalCard?.cardId ?? "",
+      digitalCardEnabled: Boolean(membership?.digitalCard?.enabled),
     };
   });
 
@@ -124,6 +136,8 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
       role: record.role,
       membershipId: null,
       endDate: record.endDate ?? "",
+      digitalCardId: "",
+      digitalCardEnabled: false,
     }));
 
   return [...accountRows, ...directoryRows].sort((a, b) =>
@@ -182,6 +196,10 @@ export async function setAdminMemberLifecycle(row: AdminMemberRow, status: Admin
   if (row.membershipId) {
     await updateDoc(doc(db, "memberships", row.membershipId), {
       status: status === "active" ? "active" : status === "pending" ? "pending" : "expired",
+      digitalCard: {
+        enabled: status === "active",
+        cardId: usableDigitalCardId(row.digitalCardId),
+      },
       updatedAt: serverTimestamp(),
     });
     return;
@@ -197,7 +215,7 @@ export async function setAdminMemberLifecycle(row: AdminMemberRow, status: Admin
     memberNumber: row.memberNumber || `FERMI-${row.uid.slice(0, 6).toUpperCase()}`,
     startDate: "2026-09-01",
     endDate: "2027-08-31",
-    digitalCard: { enabled: status === "active", cardId: `card-${row.uid}` },
+    digitalCard: { enabled: status === "active", cardId: newDigitalCardId() },
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -268,7 +286,7 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
       status: membershipStatus,
       digitalCard: {
         enabled: input.status === "active",
-        cardId: `card-${row.uid}`,
+        cardId: usableDigitalCardId(row.digitalCardId),
       },
       updatedAt: serverTimestamp(),
     });
@@ -285,7 +303,7 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
     memberNumber: input.memberNumber.trim(),
     startDate: "2026-09-01",
     endDate: input.endDate || "2027-08-31",
-    digitalCard: { enabled: input.status === "active", cardId: `card-${row.uid}` },
+    digitalCard: { enabled: input.status === "active", cardId: newDigitalCardId() },
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
