@@ -5606,9 +5606,9 @@ body.member-admin-modal-open{overflow:hidden}
 
 .agenda-hero-image-wrap {
   right: -16px;
-  top: 0;
-  width: 184px;
-  height: 138px;
+  top: -10px;
+  width: 221px;
+  height: 166px;
   transform: none;
   transform-origin: center right;
 }
@@ -5752,9 +5752,9 @@ body.member-admin-modal-open{overflow:hidden}
 
   .agenda-hero-image-wrap {
     right: -18px;
-    top: 1px;
-    width: 174px;
-    height: 132px;
+    top: -9px;
+    width: 209px;
+    height: 158px;
     transform: none;
   }
 
