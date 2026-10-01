@@ -45,6 +45,14 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           return;
         }
 
+        // Active board/admin accounts must remain able to operate the association
+        // even when their personal annual membership is not active.
+        if (profile.status === "active" && (profile.role === "admin" || profile.role === "board")) {
+          setAccess("member");
+          if (isPublic) router.replace("/");
+          return;
+        }
+
         const membershipAccess = await getMembershipAccess(user.uid);
         setAccess(membershipAccess === "active" ? "member" : membershipAccess === "pending" ? "membership-pending" : "archive");
         if (isPublic) router.replace("/");
