@@ -98,7 +98,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         setVerifyBusy(false);
       }
     };
-    return <AccessCard title="Check je HvA-mail" body="We hebben een verificatielink naar je HvA-mailadres gestuurd. Open die link en log daarna opnieuw in." actionLabel={verifyBusy ? "Versturen…" : "Verificatiemail opnieuw sturen"} onAction={() => void resend()} actionDisabled={verifyBusy} message={verifyMessage} previewBypass />;
+    return <AccessCard title="Check je HvA-mail" body="We hebben een verificatielink naar je HvA-mailadres gestuurd. Open die link en log daarna opnieuw in. Controleer ook je ongewenste e-mail of spammap." actionLabel={verifyBusy ? "Versturen…" : "Verificatiemail opnieuw sturen"} onAction={() => void resend()} actionDisabled={verifyBusy} message={verifyMessage} previewBypass />;
   }
 
   if (access === "suspended") {
