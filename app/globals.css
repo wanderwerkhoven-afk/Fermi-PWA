@@ -5291,3 +5291,53 @@ body.member-pass-modal-open {
 .member-pass-live-data{position:absolute;z-index:2;left:10%;right:10%;bottom:12%;display:grid;gap:3px;color:var(--fermi-white);text-shadow:0 1px 4px rgba(0,0,0,.34);pointer-events:none}
 .member-pass-live-data strong{font:800 clamp(18px,5vw,25px)/1.05 Georgia,"Times New Roman",serif}
 .member-pass-live-data span{font:700 clamp(9px,2.7vw,12px)/1.25 Inter,ui-sans-serif,sans-serif}
+
+
+/* Team Fermi — admin-only member administration */
+.member-admin-shell{padding-bottom:max(32px,env(safe-area-inset-bottom));background:linear-gradient(180deg,#072d43 0,#06283b 36%,#031d2c 100%)}
+.member-admin-header{position:relative;display:grid;grid-template-columns:42px minmax(0,1fr) 48px;gap:12px;align-items:start;padding:max(22px,env(safe-area-inset-top)) 18px 18px;border-bottom:1px solid rgba(132,184,212,.2)}
+.member-admin-back,.member-admin-header-icon{width:42px;height:42px;display:grid;place-items:center;border:1px solid rgba(244,234,220,.16);border-radius:50%;color:var(--fermi-white);text-decoration:none;background:rgba(3,29,44,.5)}
+.member-admin-header-icon{width:48px;height:48px;color:var(--fermi-orange);border-color:rgba(255,122,26,.24)}
+.member-admin-header small{color:var(--fermi-orange);font-size:9px;font-weight:900;letter-spacing:.13em}
+.member-admin-header h1{margin:4px 0 4px;font:800 34px/1 Georgia,"Times New Roman",serif}
+.member-admin-header p{margin:0;color:var(--fermi-muted);font-size:11px;line-height:1.4}
+.member-admin-content{display:grid;gap:13px;padding:14px}
+.member-admin-stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--fermi-line);border-radius:20px;overflow:hidden;background:rgba(3,29,44,.44)}
+.member-admin-stats div{min-width:0;padding:13px 8px;text-align:center}
+.member-admin-stats div+div{border-left:1px solid var(--fermi-line)}
+.member-admin-stats strong{display:block;color:var(--fermi-orange);font:800 24px/1 Georgia,serif}
+.member-admin-stats span{display:block;margin-top:5px;color:var(--fermi-muted);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+.member-admin-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.member-admin-actions button,.member-admin-actions label{min-height:44px;display:flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:13px;background:var(--fermi-orange);color:var(--fermi-navy-deep);font-size:11px;font-weight:900;cursor:pointer}
+.member-admin-actions label{background:var(--fermi-paper)}
+.member-admin-actions input{display:none}
+.member-admin-actions .is-busy{opacity:.62}
+.member-admin-form{display:grid;gap:10px;padding:13px;border:1px solid rgba(255,122,26,.26);border-radius:18px;background:rgba(3,29,44,.68)}
+.member-admin-form>div{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.member-admin-form label{display:grid;gap:5px;color:var(--fermi-muted);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.member-admin-form input,.member-admin-form select,.member-admin-search input{width:100%;min-width:0;border:1px solid rgba(132,184,212,.22);border-radius:11px;background:#082f45;color:var(--fermi-white);outline:none}
+.member-admin-form input,.member-admin-form select{height:40px;padding:0 10px;font-size:12px}
+.member-admin-form button{min-height:42px;display:flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:12px;background:var(--fermi-orange);color:var(--fermi-navy-deep);font-weight:900}
+.member-admin-notice{padding:10px 12px;border-radius:12px;background:rgba(255,122,26,.12);color:var(--fermi-paper);font-size:11px;line-height:1.4}
+.member-admin-search{height:44px;display:grid;grid-template-columns:24px 1fr;align-items:center;gap:5px;padding:0 10px;border:1px solid var(--fermi-line);border-radius:14px;background:rgba(3,29,44,.54);color:var(--fermi-muted)}
+.member-admin-search input{height:100%;padding:0;border:0;background:transparent;font-size:12px}
+.member-admin-list{display:grid;gap:8px}
+.member-admin-row{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;padding:11px;border:1px solid rgba(132,184,212,.19);border-radius:16px;background:rgba(5,45,66,.74)}
+.member-admin-avatar{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:var(--fermi-orange);color:var(--fermi-navy-deep);font:900 17px Georgia,serif}
+.member-admin-person{min-width:0;display:grid;align-content:center}
+.member-admin-person strong{font:800 15px/1.1 Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.member-admin-person span,.member-admin-person small{margin-top:3px;color:var(--fermi-muted);font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.member-admin-controls{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:3px}
+.member-admin-controls label{display:grid;gap:4px;color:var(--fermi-muted);font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.member-admin-select{position:relative}
+.member-admin-select select{width:100%;height:35px;appearance:none;padding:0 27px 0 9px;border:1px solid rgba(132,184,212,.2);border-radius:10px;background:#031d2c;color:var(--fermi-white);font-size:10px;font-weight:800}
+.member-admin-select svg{position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--fermi-orange)}
+.member-admin-empty{padding:26px;text-align:center;color:var(--fermi-muted);font-size:12px}
+.member-admin-import-help{margin:2px 2px 8px;color:var(--fermi-muted);font-size:9.5px;line-height:1.45}
+.member-admin-import-help strong{color:var(--fermi-paper)}
+.member-admin-gate{min-height:100dvh;display:grid;place-content:center;justify-items:center;gap:10px;padding:24px;background:var(--fermi-navy);color:var(--fermi-white);text-align:center}
+.member-admin-gate svg{color:var(--fermi-orange)}
+.member-admin-gate h1{margin:0;font:800 31px Georgia,serif}
+.member-admin-gate p{max-width:330px;margin:0;color:var(--fermi-muted);font-size:13px;line-height:1.5}
+.member-admin-gate a{margin-top:8px;padding:11px 15px;border-radius:11px;background:var(--fermi-orange);color:var(--fermi-navy-deep);font-weight:900;text-decoration:none}
+@media(min-width:700px){.member-admin-shell{width:min(100%,760px)}.member-admin-row{grid-template-columns:42px minmax(0,1fr) 260px;align-items:center}.member-admin-controls{grid-column:auto;padding-top:0}}

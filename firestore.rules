@@ -48,6 +48,10 @@ service cloud.firestore {
       allow create, update, delete: if hasRole(["board", "admin"]);
     }
 
+    match /memberDirectory/{memberId} {
+      allow read, create, update, delete: if hasRole(["admin"]);
+    }
+
     match /events/{eventId} {
       allow read: if signedIn();
       allow create, update, delete: if hasRole(["board", "admin"]);

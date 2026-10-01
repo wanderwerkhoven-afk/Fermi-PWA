@@ -101,6 +101,12 @@
       "route": "/login/",
       "status": "implemented",
       "reference": "Approved Fermi login mockup: navy editorial collage, cream auth card, email/password login, password reset and Google/HvA sign-in."
+    },
+    {
+      "id": "member-admin",
+      "route": "/profiel/leden-admin/",
+      "status": "implemented",
+      "reference": "Admin-only member administration with searchable member roster, lifecycle status/role controls, single-member entry and CSV import."
     }
   ],
   "design_system": {
@@ -192,10 +198,12 @@
     "New authenticated users bootstrap as role member with status pending; board/admin activation is separate.",
     "Backend domain models live in lib/models/backend.ts and Firebase access is isolated in lib/services.",
     "Firestore collections planned: users, memberships, events, registrations, committees, announcements, notifications and appConfig.",
-    "Login route /login/ uses Firebase Email/Password and Google authentication while preserving static GitHub Pages compatibility."
+    "Login route /login/ uses Firebase Email/Password and Google authentication while preserving static GitHub Pages compatibility.",
+    "Profile shows Leden admin only to active users with role admin.",
+    "Member administration supports lifecycle states active, pending/in overgang, suspended and archived; linked accounts update users/memberships while imported members live in memberDirectory.",
+    "Bulk member import uses CSV with comma or semicolon separators and common Dutch/English column names."
   ],
   "open_decisions": [
-    "Official production member administration integration.",
     "Final custom image asset set."
   ]
 }
