@@ -23,16 +23,16 @@ import { listActivities } from "@/lib/services/activities";
 const filters = ["Alles", "Borrel", "Lezingen", "Reizen", "Commissies"] as const;
 
 const agendaBackgroundPresets: Record<AgendaBackgroundPreset, string> = {
-  boottocht: "/Fermi-PWA/images/agenda/activity-presets/boottocht.png",
-  bowlen: "/Fermi-PWA/images/agenda/activity-presets/bowlen.png",
-  karten: "/Fermi-PWA/images/agenda/activity-presets/karten.png",
-  kerst: "/Fermi-PWA/images/agenda/activity-presets/kerst.png",
-  lasergamen: "/Fermi-PWA/images/agenda/activity-presets/lasergamen.png",
-  nieuwjaar: "/Fermi-PWA/images/agenda/activity-presets/nieuwjaar.png",
-  schilderen: "/Fermi-PWA/images/agenda/activity-presets/schilderen.png",
-  pasen: "/Fermi-PWA/images/agenda/activity-presets/pasen.png",
-  picknick: "/Fermi-PWA/images/agenda/activity-presets/picknick.png",
-  poolen: "/Fermi-PWA/images/agenda/activity-presets/poolen.png",
+  boottocht: "/Fermi-PWA/images/agenda/activities/boottocht.png",
+  bowlen: "/Fermi-PWA/images/agenda/activities/bowlen.png",
+  karten: "/Fermi-PWA/images/agenda/activities/karten.png",
+  kerst: "/Fermi-PWA/images/agenda/activities/kerst.png",
+  lasergamen: "/Fermi-PWA/images/agenda/activities/lasergamen.png",
+  nieuwjaar: "/Fermi-PWA/images/agenda/activities/nieuwjaar.png",
+  schilderen: "/Fermi-PWA/images/agenda/activities/schilderen.png",
+  pasen: "/Fermi-PWA/images/agenda/activities/pasen.png",
+  picknick: "/Fermi-PWA/images/agenda/activities/picknick.png",
+  poolen: "/Fermi-PWA/images/agenda/activities/poolen.png",
 };
 
 function resolveAgendaBackgroundPreset(event: AgendaEvent): AgendaBackgroundPreset | null {
@@ -249,7 +249,11 @@ export default function AgendaPage() {
         {selectedEvents.map((event) => {
           const isNextUpcoming = event.slug === nextUpcomingSlug;
           const backgroundPreset = resolveAgendaBackgroundPreset(event);
-          const backgroundImage = backgroundPreset ? agendaBackgroundPresets[backgroundPreset] : null;
+          const backgroundImage = event.imagePath
+            ? `/Fermi-PWA${event.imagePath}`
+            : backgroundPreset
+              ? agendaBackgroundPresets[backgroundPreset]
+              : null;
 
           return (
           <Link
