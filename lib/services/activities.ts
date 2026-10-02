@@ -27,7 +27,13 @@ function asActivity(id: string, data: Record<string, unknown>): ActivityData {
 export async function listActivities(): Promise<ActivityData[]> {
   const snapshot = await getDocs(collection(db, "activities"));
   if (snapshot.empty) return agendaEvents;
-  return snapshot.docs.map((item) => asActivity(item.id, item.data()));
+
+  const remoteActivities = snapshot.docs.map((item) => asActivity(item.id, item.data()));
+  const remoteBySlug = new Map(remoteActivities.map((activity) => [activity.slug, activity]));
+
+  return agendaEvents.map((event) => remoteBySlug.get(event.slug) ?? event).concat(
+    remoteActivities.filter((activity) => !agendaEvents.some((event) => event.slug === activity.slug)),
+  );
 }
 
 export async function getActivity(slug: string): Promise<ActivityData | null> {
