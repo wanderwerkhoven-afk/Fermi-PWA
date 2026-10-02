@@ -27,6 +27,7 @@ import {
   AdminMemberRow,
   listAdminMembers,
   saveAdminMemberDetails,
+  syncCommunityMembers,
   upsertDirectoryMember,
   upsertDirectoryMembers,
 } from "../../../lib/services/memberAdmin";
@@ -152,7 +153,9 @@ export default function LedenAdminPage() {
   });
 
   async function refresh() {
-    setMembers(await listAdminMembers());
+    const rows = await listAdminMembers();
+    setMembers(rows);
+    await syncCommunityMembers(rows);
   }
 
   useEffect(() => {
