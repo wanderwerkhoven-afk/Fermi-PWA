@@ -22,6 +22,7 @@ export type AgendaEvent = {
   location: string;
   address: string;
   art: "beer" | "course" | "quantum" | "legal" | "meeting";
+  imagePath?: string;
   backgroundPreset?: AgendaBackgroundPreset;
   featured?: boolean;
   organizer: string;
