@@ -5865,3 +5865,37 @@ body.member-admin-modal-open{overflow:hidden}
     max-width: 66%;
   }
 }
+
+
+/* Community — live member directory */
+.community-member-row-live {
+  grid-template-columns: 68px minmax(0,1fr) auto;
+  cursor: default;
+}
+
+.community-member-avatar {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  border: 3px solid rgba(255,255,255,.7);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255,255,255,.18), transparent 30%),
+    var(--fermi-navy-soft);
+  color: var(--fermi-paper);
+  font: 800 20px/1 Georgia, "Times New Roman", serif;
+  letter-spacing: -.03em;
+}
+
+@media (max-width: 420px) {
+  .community-member-row-live {
+    grid-template-columns: 61px minmax(0,1fr) auto;
+  }
+
+  .community-member-avatar {
+    width: 57px;
+    height: 57px;
+    font-size: 18px;
+  }
+}
