@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-10-01",
+  "last_updated": "2026-10-02",
   "project": {
     "name": "S.V. Fermi PWA",
     "purpose": "Afgeschermde ledenapp voor leden, commissies en bestuur van S.V. Fermi.",
@@ -175,8 +175,9 @@
     "Fermi primary tab is implemented at /fermi/.",
     "Fermi page sections are Bestuur, Commissies and Documenten using the approved dark editorial collage visual language.",
     "Community primary tab is implemented at /community/.",
-    "Community member search and filters are interactive client-side in the current prototype.",
-    "Community member data is stored centrally in data/community-members.ts.",
+    "Community member search and filters are interactive client-side.",
+    "Community member data is loaded from a privacy-safe Firestore communityMembers projection; private fields such as email, phone number and city are not exposed to the Community screen.",
+    "Leden admin synchronizes active member roster data into communityMembers so the Community count and member list stay current.",
     "Profile primary tab is implemented at /profiel/.",
     "Digital member card currently uses prototype member data and a visual QR placeholder.",
     "Profile navigation is linked from all implemented primary screens and event detail pages.",
