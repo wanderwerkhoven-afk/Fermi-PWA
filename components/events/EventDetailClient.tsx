@@ -116,7 +116,12 @@ export default function EventDetailClient({ initialEvent }: { initialEvent: Agen
         <span className="event-detail-top-spacer" />
       </header>
 
-      <section className={`event-detail-hero agenda-photo-${event.art}`}>
+      <section
+        className={`event-detail-hero agenda-photo-${event.art}${event.detailImagePath || event.imagePath ? " event-detail-hero-custom-image" : ""}`}
+        style={event.detailImagePath || event.imagePath
+          ? { backgroundImage: `url("/Fermi-PWA${event.detailImagePath || event.imagePath}")` }
+          : undefined}
+      >
         <div className="event-detail-hero-overlay" />
         <div className="event-detail-date"><strong>{event.day}</strong><span>{event.month}</span></div>
         <div className="event-detail-hero-copy">
