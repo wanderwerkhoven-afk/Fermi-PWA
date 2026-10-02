@@ -52,6 +52,13 @@ service cloud.firestore {
       allow read, create, update, delete: if hasRole(["admin"]);
     }
 
+    // Privacy-safe member projection used by the members-only Community screen.
+    // It intentionally contains no email, phone number, city or membership identifiers.
+    match /communityMembers/{memberId} {
+      allow read: if signedIn();
+      allow create, update, delete: if hasRole(["admin"]);
+    }
+
     match /events/{eventId} {
       allow read: if signedIn();
       allow create, update, delete: if hasRole(["board", "admin"]);
