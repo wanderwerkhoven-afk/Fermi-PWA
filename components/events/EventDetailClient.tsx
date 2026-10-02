@@ -121,7 +121,11 @@ export default function EventDetailClient({ initialEvent }: { initialEvent: Agen
         <div className="event-detail-date"><strong>{event.day}</strong><span>{event.month}</span></div>
         <div className="event-detail-hero-copy">
           <span className="agenda-type">{event.type}</span>
-          <h1>{event.title}</h1>
+          <h1
+            className={`event-detail-title${event.title.length > 28 ? " is-very-long" : event.title.length > 17 ? " is-long" : ""}`}
+          >
+            {event.title}
+          </h1>
           <p>{event.organizer}</p>
         </div>
       </section>
