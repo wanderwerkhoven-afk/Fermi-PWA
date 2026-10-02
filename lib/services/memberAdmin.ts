@@ -62,6 +62,41 @@ function newDigitalCardId() {
   return crypto.randomUUID();
 }
 
+function communityMemberId(row: Pick<AdminMemberRow, "uid" | "id">) {
+  return row.uid || row.id;
+}
+
+function currentStudyYear(startYear: number | null) {
+  if (!startYear) return null;
+  const year = new Date().getFullYear();
+  const month = new Date().getMonth();
+  const academicStartYear = month >= 7 ? year : year - 1;
+  const studyYear = academicStartYear - startYear + 1;
+  return studyYear > 0 ? studyYear : null;
+}
+
+async function writeCommunityMember(row: AdminMemberRow) {
+  await setDoc(
+    doc(db, "communityMembers", communityMemberId(row)),
+    {
+      firstName: row.firstName,
+      lastName: row.lastName,
+      role: row.role,
+      startYear: row.startYear,
+      study: null,
+      studyYear: currentStudyYear(row.startYear),
+      photoUrl: null,
+      active: row.status === "active",
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true },
+  );
+}
+
+export async function syncCommunityMembers(rows: AdminMemberRow[]) {
+  await Promise.all(rows.map((row) => writeCommunityMember(row)));
+}
+
 function usableDigitalCardId(value: string | null | undefined) {
   return value && !value.startsWith("card-") ? value : newDigitalCardId();
 }
@@ -160,7 +195,8 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
 export async function upsertDirectoryMember(input: Omit<DirectoryMember, "id" | "createdAt" | "updatedAt">) {
   const email = normalizeEmail(input.email);
   if (!email) throw new Error("E-mailadres ontbreekt.");
-  const ref = doc(db, "memberDirectory", directoryId(email));
+  const id = directoryId(email);
+  const ref = doc(db, "memberDirectory", id);
   await setDoc(
     ref,
     {
@@ -171,6 +207,26 @@ export async function upsertDirectoryMember(input: Omit<DirectoryMember, "id" | 
     },
     { merge: true },
   );
+
+  await writeCommunityMember({
+    id,
+    source: "directory",
+    uid: input.linkedUserId,
+    firstName: input.firstName,
+    lastName: input.lastName,
+    email,
+    memberNumber: input.memberNumber,
+    academicYear: input.academicYear,
+    phone: input.phone,
+    city: input.city,
+    startYear: input.startYear,
+    status: input.status,
+    role: input.role,
+    membershipId: null,
+    endDate: input.endDate ?? "",
+    digitalCardId: "",
+    digitalCardEnabled: false,
+  });
 }
 
 export async function upsertDirectoryMembers(
@@ -278,6 +334,21 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
       linkedUserId: row.uid,
       updatedAt: serverTimestamp(),
     }, { merge: true });
+
+    await writeCommunityMember({
+      ...row,
+      firstName: input.firstName.trim(),
+      lastName: input.lastName.trim(),
+      email: normalized,
+      memberNumber: input.memberNumber.trim(),
+      academicYear: input.academicYear.trim(),
+      phone: input.phone.trim(),
+      city: input.city.trim(),
+      startYear: input.startYear,
+      endDate: input.endDate,
+      status: input.status,
+      role: input.role,
+    });
     return;
   }
 
@@ -292,6 +363,21 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
     role: input.role,
     status: input.status === "suspended" ? "suspended" : "active",
     updatedAt: serverTimestamp(),
+  });
+
+  await writeCommunityMember({
+    ...row,
+    firstName: input.firstName.trim(),
+    lastName: input.lastName.trim(),
+    email: normalized,
+    memberNumber: input.memberNumber.trim(),
+    academicYear: input.academicYear.trim(),
+    phone: input.phone.trim(),
+    city: input.city.trim(),
+    startYear: input.startYear,
+    endDate: input.endDate,
+    status: input.status,
+    role: input.role,
   });
 
   const membershipStatus =
