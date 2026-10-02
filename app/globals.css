@@ -5806,24 +5806,17 @@ body.member-admin-modal-open{overflow:hidden}
 }
 
 
-/* Agenda activity background presets */
+/* Agenda activity background images */
 .agenda-card-with-preset {
   grid-template-columns: 64px minmax(0, 1fr);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  color: var(--fermi-white);
+  color: var(--fermi-navy-deep);
 }
 
 .agenda-card-with-preset::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(3, 29, 44, .88) 0%, rgba(3, 29, 44, .70) 36%, rgba(3, 29, 44, .20) 68%, rgba(3, 29, 44, .04) 100%),
-    linear-gradient(0deg, rgba(3, 29, 44, .16), transparent 55%);
+  content: none;
 }
 
 .agenda-card-with-preset .agenda-date,
@@ -5839,8 +5832,12 @@ body.member-admin-modal-open{overflow:hidden}
 
 .agenda-card-with-preset h2,
 .agenda-card-with-preset p {
-  color: var(--fermi-white);
-  text-shadow: 0 2px 8px rgba(0,0,0,.36);
+  color: var(--fermi-navy-deep);
+  text-shadow: none;
+}
+
+.agenda-card-with-preset .agenda-card-chevron {
+  color: var(--fermi-navy-deep);
 }
 
 .agenda-card-with-preset.featured {
