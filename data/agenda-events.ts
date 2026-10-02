@@ -1,3 +1,15 @@
+export type AgendaBackgroundPreset =
+  | "boottocht"
+  | "bowlen"
+  | "karten"
+  | "kerst"
+  | "lasergamen"
+  | "nieuwjaar"
+  | "schilderen"
+  | "pasen"
+  | "picknick"
+  | "poolen";
+
 export type AgendaEvent = {
   slug: string;
   day: string;
@@ -10,6 +22,7 @@ export type AgendaEvent = {
   location: string;
   address: string;
   art: "beer" | "course" | "quantum" | "legal" | "meeting";
+  backgroundPreset?: AgendaBackgroundPreset;
   featured?: boolean;
   organizer: string;
   price: string;
