@@ -25,6 +25,9 @@ import { agendaActivityImages } from "../../../data/agenda-images.generated";
 import type { AgendaEvent } from "../../../data/agenda-events";
 
 const monthShort = ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AUG","SEP","OKT","NOV","DEC"];
+const activityTypes = ["ACTIVITEIT","BORREL","CURSUS","LEZING","COMMISSIE","STUDIEREIS","VERGADERING"];
+const organizers = ["S.V. Fermi","AcCom","EduCom","Bestuur S.V. Fermi"];
+const capacityPresets = [20, 30, 40, 50, 60, 80];
 
 type FormState = {
   slug: string;
@@ -440,22 +443,22 @@ export default function ActiviteitenAdminPage() {
                     placeholder="Bijv. Bowlen met Fermi"
                   />
                 </label>
-                <div className="activity-admin-form-grid two">
-                  <label>Type
-                    <select value={form.type} onChange={(event) => updateForm("type", event.target.value)}>
-                      <option>ACTIVITEIT</option>
-                      <option>BORREL</option>
-                      <option>CURSUS</option>
-                      <option>LEZING</option>
-                      <option>COMMISSIE</option>
-                      <option>STUDIEREIS</option>
-                      <option>VERGADERING</option>
-                    </select>
-                  </label>
-                  <label>Slug
-                    <input value={form.slug} onChange={(event) => updateForm("slug", slugify(event.target.value))} disabled={Boolean(selected)} />
-                  </label>
+                <div>
+                  <span className="activity-admin-field-label">Type</span>
+                  <div className="activity-admin-choice-grid" role="group" aria-label="Type activiteit">
+                    {activityTypes.map((type) => (
+                      <button
+                        type="button"
+                        key={type}
+                        className={form.type === type ? "active" : ""}
+                        onClick={() => updateForm("type", type)}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+                <small className="activity-admin-auto-value">Slug automatisch: {form.slug || slugify(form.title) || "—"}</small>
               </section>
 
               <section>
@@ -488,17 +491,59 @@ export default function ActiviteitenAdminPage() {
 
               <section>
                 <h3>Organisatie & capaciteit</h3>
-                <div className="activity-admin-form-grid two">
-                  <label>Organisator
-                    <input value={form.organizer} onChange={(event) => updateForm("organizer", event.target.value)} />
-                  </label>
-                  <label>Capaciteit
-                    <input type="number" min="0" value={form.capacity} onChange={(event) => updateForm("capacity", event.target.value)} />
-                  </label>
+
+                <div>
+                  <span className="activity-admin-field-label">Organisator</span>
+                  <div className="activity-admin-choice-grid compact" role="group" aria-label="Organisator">
+                    {organizers.map((organizer) => (
+                      <button
+                        type="button"
+                        key={organizer}
+                        className={form.organizer === organizer ? "active" : ""}
+                        onClick={() => updateForm("organizer", organizer)}
+                      >
+                        {organizer}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <label>Prijs
-                  <input value={form.price} onChange={(event) => updateForm("price", event.target.value)} placeholder="Bijv. € 7,50" />
-                </label>
+
+                <div>
+                  <span className="activity-admin-field-label">Capaciteit</span>
+                  <div className="activity-admin-capacity-row">
+                    <button type="button" onClick={() => updateForm("capacity", String(Math.max(0, Number(form.capacity || 0) - 1)))} aria-label="Capaciteit verlagen">−</button>
+                    <strong>{form.capacity || "0"}</strong>
+                    <button type="button" onClick={() => updateForm("capacity", String(Number(form.capacity || 0) + 1))} aria-label="Capaciteit verhogen">+</button>
+                  </div>
+                  <div className="activity-admin-choice-grid capacity" role="group" aria-label="Capaciteit kiezen">
+                    <button type="button" className={form.capacity === "0" ? "active" : ""} onClick={() => updateForm("capacity", "0")}>Onbeperkt</button>
+                    {capacityPresets.map((amount) => (
+                      <button
+                        type="button"
+                        key={amount}
+                        className={form.capacity === String(amount) ? "active" : ""}
+                        onClick={() => updateForm("capacity", String(amount))}
+                      >
+                        {amount}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <span className="activity-admin-field-label">Prijs</span>
+                  <div className="activity-admin-segmented" role="group" aria-label="Prijsinstelling">
+                    <button type="button" className={form.price.toLowerCase().includes("gratis") ? "active" : ""} onClick={() => updateForm("price", "Gratis")}>Gratis</button>
+                    <button type="button" className={!form.price.toLowerCase().includes("gratis") ? "active" : ""} onClick={() => updateForm("price", form.price.toLowerCase().includes("gratis") ? "€ 5,00" : form.price)}>Betaald</button>
+                  </div>
+                  {!form.price.toLowerCase().includes("gratis") && (
+                    <div className="activity-admin-price-options">
+                      {["€ 2,50","€ 5,00","€ 7,50","€ 10,00","€ 15,00"].map((price) => (
+                        <button type="button" key={price} className={form.price === price ? "active" : ""} onClick={() => updateForm("price", price)}>{price}</button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </section>
 
               <section>
@@ -542,13 +587,16 @@ export default function ActiviteitenAdminPage() {
 
                 {form.imagePath && <small className="activity-admin-image-path">{form.imagePath}</small>}
 
-                <label className="activity-admin-switch-row">
-                  <input type="checkbox" checked={form.showInAgenda} onChange={(event) => updateForm("showInAgenda", event.target.checked)} />
-                  <span>
+                <div className="activity-admin-visibility-card">
+                  <div>
                     <strong>Zichtbaar in Agenda</strong>
                     <small>Zet uit om de activiteit als concept/verborgen te bewaren.</small>
-                  </span>
-                </label>
+                  </div>
+                  <div className="activity-admin-segmented compact" role="group" aria-label="Zichtbaarheid agenda">
+                    <button type="button" className={form.showInAgenda ? "active" : ""} onClick={() => updateForm("showInAgenda", true)}>Aan</button>
+                    <button type="button" className={!form.showInAgenda ? "active" : ""} onClick={() => updateForm("showInAgenda", false)}>Uit</button>
+                  </div>
+                </div>
               </section>
 
               <section>
