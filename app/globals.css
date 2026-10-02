@@ -5837,7 +5837,7 @@ body.member-admin-modal-open{overflow:hidden}
 }
 
 .agenda-card-with-preset .agenda-card-chevron {
-  color: var(--fermi-navy-deep);
+  display: none;
 }
 
 .agenda-card-with-preset.featured {
