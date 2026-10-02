@@ -45,6 +45,7 @@ type FormState = {
   description: string;
   practicalText: string;
   imagePath: string;
+  detailImagePath: string;
   showInAgenda: boolean;
 };
 
@@ -64,6 +65,7 @@ const emptyForm: FormState = {
   description: "",
   practicalText: "",
   imagePath: "",
+  detailImagePath: "",
   showInAgenda: true,
 };
 
@@ -106,6 +108,7 @@ function formFromActivity(event: ActivityData): FormState {
     description: event.description,
     practicalText: (event.practical || []).join("\n"),
     imagePath: event.imagePath || (event.backgroundPreset ? `/images/agenda/activities/${event.backgroundPreset}.png` : ""),
+    detailImagePath: event.detailImagePath || "",
     showInAgenda: event.showInAgenda !== false,
   };
 }
@@ -136,6 +139,7 @@ function activityFromForm(form: FormState, existing?: ActivityData): ActivityDat
     address: form.address.trim(),
     art: existing?.art || "meeting",
     imagePath: form.imagePath || undefined,
+    detailImagePath: form.detailImagePath || undefined,
     organizer: form.organizer.trim() || "S.V. Fermi",
     price: form.price.trim() || "Gratis",
     capacity: Math.max(0, Number(form.capacity) || 0),
@@ -549,10 +553,10 @@ export default function ActiviteitenAdminPage() {
               <section>
                 <h3>Agenda-afbeelding</h3>
                 <p className="activity-admin-section-help">
-                  Kies een afbeelding uit <code>public/images/agenda/activities/</code>. Alleen het pad wordt bij de activiteit opgeslagen.
+                  Deze afbeelding wordt gebruikt op de agenda-overzichtspagina.
                 </p>
 
-                <div className="activity-admin-image-picker" role="listbox" aria-label="Kies activiteitafbeelding">
+                <div className="activity-admin-image-picker" role="listbox" aria-label="Kies agenda-afbeelding">
                   <button
                     type="button"
                     className={`activity-admin-image-option activity-admin-image-none ${form.imagePath ? "" : "active"}`}
@@ -565,7 +569,7 @@ export default function ActiviteitenAdminPage() {
                   {agendaActivityImages.map((image) => (
                     <button
                       type="button"
-                      key={image.path}
+                      key={`agenda-${image.path}`}
                       className={`activity-admin-image-option ${form.imagePath === image.path ? "active" : ""}`}
                       onClick={() => updateForm("imagePath", image.path)}
                       aria-selected={form.imagePath === image.path}
@@ -576,16 +580,49 @@ export default function ActiviteitenAdminPage() {
                   ))}
                 </div>
 
-                {form.imagePath && (
+                {form.imagePath && <small className="activity-admin-image-path">{form.imagePath}</small>}
+              </section>
+
+              <section>
+                <h3>Detailpagina-afbeelding</h3>
+                <p className="activity-admin-section-help">
+                  Kies apart welke afbeelding als grote hero op de activiteit-detailpagina wordt gebruikt.
+                </p>
+
+                <div className="activity-admin-image-picker" role="listbox" aria-label="Kies detailpagina-afbeelding">
+                  <button
+                    type="button"
+                    className={`activity-admin-image-option activity-admin-image-none ${form.detailImagePath ? "" : "active"}`}
+                    onClick={() => updateForm("detailImagePath", "")}
+                    aria-selected={!form.detailImagePath}
+                  >
+                    <span>Gebruik agenda-afbeelding</span>
+                  </button>
+
+                  {agendaActivityImages.map((image) => (
+                    <button
+                      type="button"
+                      key={`detail-${image.path}`}
+                      className={`activity-admin-image-option ${form.detailImagePath === image.path ? "active" : ""}`}
+                      onClick={() => updateForm("detailImagePath", image.path)}
+                      aria-selected={form.detailImagePath === image.path}
+                    >
+                      <img src={`/Fermi-PWA${image.path}`} alt="" />
+                      <span>{image.label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {(form.detailImagePath || form.imagePath) && (
                   <div
-                    className="activity-admin-preset-preview"
-                    style={{ backgroundImage: `url("/Fermi-PWA${form.imagePath}")` }}
+                    className="activity-admin-preset-preview activity-admin-detail-preview"
+                    style={{ backgroundImage: `url("/Fermi-PWA${form.detailImagePath || form.imagePath}")` }}
                   >
                     <span>{form.title || "Voorbeeld activiteit"}</span>
                   </div>
                 )}
 
-                {form.imagePath && <small className="activity-admin-image-path">{form.imagePath}</small>}
+                {form.detailImagePath && <small className="activity-admin-image-path">{form.detailImagePath}</small>}
 
                 <div className="activity-admin-visibility-card">
                   <div>
