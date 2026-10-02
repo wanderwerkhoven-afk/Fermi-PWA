@@ -159,7 +159,7 @@
     "preferred_structure": {
       "brand": "public/brand/",
       "home": "public/images/home/",
-      "agenda": "public/images/agenda/",
+      "agenda": "public/images/agenda/ (activity card images in public/images/agenda/activities/)",
       "fermi": "public/images/fermi/",
       "community": "public/images/community/",
       "profile": "public/images/profile/"
@@ -210,7 +210,9 @@
     "Member administration supports lifecycle states active, pending/in overgang, suspended and archived; linked accounts update users/memberships while imported members live in memberDirectory.",
     "Bulk member import uses CSV with comma or semicolon separators and common Dutch/English column names.",
     "Leden admin beheert naast naam/e-mail ook telefoonnummer, woonplaats en startjaar; deze velden worden meegenomen in handmatige invoer, detailbewerking en CSV-import.",
-    "Activiteiten admin is een CRM op /profiel/activiteiten-admin/ waarmee admins activiteiten kunnen toevoegen, bewerken, zoeken, filteren, publiceren/verbergen en een Agenda-achtergrondpreset kunnen kiezen.",
+    "Activiteiten admin is een CRM op /profiel/activiteiten-admin/ waarmee admins activiteiten kunnen toevoegen, bewerken, zoeken, filteren en publiceren/verbergen.",
+    "Activiteitafbeeldingen staan centraal in public/images/agenda/activities/. Tijdens dev/build genereert scripts/generate-agenda-image-manifest.mjs automatisch de selector-data in data/agenda-images.generated.ts.",
+    "De Activities CRM bewaart alleen imagePath op het activity-document; de Agenda bouwt daar onder /Fermi-PWA de uiteindelijke asset-URL van. Dit houdt repository-assets en Firestore-data gescheiden.",
     "Nieuwe activiteiten worden als ActivityData naar Firestore collection activities geschreven en verschijnen via dezelfde service in de Agenda."
   ],
   "open_decisions": [
