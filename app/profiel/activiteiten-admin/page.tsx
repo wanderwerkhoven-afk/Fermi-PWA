@@ -21,23 +21,10 @@ import {
 import { auth } from "../../../lib/firebase";
 import { getUserProfile } from "../../../lib/services/users";
 import { listActivities, saveActivity, type ActivityData } from "../../../lib/services/activities";
-import type { AgendaBackgroundPreset, AgendaEvent } from "../../../data/agenda-events";
+import { agendaActivityImages } from "../../../data/agenda-images.generated";
+import type { AgendaEvent } from "../../../data/agenda-events";
 
 const monthShort = ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AUG","SEP","OKT","NOV","DEC"];
-
-const presetOptions: Array<{ value: AgendaBackgroundPreset | ""; label: string }> = [
-  { value: "", label: "Geen preset" },
-  { value: "boottocht", label: "Boottocht" },
-  { value: "bowlen", label: "Bowlen" },
-  { value: "karten", label: "Karten" },
-  { value: "kerst", label: "Kerst" },
-  { value: "lasergamen", label: "Lasergamen" },
-  { value: "nieuwjaar", label: "Nieuwjaar" },
-  { value: "schilderen", label: "Schilderen" },
-  { value: "pasen", label: "Pasen" },
-  { value: "picknick", label: "Picknick" },
-  { value: "poolen", label: "Poolen" },
-];
 
 type FormState = {
   slug: string;
@@ -54,7 +41,7 @@ type FormState = {
   registrationDeadline: string;
   description: string;
   practicalText: string;
-  backgroundPreset: AgendaBackgroundPreset | "";
+  imagePath: string;
   showInAgenda: boolean;
 };
 
@@ -73,7 +60,7 @@ const emptyForm: FormState = {
   registrationDeadline: "",
   description: "",
   practicalText: "",
-  backgroundPreset: "",
+  imagePath: "",
   showInAgenda: true,
 };
 
@@ -115,7 +102,7 @@ function formFromActivity(event: ActivityData): FormState {
     registrationDeadline: event.registrationDeadline,
     description: event.description,
     practicalText: (event.practical || []).join("\n"),
-    backgroundPreset: event.backgroundPreset || "",
+    imagePath: event.imagePath || (event.backgroundPreset ? `/images/agenda/activities/${event.backgroundPreset}.png` : ""),
     showInAgenda: event.showInAgenda !== false,
   };
 }
@@ -145,7 +132,7 @@ function activityFromForm(form: FormState, existing?: ActivityData): ActivityDat
     location: form.location.trim() || "Locatie volgt",
     address: form.address.trim(),
     art: existing?.art || "meeting",
-    backgroundPreset: form.backgroundPreset || undefined,
+    imagePath: form.imagePath || undefined,
     organizer: form.organizer.trim() || "S.V. Fermi",
     price: form.price.trim() || "Gratis",
     capacity: Math.max(0, Number(form.capacity) || 0),
@@ -366,13 +353,15 @@ export default function ActiviteitenAdminPage() {
 
         <section className="activity-admin-list">
           {visibleActivities.map((activity) => {
-            const preset = activity.backgroundPreset;
+            const imagePath = activity.imagePath || (activity.backgroundPreset
+              ? `/images/agenda/activities/${activity.backgroundPreset}.png`
+              : "");
             return (
               <article className="activity-admin-row" key={activity.slug}>
                 <div
                   className="activity-admin-thumb"
-                  style={preset ? {
-                    backgroundImage: `linear-gradient(rgba(3,29,44,.16),rgba(3,29,44,.50)),url("/Fermi-PWA/images/agenda/activity-presets/${preset}.png")`,
+                  style={imagePath ? {
+                    backgroundImage: `linear-gradient(rgba(3,29,44,.16),rgba(3,29,44,.50)),url("/Fermi-PWA${imagePath}")`,
                   } : undefined}
                 >
                   <strong>{activity.day}</strong>
@@ -513,25 +502,46 @@ export default function ActiviteitenAdminPage() {
               </section>
 
               <section>
-                <h3>Agendaweergave</h3>
-                <label>Achtergrondpreset
-                  <select
-                    value={form.backgroundPreset}
-                    onChange={(event) => updateForm("backgroundPreset", event.target.value as AgendaBackgroundPreset | "")}
+                <h3>Agenda-afbeelding</h3>
+                <p className="activity-admin-section-help">
+                  Kies een afbeelding uit <code>public/images/agenda/activities/</code>. Alleen het pad wordt bij de activiteit opgeslagen.
+                </p>
+
+                <div className="activity-admin-image-picker" role="listbox" aria-label="Kies activiteitafbeelding">
+                  <button
+                    type="button"
+                    className={`activity-admin-image-option activity-admin-image-none ${form.imagePath ? "" : "active"}`}
+                    onClick={() => updateForm("imagePath", "")}
+                    aria-selected={!form.imagePath}
                   >
-                    {presetOptions.map((option) => (
-                      <option key={option.value || "none"} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                </label>
-                {form.backgroundPreset && (
+                    <span>Geen afbeelding</span>
+                  </button>
+
+                  {agendaActivityImages.map((image) => (
+                    <button
+                      type="button"
+                      key={image.path}
+                      className={`activity-admin-image-option ${form.imagePath === image.path ? "active" : ""}`}
+                      onClick={() => updateForm("imagePath", image.path)}
+                      aria-selected={form.imagePath === image.path}
+                    >
+                      <img src={`/Fermi-PWA${image.path}`} alt="" />
+                      <span>{image.label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {form.imagePath && (
                   <div
                     className="activity-admin-preset-preview"
-                    style={{ backgroundImage: `url("/Fermi-PWA/images/agenda/activity-presets/${form.backgroundPreset}.png")` }}
+                    style={{ backgroundImage: `url("/Fermi-PWA${form.imagePath}")` }}
                   >
                     <span>{form.title || "Voorbeeld activiteit"}</span>
                   </div>
                 )}
+
+                {form.imagePath && <small className="activity-admin-image-path">{form.imagePath}</small>}
+
                 <label className="activity-admin-switch-row">
                   <input type="checkbox" checked={form.showInAgenda} onChange={(event) => updateForm("showInAgenda", event.target.checked)} />
                   <span>
