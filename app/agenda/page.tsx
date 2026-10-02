@@ -13,10 +13,48 @@ import {
   UserRound,
   UsersRound,
 } from "lucide-react";
-import { agendaEvents, type AgendaEvent } from "@/data/agenda-events";
+import {
+  agendaEvents,
+  type AgendaBackgroundPreset,
+  type AgendaEvent,
+} from "@/data/agenda-events";
 import { listActivities } from "@/lib/services/activities";
 
 const filters = ["Alles", "Borrel", "Lezingen", "Reizen", "Commissies"] as const;
+
+const agendaBackgroundPresets: Record<AgendaBackgroundPreset, string> = {
+  boottocht: "/Fermi-PWA/images/agenda/activity-presets/boottocht.png",
+  bowlen: "/Fermi-PWA/images/agenda/activity-presets/bowlen.png",
+  karten: "/Fermi-PWA/images/agenda/activity-presets/karten.png",
+  kerst: "/Fermi-PWA/images/agenda/activity-presets/kerst.png",
+  lasergamen: "/Fermi-PWA/images/agenda/activity-presets/lasergamen.png",
+  nieuwjaar: "/Fermi-PWA/images/agenda/activity-presets/nieuwjaar.png",
+  schilderen: "/Fermi-PWA/images/agenda/activity-presets/schilderen.png",
+  pasen: "/Fermi-PWA/images/agenda/activity-presets/pasen.png",
+  picknick: "/Fermi-PWA/images/agenda/activity-presets/picknick.png",
+  poolen: "/Fermi-PWA/images/agenda/activity-presets/poolen.png",
+};
+
+function resolveAgendaBackgroundPreset(event: AgendaEvent): AgendaBackgroundPreset | null {
+  if (event.backgroundPreset) return event.backgroundPreset;
+
+  const haystack = `${event.title} ${event.type}`.toLowerCase();
+  const aliases: Array<[AgendaBackgroundPreset, string[]]> = [
+    ["boottocht", ["boottocht", "varen", "boot"]],
+    ["bowlen", ["bowlen", "bowling"]],
+    ["karten", ["karten", "karting"]],
+    ["kerst", ["kerst", "christmas"]],
+    ["lasergamen", ["lasergamen", "laser game", "lasergame"]],
+    ["nieuwjaar", ["nieuwjaar", "new year"]],
+    ["schilderen", ["schilderen", "painting", "paint"]],
+    ["pasen", ["pasen", "easter"]],
+    ["picknick", ["picknick", "picnic"]],
+    ["poolen", ["poolen", "poolavond", "poolen"]],
+  ];
+
+  return aliases.find(([, terms]) => terms.some((term) => haystack.includes(term)))?.[0] ?? null;
+}
+
 type AgendaFilter = (typeof filters)[number];
 
 function matchesAgendaFilter(event: AgendaEvent, filter: AgendaFilter) {
@@ -210,6 +248,8 @@ export default function AgendaPage() {
       <section className="agenda-list agenda-list-redesign">
         {selectedEvents.map((event) => {
           const isNextUpcoming = event.slug === nextUpcomingSlug;
+          const backgroundPreset = resolveAgendaBackgroundPreset(event);
+          const backgroundImage = backgroundPreset ? agendaBackgroundPresets[backgroundPreset] : null;
 
           return (
           <Link
@@ -218,7 +258,10 @@ export default function AgendaPage() {
             key={event.slug}
             aria-label={`Bekijk ${event.title}`}
           >
-            <article className={isNextUpcoming ? agendaCardStyle.nextUpcoming : agendaCardStyle.standard}>
+            <article
+              className={`${isNextUpcoming ? agendaCardStyle.nextUpcoming : agendaCardStyle.standard}${backgroundImage ? " agenda-card-with-preset" : ""}`}
+              style={backgroundImage ? { backgroundImage: `url("${backgroundImage}")` } : undefined}
+            >
               <div className="agenda-date agenda-date-redesign">
                 <strong>{event.day}</strong>
                 <span>{event.month}</span>
@@ -237,9 +280,11 @@ export default function AgendaPage() {
                 )}
               </div>
 
-              <div className={`agenda-photo agenda-photo-${event.art}`} aria-label="Tijdelijke stockafbeelding">
-                <span className="agenda-photo-overlay" />
-              </div>
+              {!backgroundImage && (
+                <div className={`agenda-photo agenda-photo-${event.art}`} aria-label="Activiteitsafbeelding">
+                  <span className="agenda-photo-overlay" />
+                </div>
+              )}
 
               {!isNextUpcoming && <ChevronRight className="agenda-card-chevron" size={22} />}
             </article>
