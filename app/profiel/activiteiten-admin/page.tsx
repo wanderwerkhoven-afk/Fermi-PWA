@@ -6,54 +6,171 @@ import { onAuthStateChanged } from "firebase/auth";
 import {
   ArrowLeft,
   CalendarDays,
-  CheckCircle2,
-  ChevronRight,
+  Clock3,
+  Eye,
+  EyeOff,
+  MapPin,
+  Pencil,
+  Plus,
+  Save,
   Search,
   ShieldAlert,
+  UsersRound,
   X,
 } from "lucide-react";
 import { auth } from "../../../lib/firebase";
 import { getUserProfile } from "../../../lib/services/users";
-import {
-  listActivities,
-  saveActivity,
-  seedActivitiesIfMissing,
-  type ActivityData,
-} from "../../../lib/services/activities";
+import { listActivities, saveActivity, type ActivityData } from "../../../lib/services/activities";
+import type { AgendaBackgroundPreset, AgendaEvent } from "../../../data/agenda-events";
 
-const emptyActivity: ActivityData = {
+const monthShort = ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AUG","SEP","OKT","NOV","DEC"];
+
+const presetOptions: Array<{ value: AgendaBackgroundPreset | ""; label: string }> = [
+  { value: "", label: "Geen preset" },
+  { value: "boottocht", label: "Boottocht" },
+  { value: "bowlen", label: "Bowlen" },
+  { value: "karten", label: "Karten" },
+  { value: "kerst", label: "Kerst" },
+  { value: "lasergamen", label: "Lasergamen" },
+  { value: "nieuwjaar", label: "Nieuwjaar" },
+  { value: "schilderen", label: "Schilderen" },
+  { value: "pasen", label: "Pasen" },
+  { value: "picknick", label: "Picknick" },
+  { value: "poolen", label: "Poolen" },
+];
+
+type FormState = {
+  slug: string;
+  title: string;
+  type: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  address: string;
+  organizer: string;
+  price: string;
+  capacity: string;
+  registrationDeadline: string;
+  description: string;
+  practicalText: string;
+  backgroundPreset: AgendaBackgroundPreset | "";
+  showInAgenda: boolean;
+};
+
+const emptyForm: FormState = {
   slug: "",
-  day: "",
-  month: "JAN",
-  year: new Date().getFullYear().toString(),
-  dateLabel: "",
-  type: "ACTIVITEIT",
   title: "",
-  time: "",
+  type: "ACTIVITEIT",
+  date: "",
+  startTime: "19:00",
+  endTime: "22:00",
   location: "",
   address: "",
-  art: "meeting",
   organizer: "S.V. Fermi",
   price: "Gratis",
-  capacity: 0,
-  registered: 0,
+  capacity: "40",
   registrationDeadline: "",
   description: "",
-  practical: [],
+  practicalText: "",
+  backgroundPreset: "",
   showInAgenda: true,
 };
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function eventDate(event: AgendaEvent) {
+  const monthIndex = monthShort.indexOf(event.month);
+  if (monthIndex < 0) return new Date(0);
+  return new Date(Number(event.year), monthIndex, Number(event.day), 12);
+}
+
+function formFromActivity(event: ActivityData): FormState {
+  const monthIndex = monthShort.indexOf(event.month);
+  const date =
+    monthIndex >= 0
+      ? `${event.year}-${String(monthIndex + 1).padStart(2, "0")}-${String(Number(event.day)).padStart(2, "0")}`
+      : "";
+  const times = [...event.time.matchAll(/(\d{1,2}):(\d{2})/g)].map((match) => `${match[1].padStart(2, "0")}:${match[2]}`);
+
+  return {
+    slug: event.slug,
+    title: event.title,
+    type: event.type,
+    date,
+    startTime: times[0] || "19:00",
+    endTime: times[1] || times[0] || "22:00",
+    location: event.location,
+    address: event.address,
+    organizer: event.organizer,
+    price: event.price,
+    capacity: String(event.capacity ?? 0),
+    registrationDeadline: event.registrationDeadline,
+    description: event.description,
+    practicalText: (event.practical || []).join("\n"),
+    backgroundPreset: event.backgroundPreset || "",
+    showInAgenda: event.showInAgenda !== false,
+  };
+}
+
+function activityFromForm(form: FormState, existing?: ActivityData): ActivityData {
+  const date = new Date(`${form.date}T12:00:00`);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = monthShort[date.getMonth()];
+  const year = String(date.getFullYear());
+  const dateLabel = new Intl.DateTimeFormat("nl-NL", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+
+  return {
+    ...(existing || {}),
+    slug: form.slug || slugify(form.title),
+    day,
+    month,
+    year,
+    dateLabel,
+    type: form.type.trim().toUpperCase() || "ACTIVITEIT",
+    title: form.title.trim(),
+    time: `${form.startTime} – ${form.endTime}`,
+    location: form.location.trim() || "Locatie volgt",
+    address: form.address.trim(),
+    art: existing?.art || "meeting",
+    backgroundPreset: form.backgroundPreset || undefined,
+    organizer: form.organizer.trim() || "S.V. Fermi",
+    price: form.price.trim() || "Gratis",
+    capacity: Math.max(0, Number(form.capacity) || 0),
+    registered: existing?.registered ?? 0,
+    registrationDeadline: form.registrationDeadline.trim() || "Volgt",
+    description: form.description.trim(),
+    practical: form.practicalText.split("\n").map((item) => item.trim()).filter(Boolean),
+    showInAgenda: form.showInAgenda,
+  };
+}
 
 export default function ActiviteitenAdminPage() {
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [activities, setActivities] = useState<ActivityData[]>([]);
-  const [selected, setSelected] = useState<ActivityData | null>(null);
-  const [edit, setEdit] = useState<ActivityData>(emptyActivity);
   const [query, setQuery] = useState("");
-  const [notice, setNotice] = useState("");
+  const [mode, setMode] = useState<"all" | "upcoming" | "past" | "hidden">("all");
+  const [selected, setSelected] = useState<ActivityData | null>(null);
+  const [form, setForm] = useState<FormState>(emptyForm);
+  const [panelOpen, setPanelOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState("");
 
   async function refresh() {
-    setActivities(await listActivities());
+    const items = await listActivities();
+    setActivities([...items].sort((a, b) => eventDate(a).getTime() - eventDate(b).getTime()));
   }
 
   useEffect(() => {
@@ -66,10 +183,7 @@ export default function ActiviteitenAdminPage() {
         const profile = await getUserProfile(user.uid);
         const allowed = profile?.status === "active" && profile.role === "admin";
         setAuthorized(allowed);
-        if (allowed) {
-          await seedActivitiesIfMissing();
-          await refresh();
-        }
+        if (allowed) await refresh();
       } catch (error) {
         console.error(error);
         setAuthorized(false);
@@ -77,189 +191,373 @@ export default function ActiviteitenAdminPage() {
     });
   }, []);
 
-  const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    if (!needle) return activities;
-    return activities.filter((activity) =>
-      [activity.title, activity.type, activity.location, activity.organizer]
-        .join(" ")
-        .toLowerCase()
-        .includes(needle),
-    );
-  }, [activities, query]);
+  const counts = useMemo(() => {
+    const now = new Date();
+    now.setHours(0,0,0,0);
+    return {
+      total: activities.length,
+      upcoming: activities.filter((item) => eventDate(item) >= now && item.showInAgenda !== false).length,
+      hidden: activities.filter((item) => item.showInAgenda === false).length,
+      registrations: activities.reduce((sum, item) => sum + (Number(item.registered) || 0), 0),
+    };
+  }, [activities]);
 
-  function openActivity(activity: ActivityData) {
-    setSelected(activity);
-    setEdit({ ...activity, practical: [...(activity.practical || [])] });
+  const visibleActivities = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    const now = new Date();
+    now.setHours(0,0,0,0);
+
+    return activities.filter((item) => {
+      const date = eventDate(item);
+      const matchesMode =
+        mode === "all"
+        || (mode === "upcoming" && date >= now && item.showInAgenda !== false)
+        || (mode === "past" && date < now)
+        || (mode === "hidden" && item.showInAgenda === false);
+      const matchesQuery =
+        !needle
+        || [item.title, item.type, item.location, item.organizer].join(" ").toLowerCase().includes(needle);
+      return matchesMode && matchesQuery;
+    });
+  }, [activities, query, mode]);
+
+  function openNew() {
+    setSelected(null);
+    setForm(emptyForm);
     setNotice("");
+    setPanelOpen(true);
   }
 
-  async function save() {
+  function openEdit(activity: ActivityData) {
+    setSelected(activity);
+    setForm(formFromActivity(activity));
+    setNotice("");
+    setPanelOpen(true);
+  }
+
+  function updateForm<K extends keyof FormState>(key: K, value: FormState[K]) {
+    setForm((current) => ({ ...current, [key]: value }));
+  }
+
+  async function handleSave() {
+    if (!form.title.trim() || !form.date) {
+      setNotice("Vul minimaal een titel en datum in.");
+      return;
+    }
+
+    const generatedSlug = form.slug || slugify(form.title);
+    if (!generatedSlug) {
+      setNotice("De activiteit heeft een geldige titel nodig.");
+      return;
+    }
+
+    if (!selected && activities.some((item) => item.slug === generatedSlug)) {
+      setNotice("Er bestaat al een activiteit met deze titel. Pas de titel of slug aan.");
+      return;
+    }
+
     setBusy(true);
     setNotice("");
     try {
-      await saveActivity(edit);
+      const next = activityFromForm({ ...form, slug: generatedSlug }, selected || undefined);
+      await saveActivity(next);
       await refresh();
-      setSelected(null);
-      setNotice(`${edit.title} is opgeslagen in Firebase.`);
+      setPanelOpen(false);
+      setNotice(`${next.title} is opgeslagen.`);
     } catch (error) {
       console.error(error);
-      setNotice("Activiteit opslaan is niet gelukt.");
+      setNotice("Opslaan is niet gelukt.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function toggleVisibility(activity: ActivityData) {
+    setBusy(true);
+    try {
+      await saveActivity({ ...activity, showInAgenda: activity.showInAgenda === false });
+      await refresh();
+      setNotice(
+        activity.showInAgenda === false
+          ? `${activity.title} staat weer in de agenda.`
+          : `${activity.title} is verborgen uit de agenda.`,
+      );
+    } catch (error) {
+      console.error(error);
+      setNotice("Wijziging is niet gelukt.");
     } finally {
       setBusy(false);
     }
   }
 
   if (authorized === null) {
-    return <main className="member-admin-gate">Activiteitenadministratie laden…</main>;
+    return <main className="activity-admin-gate">Activiteiten CRM laden…</main>;
   }
 
   if (!authorized) {
     return (
-      <main className="member-admin-gate">
+      <main className="activity-admin-gate">
         <ShieldAlert size={42} />
         <h1>Geen admin-toegang</h1>
-        <p>Deze pagina is alleen beschikbaar voor actieve Fermi-admins.</p>
+        <p>Deze omgeving is alleen beschikbaar voor actieve Fermi-admins.</p>
         <Link href="/profiel">Terug naar profiel</Link>
       </main>
     );
   }
 
   return (
-    <main className="app-shell member-admin-shell">
-      <header className="member-admin-header">
-        <Link className="member-admin-back" href="/profiel" aria-label="Terug naar profiel">
+    <main className="app-shell activity-admin-shell">
+      <header className="activity-admin-header">
+        <Link className="activity-admin-back" href="/profiel" aria-label="Terug naar profiel">
           <ArrowLeft size={22} />
         </Link>
         <div>
-          <small>ADMINISTRATIE</small>
-          <h1>Activiteiten admin</h1>
-          <p>Activiteitsgegevens beheren vanuit Firebase.</p>
+          <small>ACTIVITEITEN CRM</small>
+          <h1>Activiteiten</h1>
+          <p>Plan, publiceer en beheer activiteiten vanuit één overzicht.</p>
         </div>
-        <span className="member-admin-header-icon"><CalendarDays size={26} /></span>
+        <button type="button" className="activity-admin-add-top" onClick={openNew} aria-label="Nieuwe activiteit">
+          <Plus size={20} />
+        </button>
       </header>
 
-      <section className="member-admin-content">
-        {notice && <div className="member-admin-notice" role="status">{notice}</div>}
-
-        <div className="member-admin-search">
-          <Search size={18} />
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Zoek activiteit, locatie of organisator"
-            aria-label="Activiteiten zoeken"
-          />
+      <section className="activity-admin-content">
+        <div className="activity-admin-stats">
+          <div><strong>{counts.total}</strong><span>Totaal</span></div>
+          <div><strong>{counts.upcoming}</strong><span>Komend</span></div>
+          <div><strong>{counts.hidden}</strong><span>Verborgen</span></div>
+          <div><strong>{counts.registrations}</strong><span>Inschrijvingen</span></div>
         </div>
 
-        <section className="member-admin-list">
-          {filtered.map((activity) => (
-            <button
-              className="member-admin-row member-admin-row-button"
-              type="button"
-              key={activity.slug}
-              onClick={() => openActivity(activity)}
-            >
-              <div className="member-admin-avatar">{activity.day || "?"}</div>
-              <div className="member-admin-person">
-                <strong>{activity.title}</strong>
-                <span>{activity.dateLabel || `${activity.day} ${activity.month} ${activity.year}`}</span>
-                <small>{activity.location} · {activity.organizer}</small>
-              </div>
-              <div className="member-admin-row-meta">
-                <span>{activity.type}</span>
-                <span>{activity.showInAgenda === false ? "Verborgen" : "Zichtbaar"}</span>
-              </div>
-              <ChevronRight className="member-admin-row-chevron" size={19} />
-            </button>
-          ))}
+        <button className="activity-admin-primary" type="button" onClick={openNew}>
+          <Plus size={18} /> Nieuwe activiteit
+        </button>
+
+        {notice && <div className="activity-admin-notice" role="status">{notice}</div>}
+
+        <div className="activity-admin-toolbar">
+          <label className="activity-admin-search">
+            <Search size={18} />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Zoek activiteit, locatie of organisator"
+            />
+          </label>
+
+          <div className="activity-admin-filters">
+            {([
+              ["all", "Alles"],
+              ["upcoming", "Komend"],
+              ["past", "Voorbij"],
+              ["hidden", "Verborgen"],
+            ] as const).map(([value, label]) => (
+              <button
+                type="button"
+                key={value}
+                className={mode === value ? "active" : ""}
+                onClick={() => setMode(value)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <section className="activity-admin-list">
+          {visibleActivities.map((activity) => {
+            const preset = activity.backgroundPreset;
+            return (
+              <article className="activity-admin-row" key={activity.slug}>
+                <div
+                  className="activity-admin-thumb"
+                  style={preset ? {
+                    backgroundImage: `linear-gradient(rgba(3,29,44,.16),rgba(3,29,44,.50)),url("/Fermi-PWA/images/agenda/activity-presets/${preset}.png")`,
+                  } : undefined}
+                >
+                  <strong>{activity.day}</strong>
+                  <span>{activity.month}</span>
+                </div>
+
+                <div className="activity-admin-row-copy">
+                  <span className="activity-admin-type">{activity.type}</span>
+                  <h2>{activity.title}</h2>
+                  <p><CalendarDays size={14} /> {activity.dateLabel}</p>
+                  <p><Clock3 size={14} /> {activity.time}</p>
+                  <p><MapPin size={14} /> {activity.location}</p>
+                </div>
+
+                <div className="activity-admin-row-meta">
+                  <span><UsersRound size={14} /> {activity.registered || 0}/{activity.capacity || "∞"}</span>
+                  <span className={activity.showInAgenda === false ? "hidden" : "published"}>
+                    {activity.showInAgenda === false ? "Verborgen" : "Gepubliceerd"}
+                  </span>
+                </div>
+
+                <div className="activity-admin-row-actions">
+                  <button type="button" onClick={() => openEdit(activity)} aria-label={`${activity.title} bewerken`}>
+                    <Pencil size={17} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleVisibility(activity)}
+                    disabled={busy}
+                    aria-label={activity.showInAgenda === false ? "Publiceren" : "Verbergen"}
+                  >
+                    {activity.showInAgenda === false ? <Eye size={17} /> : <EyeOff size={17} />}
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+
+          {visibleActivities.length === 0 && (
+            <div className="activity-admin-empty">
+              <CalendarDays size={32} />
+              <strong>Geen activiteiten gevonden</strong>
+              <span>Maak een nieuwe activiteit of wijzig je filters.</span>
+            </div>
+          )}
         </section>
       </section>
 
-      {selected && (
-        <div className="member-admin-modal-backdrop" role="presentation" onClick={() => setSelected(null)}>
-          <section className="member-admin-modal" role="dialog" aria-modal="true" aria-label="Activiteit bewerken" onClick={(event) => event.stopPropagation()}>
-            <header className="member-admin-modal-header">
-              <div className="member-admin-modal-avatar">{edit.day || "?"}</div>
+      {panelOpen && (
+        <div className="activity-admin-modal-backdrop" onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setPanelOpen(false);
+        }}>
+          <section className="activity-admin-modal" role="dialog" aria-modal="true" aria-label="Activiteit bewerken">
+            <header>
               <div>
-                <small>ACTIVITEIT</small>
-                <h2>{edit.title}</h2>
-                <p>{edit.slug}</p>
+                <small>{selected ? "ACTIVITEIT BEWERKEN" : "NIEUWE ACTIVITEIT"}</small>
+                <h2>{selected ? selected.title : "Nieuwe activiteit"}</h2>
               </div>
-              <button type="button" aria-label="Sluiten" onClick={() => setSelected(null)}><X size={20} /></button>
+              <button type="button" onClick={() => setPanelOpen(false)} aria-label="Sluiten"><X size={20} /></button>
             </header>
 
-            <div className="member-admin-modal-body">
-              <section className="member-admin-modal-section">
+            <div className="activity-admin-form">
+              <section>
                 <h3>Basisgegevens</h3>
-                <label>Titel<input value={edit.title} onChange={(e) => setEdit({ ...edit, title: e.target.value })} /></label>
-                <div className="member-admin-modal-grid two">
-                  <label>Type<input value={edit.type} onChange={(e) => setEdit({ ...edit, type: e.target.value.toUpperCase() })} /></label>
-                  <label>Organisator<input value={edit.organizer} onChange={(e) => setEdit({ ...edit, organizer: e.target.value })} /></label>
-                </div>
-              </section>
-
-              <section className="member-admin-modal-section">
-                <h3>Datum & tijd</h3>
-                <label>Datumtekst<input value={edit.dateLabel} onChange={(e) => setEdit({ ...edit, dateLabel: e.target.value })} /></label>
-                <div className="member-admin-modal-grid two">
-                  <label>Dag<input value={edit.day} onChange={(e) => setEdit({ ...edit, day: e.target.value })} /></label>
-                  <label>Maand
-                    <select value={edit.month} onChange={(e) => setEdit({ ...edit, month: e.target.value })}>
-                      {["JAN","FEB","MAR","APR","MEI","JUN","JUL","AUG","SEP","OKT","NOV","DEC"].map((month) => <option key={month}>{month}</option>)}
-                    </select>
-                  </label>
-                  <label>Jaar<input value={edit.year} onChange={(e) => setEdit({ ...edit, year: e.target.value })} /></label>
-                  <label>Tijd<input value={edit.time} onChange={(e) => setEdit({ ...edit, time: e.target.value })} /></label>
-                </div>
-              </section>
-
-              <section className="member-admin-modal-section">
-                <h3>Locatie</h3>
-                <label>Locatie<input value={edit.location} onChange={(e) => setEdit({ ...edit, location: e.target.value })} /></label>
-                <label>Adres<input value={edit.address} onChange={(e) => setEdit({ ...edit, address: e.target.value })} /></label>
-              </section>
-
-              <section className="member-admin-modal-section">
-                <h3>Inschrijving</h3>
-                <div className="member-admin-modal-grid two">
-                  <label>Prijs<input value={edit.price} onChange={(e) => setEdit({ ...edit, price: e.target.value })} /></label>
-                  <label>Deadline<input value={edit.registrationDeadline} onChange={(e) => setEdit({ ...edit, registrationDeadline: e.target.value })} /></label>
-                  <label>Capaciteit<input type="number" min="0" value={edit.capacity} onChange={(e) => setEdit({ ...edit, capacity: Number(e.target.value) })} /></label>
-                  <label>Aangemeld<input type="number" min="0" value={edit.registered} onChange={(e) => setEdit({ ...edit, registered: Number(e.target.value) })} /></label>
-                </div>
-              </section>
-
-              <section className="member-admin-modal-section">
-                <h3>Inhoud</h3>
-                <label>Beschrijving<textarea rows={5} value={edit.description} onChange={(e) => setEdit({ ...edit, description: e.target.value })} /></label>
-                <label>Praktisch — één punt per regel
-                  <textarea
-                    rows={4}
-                    value={(edit.practical || []).join("\n")}
-                    onChange={(e) => setEdit({ ...edit, practical: e.target.value.split("\n").filter(Boolean) })}
+                <label>Titel
+                  <input
+                    value={form.title}
+                    onChange={(event) => {
+                      const title = event.target.value;
+                      setForm((current) => ({
+                        ...current,
+                        title,
+                        slug: selected ? current.slug : slugify(title),
+                      }));
+                    }}
+                    placeholder="Bijv. Bowlen met Fermi"
                   />
                 </label>
-                <label>
-                  <span>In agenda tonen</span>
-                  <select value={edit.showInAgenda === false ? "false" : "true"} onChange={(e) => setEdit({ ...edit, showInAgenda: e.target.value === "true" })}>
-                    <option value="true">Ja</option>
-                    <option value="false">Nee</option>
-                  </select>
+                <div className="activity-admin-form-grid two">
+                  <label>Type
+                    <select value={form.type} onChange={(event) => updateForm("type", event.target.value)}>
+                      <option>ACTIVITEIT</option>
+                      <option>BORREL</option>
+                      <option>CURSUS</option>
+                      <option>LEZING</option>
+                      <option>COMMISSIE</option>
+                      <option>STUDIEREIS</option>
+                      <option>VERGADERING</option>
+                    </select>
+                  </label>
+                  <label>Slug
+                    <input value={form.slug} onChange={(event) => updateForm("slug", slugify(event.target.value))} disabled={Boolean(selected)} />
+                  </label>
+                </div>
+              </section>
+
+              <section>
+                <h3>Datum & tijd</h3>
+                <label>Datum
+                  <input type="date" value={form.date} onChange={(event) => updateForm("date", event.target.value)} />
                 </label>
-                <label>
-                  <span>Uitgelicht</span>
-                  <select value={edit.featured ? "true" : "false"} onChange={(e) => setEdit({ ...edit, featured: e.target.value === "true" })}>
-                    <option value="false">Nee</option>
-                    <option value="true">Ja</option>
-                  </select>
+                <div className="activity-admin-form-grid two">
+                  <label>Starttijd
+                    <input type="time" value={form.startTime} onChange={(event) => updateForm("startTime", event.target.value)} />
+                  </label>
+                  <label>Eindtijd
+                    <input type="time" value={form.endTime} onChange={(event) => updateForm("endTime", event.target.value)} />
+                  </label>
+                </div>
+                <label>Inschrijfdeadline
+                  <input value={form.registrationDeadline} onChange={(event) => updateForm("registrationDeadline", event.target.value)} placeholder="Bijv. 12 november om 18:00" />
                 </label>
               </section>
 
-              <button className="member-admin-save" type="button" onClick={save} disabled={busy}>
-                <CheckCircle2 size={18} /> {busy ? "Opslaan…" : "Wijzigingen opslaan"}
-              </button>
+              <section>
+                <h3>Locatie</h3>
+                <label>Locatienaam
+                  <input value={form.location} onChange={(event) => updateForm("location", event.target.value)} placeholder="Bijv. Knijn Bowling" />
+                </label>
+                <label>Adres
+                  <input value={form.address} onChange={(event) => updateForm("address", event.target.value)} placeholder="Straat, plaats" />
+                </label>
+              </section>
+
+              <section>
+                <h3>Organisatie & capaciteit</h3>
+                <div className="activity-admin-form-grid two">
+                  <label>Organisator
+                    <input value={form.organizer} onChange={(event) => updateForm("organizer", event.target.value)} />
+                  </label>
+                  <label>Capaciteit
+                    <input type="number" min="0" value={form.capacity} onChange={(event) => updateForm("capacity", event.target.value)} />
+                  </label>
+                </div>
+                <label>Prijs
+                  <input value={form.price} onChange={(event) => updateForm("price", event.target.value)} placeholder="Bijv. € 7,50" />
+                </label>
+              </section>
+
+              <section>
+                <h3>Agendaweergave</h3>
+                <label>Achtergrondpreset
+                  <select
+                    value={form.backgroundPreset}
+                    onChange={(event) => updateForm("backgroundPreset", event.target.value as AgendaBackgroundPreset | "")}
+                  >
+                    {presetOptions.map((option) => (
+                      <option key={option.value || "none"} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </label>
+                {form.backgroundPreset && (
+                  <div
+                    className="activity-admin-preset-preview"
+                    style={{ backgroundImage: `url("/Fermi-PWA/images/agenda/activity-presets/${form.backgroundPreset}.png")` }}
+                  >
+                    <span>{form.title || "Voorbeeld activiteit"}</span>
+                  </div>
+                )}
+                <label className="activity-admin-switch-row">
+                  <input type="checkbox" checked={form.showInAgenda} onChange={(event) => updateForm("showInAgenda", event.target.checked)} />
+                  <span>
+                    <strong>Zichtbaar in Agenda</strong>
+                    <small>Zet uit om de activiteit als concept/verborgen te bewaren.</small>
+                  </span>
+                </label>
+              </section>
+
+              <section>
+                <h3>Inhoud</h3>
+                <label>Beschrijving
+                  <textarea rows={5} value={form.description} onChange={(event) => updateForm("description", event.target.value)} placeholder="Wat gaan leden doen?" />
+                </label>
+                <label>Praktische informatie
+                  <textarea rows={4} value={form.practicalText} onChange={(event) => updateForm("practicalText", event.target.value)} placeholder={"Eén punt per regel\nNeem je ledenpas mee\nVerzamelen om 18:45"} />
+                </label>
+              </section>
             </div>
+
+            <footer>
+              <button type="button" className="secondary" onClick={() => setPanelOpen(false)}>Annuleren</button>
+              <button type="button" className="primary" onClick={handleSave} disabled={busy}>
+                <Save size={18} /> {busy ? "Opslaan…" : selected ? "Wijzigingen opslaan" : "Activiteit toevoegen"}
+              </button>
+            </footer>
           </section>
         </div>
       )}
