@@ -5804,3 +5804,64 @@ body.member-admin-modal-open{overflow:hidden}
     font-size: 10.5px;
   }
 }
+
+
+/* Agenda activity background presets */
+.agenda-card-with-preset {
+  grid-template-columns: 64px minmax(0, 1fr);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: var(--fermi-white);
+}
+
+.agenda-card-with-preset::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(3, 29, 44, .88) 0%, rgba(3, 29, 44, .70) 36%, rgba(3, 29, 44, .20) 68%, rgba(3, 29, 44, .04) 100%),
+    linear-gradient(0deg, rgba(3, 29, 44, .16), transparent 55%);
+}
+
+.agenda-card-with-preset .agenda-date,
+.agenda-card-with-preset .agenda-card-copy,
+.agenda-card-with-preset .agenda-card-chevron {
+  position: relative;
+  z-index: 3;
+}
+
+.agenda-card-with-preset .agenda-card-copy {
+  max-width: 62%;
+}
+
+.agenda-card-with-preset h2,
+.agenda-card-with-preset p {
+  color: var(--fermi-white);
+  text-shadow: 0 2px 8px rgba(0,0,0,.36);
+}
+
+.agenda-card-with-preset.featured {
+  grid-template-columns: 67px minmax(0, 1fr);
+}
+
+.agenda-card-with-preset.featured .agenda-card-copy {
+  max-width: 64%;
+}
+
+@media (max-width: 420px) {
+  .agenda-card-with-preset {
+    grid-template-columns: 60px minmax(0, 1fr);
+  }
+
+  .agenda-card-with-preset.featured {
+    grid-template-columns: 62px minmax(0, 1fr);
+  }
+
+  .agenda-card-with-preset .agenda-card-copy,
+  .agenda-card-with-preset.featured .agenda-card-copy {
+    max-width: 66%;
+  }
+}
