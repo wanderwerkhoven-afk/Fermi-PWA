@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { getUserProfile } from "../lib/services/users";
 import { getActiveMembership } from "../lib/services/memberships";
+import { listActivities } from "../lib/services/activities";
+import type { AgendaEvent } from "../data/agenda-events";
 import type { FermiUser, Membership } from "../lib/models/backend";
 import MemberQrCode from "../components/MemberQrCode";
 import {
@@ -23,35 +25,30 @@ import {
   X,
 } from "lucide-react";
 
-const upcoming = [
-  {
-    day: "18",
-    month: "NOV",
-    title: "Open Spreekuur",
-    time: "15:30 – 17:30",
-    location: "JMH 04D04",
-    art: "legal",
-    href: "/agenda/open-spreekuur",
-  },
-  {
-    day: "21",
-    month: "NOV",
-    title: "Beer Pong Toernooi",
-    time: "19:00 – 23:00",
-    location: "De Fysica Kantine",
-    art: "beer",
-    href: "/agenda",
-  },
-  {
-    day: "26",
-    month: "NOV",
-    title: "Lezing: Quantum Computers",
-    time: "15:30 – 17:00",
-    location: "K2.01",
-    art: "quantum",
-    href: "/agenda/quantum-computers",
-  },
-];
+const monthOrder = ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AUG","SEP","OKT","NOV","DEC"];
+
+function eventStart(event: AgendaEvent) {
+  const monthIndex = monthOrder.indexOf(event.month);
+  if (monthIndex < 0) return Number.POSITIVE_INFINITY;
+
+  const firstTime = event.time.match(/(\d{1,2}):(\d{2})/);
+  const hour = firstTime ? Number(firstTime[1]) : 0;
+  const minute = firstTime ? Number(firstTime[2]) : 0;
+
+  return new Date(Number(event.year), monthIndex, Number(event.day), hour, minute).getTime();
+}
+
+function eventEnd(event: AgendaEvent) {
+  const monthIndex = monthOrder.indexOf(event.month);
+  if (monthIndex < 0) return Number.NEGATIVE_INFINITY;
+
+  const times = [...event.time.matchAll(/(\d{1,2}):(\d{2})/g)];
+  const last = times.at(-1);
+  const hour = last ? Number(last[1]) : 23;
+  const minute = last ? Number(last[2]) : 59;
+
+  return new Date(Number(event.year), monthIndex, Number(event.day), hour, minute, 59, 999).getTime();
+}
 
 const announcements = [
   {
@@ -81,8 +78,24 @@ export default function HomePage() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [announcementsOpen, setAnnouncementsOpen] = useState(false);
   const [activeAnnouncement, setActiveAnnouncement] = useState<(typeof announcements)[number] | null>(null);
+  const [activities, setActivities] = useState<AgendaEvent[]>([]);
 
   const overlayOpen = memberPassOpen || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
+
+  const upcomingActivities = useMemo(() => {
+    const now = Date.now();
+
+    return activities
+      .filter((event) => event.showInAgenda !== false && eventEnd(event) >= now)
+      .sort((a, b) => eventStart(a) - eventStart(b))
+      .slice(0, 3);
+  }, [activities]);
+
+  useEffect(() => {
+    listActivities()
+      .then((items) => setActivities(items))
+      .catch((error) => console.error("Upcoming activities could not be loaded", error));
+  }, []);
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
@@ -214,14 +227,16 @@ export default function HomePage() {
           </div>
 
           <div className="event-strip">
-            {upcoming.map((event) => (
-              <Link className="mini-event mini-event-link interactive-card" href={event.href} key={event.day}>
+            {upcomingActivities.map((event) => (
+              <Link className="mini-event mini-event-link interactive-card" href={`/agenda/${event.slug}`} key={event.slug}>
                 <div className={`mini-art placeholder-art ${event.art}`}>
                   <div className="date-chip">
                     <strong>{event.day}</strong>
                     <span>{event.month}</span>
                   </div>
-                  <span className="mini-art-label">{event.art === "beer" ? "● ● ●" : event.art === "legal" ? "§" : "ψ"}</span>
+                  <span className="mini-art-label">
+                    {event.art === "beer" ? "● ● ●" : event.art === "legal" ? "§" : event.art === "quantum" ? "ψ" : "✦"}
+                  </span>
                 </div>
                 <div className="mini-event-body">
                   <h3>{event.title}</h3>
@@ -230,6 +245,13 @@ export default function HomePage() {
                 </div>
               </Link>
             ))}
+
+            {upcomingActivities.length === 0 && (
+              <div className="home-upcoming-empty">
+                <CalendarDays size={24} />
+                <span>Er staan nog geen komende activiteiten in de agenda.</span>
+              </div>
+            )}
           </div>
         </section>
 
