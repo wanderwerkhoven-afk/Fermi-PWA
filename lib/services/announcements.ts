@@ -54,7 +54,11 @@ export async function listAnnouncements(): Promise<AnnouncementData[]> {
 
 export async function listPublishedAnnouncements(): Promise<AnnouncementData[]> {
   const now = new Date();
-  const today = now.toISOString().slice(0, 10);
+  const today = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0"),
+  ].join("-");
 
   return (await listAnnouncements())
     .filter((item) => item.published)
