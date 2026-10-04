@@ -213,7 +213,9 @@
     "Activiteiten admin is een CRM op /profiel/activiteiten-admin/ waarmee admins activiteiten kunnen toevoegen, bewerken, zoeken, filteren en publiceren/verbergen.",
     "Activiteitafbeeldingen zijn opgesplitst in public/images/agenda/activities/container-images/ voor Agenda-cards en public/images/agenda/activities/detail-images/ voor detailpagina-hero's. Tijdens dev/build genereert scripts/generate-agenda-image-manifest.mjs automatisch twee selectorlijsten in data/agenda-images.generated.ts.",
     "De Activities CRM bewaart alleen imagePath en detailImagePath op het activity-document; de app bouwt daar onder /Fermi-PWA de uiteindelijke asset-URL van. Dit houdt repository-assets en Firestore-data gescheiden.",
-    "Nieuwe activiteiten worden als ActivityData naar Firestore collection activities geschreven en verschijnen via dezelfde service in de Agenda."
+    "Nieuwe activiteiten worden als ActivityData naar Firestore collection activities geschreven en verschijnen via dezelfde service in de Agenda.",
+    "Activiteiten zijn niet meer hardcoded in de repository: Firestore collection activities is de enige activity-datasource voor Agenda, Home/Binnenkort, Home/Volgende activiteit, Activities CRM en detailpagina's.",
+    "Activity detail navigation gebruikt de statische route /agenda/activiteit/?slug=<slug>, zodat nieuwe Firestore-activiteiten op GitHub Pages geen vooraf gegenereerde hardcoded slug-route nodig hebben."
   ],
   "open_decisions": [
     "Final custom image asset set."
