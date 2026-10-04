@@ -20,7 +20,7 @@ import {
 } from "@/data/agenda-events";
 import { listActivities } from "@/lib/services/activities";
 
-const filters = ["Alles", "Borrel", "Lezingen", "Reizen"] as const;
+const filters = ["Alles", "Activiteiten", "Borrel", "Lezingen", "Reizen"] as const;
 
 const agendaBackgroundPresets: Record<AgendaBackgroundPreset, string> = {
   boottocht: "/Fermi-PWA/images/agenda/activities/container-images/boottocht.png",
