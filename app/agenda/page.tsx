@@ -23,16 +23,16 @@ import { listActivities } from "@/lib/services/activities";
 const filters = ["Alles", "Borrel", "Lezingen", "Reizen", "Commissies"] as const;
 
 const agendaBackgroundPresets: Record<AgendaBackgroundPreset, string> = {
-  boottocht: "/Fermi-PWA/images/agenda/activities/boottocht.png",
-  bowlen: "/Fermi-PWA/images/agenda/activities/bowlen.png",
-  karten: "/Fermi-PWA/images/agenda/activities/karten.png",
-  kerst: "/Fermi-PWA/images/agenda/activities/kerst.png",
-  lasergamen: "/Fermi-PWA/images/agenda/activities/lasergamen.png",
-  nieuwjaar: "/Fermi-PWA/images/agenda/activities/nieuwjaar.png",
-  schilderen: "/Fermi-PWA/images/agenda/activities/schilderen.png",
-  pasen: "/Fermi-PWA/images/agenda/activities/pasen.png",
-  picknick: "/Fermi-PWA/images/agenda/activities/picknick.png",
-  poolen: "/Fermi-PWA/images/agenda/activities/poolen.png",
+  boottocht: "/Fermi-PWA/images/agenda/activities/container-images/boottocht.png",
+  bowlen: "/Fermi-PWA/images/agenda/activities/container-images/bowlen.png",
+  karten: "/Fermi-PWA/images/agenda/activities/container-images/karten.png",
+  kerst: "/Fermi-PWA/images/agenda/activities/container-images/kerst.png",
+  lasergamen: "/Fermi-PWA/images/agenda/activities/container-images/lasergamen.png",
+  nieuwjaar: "/Fermi-PWA/images/agenda/activities/container-images/nieuwjaar.png",
+  schilderen: "/Fermi-PWA/images/agenda/activities/container-images/schilderen.png",
+  pasen: "/Fermi-PWA/images/agenda/activities/container-images/pasen.png",
+  picknick: "/Fermi-PWA/images/agenda/activities/container-images/picknick.png",
+  poolen: "/Fermi-PWA/images/agenda/activities/container-images/poolen.png",
 };
 
 function resolveAgendaBackgroundPreset(event: AgendaEvent): AgendaBackgroundPreset | null {
@@ -53,6 +53,20 @@ function resolveAgendaBackgroundPreset(event: AgendaEvent): AgendaBackgroundPres
   ];
 
   return aliases.find(([, terms]) => terms.some((term) => haystack.includes(term)))?.[0] ?? null;
+}
+
+function resolveActivityImagePath(path: string | undefined) {
+  if (!path) return null;
+  if (path.includes("/container-images/") || path.includes("/detail-images/")) {
+    return `/Fermi-PWA${path}`;
+  }
+  if (path.startsWith("/images/agenda/activities/")) {
+    return `/Fermi-PWA${path.replace(
+      "/images/agenda/activities/",
+      "/images/agenda/activities/container-images/",
+    )}`;
+  }
+  return `/Fermi-PWA${path}`;
 }
 
 type AgendaFilter = (typeof filters)[number];
@@ -249,11 +263,8 @@ export default function AgendaPage() {
         {selectedEvents.map((event) => {
           const isNextUpcoming = event.slug === nextUpcomingSlug;
           const backgroundPreset = resolveAgendaBackgroundPreset(event);
-          const backgroundImage = event.imagePath
-            ? `/Fermi-PWA${event.imagePath}`
-            : backgroundPreset
-              ? agendaBackgroundPresets[backgroundPreset]
-              : null;
+          const backgroundImage = resolveActivityImagePath(event.imagePath)
+            || (backgroundPreset ? agendaBackgroundPresets[backgroundPreset] : null);
 
           return (
           <Link
