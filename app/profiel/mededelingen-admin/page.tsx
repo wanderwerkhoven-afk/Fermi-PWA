@@ -381,19 +381,35 @@ export default function MededelingenAdminPage() {
                 </label>
                 <label>Route
                   <select
-                    value={form.actionRoute}
-                    onChange={(event) => updateForm("actionRoute", event.target.value)}
+                    value={routeOptions.some((route) => route.value === form.actionRoute) ? form.actionRoute : "__custom__"}
+                    onChange={(event) => {
+                      if (event.target.value === "__custom__") {
+                        updateForm("actionRoute", "");
+                      } else {
+                        updateForm("actionRoute", event.target.value);
+                      }
+                    }}
                   >
-                    {!routeOptions.some((route) => route.value === form.actionRoute) && form.actionRoute && (
-                      <option value={form.actionRoute}>Huidige route · {form.actionRoute}</option>
-                    )}
                     {routeOptions.map((route) => (
                       <option key={route.value} value={route.value}>
                         {route.label}
                       </option>
                     ))}
+                    <option value="__custom__">Zelf route invullen…</option>
                   </select>
                 </label>
+
+                {!routeOptions.some((route) => route.value === form.actionRoute) && (
+                  <label>Eigen route
+                    <input
+                      value={form.actionRoute}
+                      onChange={(event) => updateForm("actionRoute", event.target.value)}
+                      placeholder="/bijv-mijn-pagina"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                    />
+                  </label>
+                )}
               </section>
 
               <section>
