@@ -6906,3 +6906,9 @@ body.member-admin-modal-open{overflow:hidden}
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+
+/* Agenda cards — anchor artwork to the right side */
+.agenda-card-with-preset {
+  background-position: right center;
+}
