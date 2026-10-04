@@ -39,8 +39,18 @@ function eventStart(event: AgendaEvent) {
 }
 
 function resolveHomeActivityImage(event: AgendaEvent) {
-  const path = event.detailImagePath || event.imagePath;
+  let path = event.detailImagePath
+    || event.imagePath
+    || (event.backgroundPreset ? `/images/agenda/activities/container-images/${event.backgroundPreset}.png` : "");
+
   if (!path) return null;
+
+  if (path.startsWith("/images/agenda/activities/") && !path.includes("/container-images/") && !path.includes("/detail-images/")) {
+    path = path.replace(
+      "/images/agenda/activities/",
+      "/images/agenda/activities/container-images/",
+    );
+  }
 
   if (path.startsWith("/images/")) {
     return `/Fermi-PWA${path}`;
@@ -68,8 +78,8 @@ const announcements = [
     title: "Inschrijvingen Studiereis geopend!",
     summary: "De inschrijvingen voor de studiereis zijn nu open. Vergeet je niet in te schrijven!",
     detail: "Bekijk alle informatie over de studiereis, praktische details en de inschrijving op de activiteitenpagina.",
-    href: "/agenda/studiereis-budapest-25",
-    cta: "Bekijk studiereis",
+    href: "/agenda",
+    cta: "Bekijk agenda",
   },
   {
     id: "merch",
@@ -98,9 +108,11 @@ export default function HomePage() {
 
     return activities
       .filter((event) => event.showInAgenda !== false && eventEnd(event) >= now)
-      .sort((a, b) => eventStart(a) - eventStart(b))
-      .slice(0, 3);
+      .sort((a, b) => eventStart(a) - eventStart(b));
   }, [activities]);
+
+  const featuredActivity = upcomingActivities[0] ?? null;
+  const homeUpcomingActivities = upcomingActivities.slice(featuredActivity ? 1 : 0, featuredActivity ? 4 : 3);
 
   useEffect(() => {
     listActivities()
@@ -207,29 +219,48 @@ export default function HomePage() {
       </section>
 
       <section className="content">
-        <article className="featured-event">
-          <div className="featured-copy">
-            <span className="eyebrow">Volgende activiteit</span>
-            <h2>Maandborrel</h2>
+        {featuredActivity ? (
+          <article className="featured-event">
+            <div className="featured-copy">
+              <span className="eyebrow">Volgende activiteit</span>
+              <h2>{featuredActivity.title}</h2>
 
-            <div className="event-meta">
-              <span><CalendarDays size={18} /> Donderdag 13 nov 2026</span>
-              <span><Clock3 size={18} /> 16:30 – 23:00</span>
-              <span><MapPin size={18} /> Café de Jäger, Haarlem</span>
+              <div className="event-meta">
+                <span><CalendarDays size={18} /> {featuredActivity.dateLabel}</span>
+                <span><Clock3 size={18} /> {featuredActivity.time}</span>
+                <span><MapPin size={18} /> {featuredActivity.location}</span>
+              </div>
+
+              <Link
+                className="primary-button interactive-control"
+                href={`/agenda/activiteit?slug=${encodeURIComponent(featuredActivity.slug)}`}
+              >
+                Bekijk activiteit <ChevronRight size={22} />
+              </Link>
             </div>
 
-            <Link className="primary-button interactive-control" href="/agenda/maandborrel">
-              Bekijk activiteit <ChevronRight size={22} />
-            </Link>
-          </div>
-
-          <div className="featured-art home-featured-art" aria-hidden="true">
-            <img
-              src="/Fermi-PWA/images/home/home-featured-borrel.png"
-              alt=""
+            <div
+              className={`featured-art home-featured-art${resolveHomeActivityImage(featuredActivity) ? " home-featured-art-live" : ""}`}
+              style={resolveHomeActivityImage(featuredActivity) ? {
+                backgroundImage: `url("${resolveHomeActivityImage(featuredActivity)}")`,
+              } : undefined}
+              aria-hidden="true"
             />
-          </div>
-        </article>
+          </article>
+        ) : (
+          <article className="featured-event home-featured-empty">
+            <div className="featured-copy">
+              <span className="eyebrow">Volgende activiteit</span>
+              <h2>Nog niets gepland</h2>
+              <div className="event-meta">
+                <span><CalendarDays size={18} /> Nieuwe activiteiten verschijnen hier automatisch.</span>
+              </div>
+              <Link className="primary-button interactive-control" href="/agenda">
+                Bekijk agenda <ChevronRight size={22} />
+              </Link>
+            </div>
+          </article>
+        )}
 
         <section className="section-block">
           <div className="section-heading">
@@ -238,11 +269,11 @@ export default function HomePage() {
           </div>
 
           <div className="event-strip">
-            {upcomingActivities.map((event) => {
+            {homeUpcomingActivities.map((event) => {
               const artwork = resolveHomeActivityImage(event);
 
               return (
-              <Link className="mini-event mini-event-link interactive-card" href={`/agenda/${event.slug}`} key={event.slug}>
+              <Link className="mini-event mini-event-link interactive-card" href={`/agenda/activiteit?slug=${encodeURIComponent(event.slug)}`} key={event.slug}>
                 <div
                   className={`mini-art placeholder-art ${event.art}${artwork ? " mini-art-activity-image" : ""}`}
                   style={artwork ? {
@@ -268,7 +299,7 @@ export default function HomePage() {
               );
             })}
 
-            {upcomingActivities.length === 0 && (
+            {homeUpcomingActivities.length === 0 && !featuredActivity && (
               <div className="home-upcoming-empty">
                 <CalendarDays size={24} />
                 <span>Er staan nog geen komende activiteiten in de agenda.</span>
@@ -337,7 +368,7 @@ export default function HomePage() {
                 <X size={21} />
               </button>
             </div>
-            <Link className="home-notification interactive-card" href="/agenda/studiereis-budapest-25" onClick={() => setNotificationsOpen(false)}>
+            <Link className="home-notification interactive-card" href="/agenda" onClick={() => setNotificationsOpen(false)}>
               <span className="announcement-icon"><Megaphone size={20} /></span>
               <span>
                 <strong>Studiereis-inschrijving geopend</strong>
