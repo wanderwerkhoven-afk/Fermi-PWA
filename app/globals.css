@@ -6912,3 +6912,9 @@ body.member-admin-modal-open{overflow:hidden}
 .agenda-card-with-preset {
   background-position: right center;
 }
+
+
+/* Activities CRM — Agenda artwork should preview from the right edge */
+.activity-admin-agenda-image-picker .activity-admin-image-option img {
+  object-position: right center;
+}
