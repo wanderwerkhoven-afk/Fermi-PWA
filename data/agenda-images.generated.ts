@@ -20,4 +20,13 @@ export const agendaContainerImages: AgendaActivityImage[] = [
   { path: "/images/agenda/activities/container-images/schilderen.png", fileName: "schilderen.png", label: "Schilderen" }
 ];
 
-export const agendaDetailImages: AgendaActivityImage[] = [];
+export const agendaDetailImages: AgendaActivityImage[] = [
+  { path: "/images/agenda/activities/detail-images/bowlen-fermi-colors.png", fileName: "bowlen-fermi-colors.png", label: "Bowlen Fermi Colors" },
+  { path: "/images/agenda/activities/detail-images/karten-fermi-colors.png", fileName: "karten-fermi-colors.png", label: "Karten Fermi Colors" },
+  { path: "/images/agenda/activities/detail-images/kerst-fermi-colors.png", fileName: "kerst-fermi-colors.png", label: "Kerst Fermi Colors" },
+  { path: "/images/agenda/activities/detail-images/lasergamen-fermi-colors.png", fileName: "lasergamen-fermi-colors.png", label: "Lasergamen Fermi Colors" },
+  { path: "/images/agenda/activities/detail-images/natuurkundige-lezing-fermi-colors.png", fileName: "natuurkundige-lezing-fermi-colors.png", label: "Natuurkundige Lezing Fermi Colors" },
+  { path: "/images/agenda/activities/detail-images/picknick-fermi-colors.png", fileName: "picknick-fermi-colors.png", label: "Picknick Fermi Colors" },
+  { path: "/images/agenda/activities/detail-images/poolen-fermi-colors.png", fileName: "poolen-fermi-colors.png", label: "Poolen Fermi Colors" },
+  { path: "/images/agenda/activities/detail-images/quantum-computer-fermi-colors.png", fileName: "quantum-computer-fermi-colors.png", label: "Quantum Computer Fermi Colors" }
+];
