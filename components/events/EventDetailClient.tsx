@@ -45,20 +45,49 @@ function FermiMark() {
   );
 }
 
-export default function EventDetailClient({ initialEvent }: { initialEvent: AgendaEvent }) {
-  const [event, setEvent] = useState<AgendaEvent>(initialEvent);
+export default function EventDetailClient({ slug }: { slug: string }) {
+  const [event, setEvent] = useState<AgendaEvent | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-    getActivity(initialEvent.slug)
+    setLoading(true);
+
+    getActivity(slug)
       .then((activity) => {
-        if (active && activity) setEvent(activity);
+        if (active) setEvent(activity);
       })
-      .catch((error) => console.error("Activiteit laden uit Firebase mislukt", error));
+      .catch((error) => {
+        console.error("Activiteit laden uit Firebase mislukt", error);
+        if (active) setEvent(null);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
     return () => {
       active = false;
     };
-  }, [initialEvent.slug]);
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <main className="app-shell event-detail-shell">
+        <div className="event-detail-loading">Activiteit laden…</div>
+      </main>
+    );
+  }
+
+  if (!event) {
+    return (
+      <main className="app-shell event-detail-shell">
+        <div className="event-detail-loading">
+          <strong>Activiteit niet gevonden</strong>
+          <Link href="/agenda">Terug naar agenda</Link>
+        </div>
+      </main>
+    );
+  }
 
   const travel = event.detailVariant === "travel" ? event.travel : undefined;
   const detailHeroImage = resolveEventImagePath(event.detailImagePath)
