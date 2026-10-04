@@ -263,6 +263,8 @@ export default function HomePage() {
               style={resolveHomeFeaturedImage(featuredActivity) ? {
                 backgroundImage: `url("${resolveHomeFeaturedImage(featuredActivity)}")`,
                 backgroundPosition: "right center",
+                backgroundSize: "contain",
+                backgroundRepeat: "no-repeat",
               } : undefined}
               aria-hidden="true"
             />
