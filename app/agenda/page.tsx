@@ -14,7 +14,6 @@ import {
   UsersRound,
 } from "lucide-react";
 import {
-  agendaEvents,
   type AgendaBackgroundPreset,
   type AgendaEvent,
 } from "@/data/agenda-events";
@@ -143,7 +142,7 @@ function getEventEnd(event: AgendaEvent) {
 export default function AgendaPage() {
   const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
-  const [events, setEvents] = useState<AgendaEvent[]>(agendaEvents);
+  const [events, setEvents] = useState<AgendaEvent[]>([]);
   const [activeFilter, setActiveFilter] = useState<AgendaFilter>("Alles");
 
   useEffect(() => {
@@ -268,7 +267,7 @@ export default function AgendaPage() {
 
           return (
           <Link
-            href={`/agenda/${event.slug}`}
+            href={`/agenda/activiteit?slug=${encodeURIComponent(event.slug)}`}
             className="agenda-card-link"
             key={event.slug}
             aria-label={`Bekijk ${event.title}`}
