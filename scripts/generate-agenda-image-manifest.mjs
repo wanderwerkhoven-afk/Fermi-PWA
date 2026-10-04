@@ -67,6 +67,8 @@ export type AgendaActivityImage = {
 export const agendaContainerImages: AgendaActivityImage[] = ${JSON.stringify(containerImages, null, 2)};
 
 export const agendaDetailImages: AgendaActivityImage[] = ${JSON.stringify(detailImages, null, 2)};
+
+export const homeFeaturedImages: AgendaActivityImage[] = ${JSON.stringify(featuredImages, null, 2)};
 `;
 
 await writeFile(outputFile, source, "utf8");
