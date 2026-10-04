@@ -21,7 +21,7 @@ import {
 import { auth } from "../../../lib/firebase";
 import { getUserProfile } from "../../../lib/services/users";
 import { listActivities, saveActivity, type ActivityData } from "../../../lib/services/activities";
-import { agendaContainerImages, agendaDetailImages } from "../../../data/agenda-images.generated";
+import { agendaContainerImages, agendaDetailImages, homeFeaturedImages } from "../../../data/agenda-images.generated";
 import type { AgendaEvent } from "../../../data/agenda-events";
 
 const monthShort = ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AUG","SEP","OKT","NOV","DEC"];
@@ -46,6 +46,7 @@ type FormState = {
   practicalText: string;
   imagePath: string;
   detailImagePath: string;
+  featuredImagePath: string;
   showInAgenda: boolean;
   featured: boolean;
 };
@@ -67,6 +68,7 @@ const emptyForm: FormState = {
   practicalText: "",
   imagePath: "",
   detailImagePath: "",
+  featuredImagePath: "",
   showInAgenda: true,
   featured: false,
 };
@@ -122,6 +124,7 @@ function formFromActivity(event: ActivityData): FormState {
       event.imagePath || (event.backgroundPreset ? `/images/agenda/activities/container-images/${event.backgroundPreset}.png` : ""),
     ),
     detailImagePath: event.detailImagePath || "",
+    featuredImagePath: event.featuredImagePath || "",
     showInAgenda: event.showInAgenda !== false,
     featured: event.featured === true,
   };
@@ -154,6 +157,7 @@ function activityFromForm(form: FormState, existing?: ActivityData): ActivityDat
     art: existing?.art || "meeting",
     imagePath: form.imagePath || undefined,
     detailImagePath: form.detailImagePath || undefined,
+    featuredImagePath: form.featuredImagePath || undefined,
     organizer: form.organizer.trim() || "S.V. Fermi Bestuur",
     price: form.price.trim() || "Gratis",
     capacity: Math.max(0, Number(form.capacity) || 0),
@@ -614,6 +618,52 @@ export default function ActiviteitenAdminPage() {
                 </div>
 
                 {form.imagePath && <small className="activity-admin-image-path">{form.imagePath}</small>}
+              </section>
+
+              <section>
+                <h3>Featured-afbeelding</h3>
+                <p className="activity-admin-section-help">
+                  Deze afbeelding wordt gebruikt voor de grote featured activiteit op Home.
+                </p>
+
+                <div className="activity-admin-image-picker" role="listbox" aria-label="Kies featured-afbeelding">
+                  <button
+                    type="button"
+                    className={`activity-admin-image-option activity-admin-image-none ${form.featuredImagePath ? "" : "active"}`}
+                    onClick={() => updateForm("featuredImagePath", "")}
+                    aria-selected={!form.featuredImagePath}
+                  >
+                    <span>Gebruik automatisch bijpassende afbeelding</span>
+                  </button>
+
+                  {homeFeaturedImages.map((image) => (
+                    <div className="activity-admin-image-cell" key={`featured-${image.path}`}>
+                      <button
+                        type="button"
+                        className={`activity-admin-image-option ${form.featuredImagePath === image.path ? "active" : ""}`}
+                        onClick={() => updateForm("featuredImagePath", image.path)}
+                        aria-selected={form.featuredImagePath === image.path}
+                      >
+                        <img src={`/Fermi-PWA${image.path}`} alt="" />
+                        <span>{image.label}</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {form.featuredImagePath && (
+                  <div
+                    className="activity-admin-preset-preview"
+                    style={{
+                      backgroundImage: `url("/Fermi-PWA${form.featuredImagePath}")`,
+                      backgroundPosition: "right center",
+                    }}
+                  >
+                    <span>{form.title || "Featured voorbeeld"}</span>
+                  </div>
+                )}
+
+                {form.featuredImagePath && <small className="activity-admin-image-path">{form.featuredImagePath}</small>}
               </section>
 
               <section>
