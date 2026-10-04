@@ -141,8 +141,8 @@ function getEventEnd(event: AgendaEvent) {
 }
 
 export default function AgendaPage() {
-  const [selectedMonth, setSelectedMonth] = useState(10);
-  const [selectedYear, setSelectedYear] = useState(2025);
+  const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
   const [events, setEvents] = useState<AgendaEvent[]>(agendaEvents);
   const [activeFilter, setActiveFilter] = useState<AgendaFilter>("Alles");
 
