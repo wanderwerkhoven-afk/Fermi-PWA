@@ -92,9 +92,24 @@ export const agendaContainerImages: AgendaActivityImage[] = [
 
 export const agendaDetailImages: AgendaActivityImage[] = [
   {
+    "path": "/images/agenda/activities/detail-images/boottocht-fermi-colors.png",
+    "fileName": "boottocht-fermi-colors.png",
+    "label": "Boottocht Fermi Colors"
+  },
+  {
+    "path": "/images/agenda/activities/detail-images/borrel-fermi-colors.png",
+    "fileName": "borrel-fermi-colors.png",
+    "label": "Borrel Fermi Colors"
+  },
+  {
     "path": "/images/agenda/activities/detail-images/bowlen-fermi-colors.png",
     "fileName": "bowlen-fermi-colors.png",
     "label": "Bowlen Fermi Colors"
+  },
+  {
+    "path": "/images/agenda/activities/detail-images/juridisch-fermi-colors.png",
+    "fileName": "juridisch-fermi-colors.png",
+    "label": "Juridisch Fermi Colors"
   },
   {
     "path": "/images/agenda/activities/detail-images/karten-fermi-colors.png",
@@ -135,6 +150,11 @@ export const agendaDetailImages: AgendaActivityImage[] = [
     "path": "/images/agenda/activities/detail-images/quantum-computer-fermi-colors.png",
     "fileName": "quantum-computer-fermi-colors.png",
     "label": "Quantum Computer Fermi Colors"
+  },
+  {
+    "path": "/images/agenda/activities/detail-images/schilderen-fermi-colors.png",
+    "fileName": "schilderen-fermi-colors.png",
+    "label": "Schilderen Fermi Colors"
   },
   {
     "path": "/images/agenda/activities/detail-images/studiereis-eindhoven-fermi-colors.png",
