@@ -7342,16 +7342,35 @@ body.member-admin-modal-open{overflow:hidden}
 }
 
 
-/* Home featured activity — artwork anchored to the card's bottom-right corner */
+/* Home featured activity — transparent artwork behaves like a sticker */
+.home-featured-event {
+  overflow: visible;
+}
+
 .home-featured-art-live {
-  background-size: 130% auto !important;
-  background-position: right bottom !important;
-  background-repeat: no-repeat !important;
+  overflow: visible;
+  position: relative;
+}
+
+.home-featured-art-live img {
+  position: absolute;
+  right: -18px;
+  bottom: -10px;
+  width: auto;
+  height: 116%;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+  transform: none;
+  transform-origin: right bottom;
+  pointer-events: none;
+  z-index: 2;
 }
 
 @media (max-width: 420px) {
-  .home-featured-art-live {
-    background-size: 138% auto !important;
-    background-position: right bottom !important;
+  .home-featured-art-live img {
+    right: -14px;
+    bottom: -8px;
+    height: 112%;
   }
 }
