@@ -42,6 +42,16 @@ type FormState = {
   pinned: boolean;
 };
 
+const routeOptions = [
+  { value: "/", label: "Home" },
+  { value: "/agenda", label: "Agenda" },
+  { value: "/fermi", label: "Fermi" },
+  { value: "/fermi/bestuur", label: "Bestuur" },
+  { value: "/community", label: "Community" },
+  { value: "/community/fotoalbums", label: "Fotoalbums" },
+  { value: "/profiel", label: "Profiel" },
+] as const;
+
 const emptyForm: FormState = {
   id: "",
   title: "",
@@ -370,7 +380,19 @@ export default function MededelingenAdminPage() {
                   <input value={form.actionLabel} onChange={(event) => updateForm("actionLabel", event.target.value)} placeholder="Bijv. Bekijk agenda" />
                 </label>
                 <label>Route
-                  <input value={form.actionRoute} onChange={(event) => updateForm("actionRoute", event.target.value)} placeholder="/agenda" />
+                  <select
+                    value={form.actionRoute}
+                    onChange={(event) => updateForm("actionRoute", event.target.value)}
+                  >
+                    {!routeOptions.some((route) => route.value === form.actionRoute) && form.actionRoute && (
+                      <option value={form.actionRoute}>Huidige route · {form.actionRoute}</option>
+                    )}
+                    {routeOptions.map((route) => (
+                      <option key={route.value} value={route.value}>
+                        {route.label}
+                      </option>
+                    ))}
+                  </select>
                 </label>
               </section>
 
