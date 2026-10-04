@@ -7172,3 +7172,171 @@ body.member-admin-modal-open{overflow:hidden}
   right: 12px;
   bottom: 10px;
 }
+
+
+/* S.V. Fermi custom 404 */
+.fermi-404-shell {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: max(28px, env(safe-area-inset-top)) 18px max(28px, env(safe-area-inset-bottom));
+}
+
+.fermi-404-card {
+  position: relative;
+  width: min(100%, 480px);
+  overflow: hidden;
+  border: 1px solid rgba(132,184,212,.18);
+  border-radius: 28px;
+  background:
+    linear-gradient(160deg, rgba(244,234,220,.06), rgba(3,29,44,.22)),
+    rgba(3,29,44,.74);
+  box-shadow: 0 24px 70px rgba(0,0,0,.28);
+}
+
+.fermi-404-art {
+  position: relative;
+  min-height: 270px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(255,122,26,.22), transparent 28%),
+    linear-gradient(180deg, rgba(255,122,26,.08), transparent 70%);
+}
+
+.fermi-404-core {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 122px;
+  height: 122px;
+  border-radius: 50%;
+  background: var(--fermi-orange);
+  color: var(--fermi-navy-deep);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 46px;
+  font-weight: 900;
+  box-shadow: 0 18px 38px rgba(0,0,0,.24);
+}
+
+.fermi-404-atom {
+  position: absolute;
+  z-index: 3;
+  color: var(--fermi-paper);
+  opacity: .92;
+}
+
+.fermi-404-orbit {
+  position: absolute;
+  width: 245px;
+  height: 94px;
+  border: 2px solid rgba(244,234,220,.58);
+  border-radius: 50%;
+}
+
+.fermi-404-orbit.orbit-one {
+  transform: rotate(24deg);
+}
+
+.fermi-404-orbit.orbit-two {
+  transform: rotate(-24deg);
+}
+
+.fermi-404-spark {
+  position: absolute;
+  color: var(--fermi-orange);
+}
+
+.fermi-404-spark.spark-one {
+  top: 42px;
+  right: 48px;
+  transform: rotate(13deg);
+}
+
+.fermi-404-spark.spark-two {
+  left: 42px;
+  bottom: 52px;
+  opacity: .72;
+}
+
+.fermi-404-copy {
+  position: relative;
+  padding: 22px 22px 25px;
+  background: var(--fermi-paper);
+  color: var(--fermi-navy-deep);
+}
+
+.fermi-404-kicker {
+  color: var(--fermi-orange-dark);
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .095em;
+}
+
+.fermi-404-copy h1 {
+  max-width: 360px;
+  margin: 9px 0 11px;
+  font: 900 37px/.96 Georgia, "Times New Roman", serif;
+  letter-spacing: -.035em;
+}
+
+.fermi-404-copy p {
+  margin: 0;
+  max-width: 390px;
+  color: #324955;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.fermi-404-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.fermi-404-secondary {
+  min-height: 48px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(6,40,59,.16);
+  border-radius: 14px;
+  background: rgba(6,40,59,.08);
+  color: var(--fermi-navy-deep);
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.fermi-404-footnote {
+  display: block;
+  margin-top: 20px;
+  color: #6c7d85;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+
+@media (max-width: 420px) {
+  .fermi-404-art {
+    min-height: 235px;
+  }
+
+  .fermi-404-core {
+    width: 108px;
+    height: 108px;
+    font-size: 40px;
+  }
+
+  .fermi-404-orbit {
+    width: 215px;
+    height: 82px;
+  }
+
+  .fermi-404-copy h1 {
+    font-size: 32px;
+  }
+}
