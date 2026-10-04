@@ -7082,3 +7082,93 @@ body.member-admin-modal-open{overflow:hidden}
 .activity-admin-price-input input:focus {
   border-color: var(--fermi-orange);
 }
+
+
+/* Announcements CRM */
+.announcement-admin-filters {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.announcement-admin-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px minmax(0,1fr);
+  gap: 11px;
+  align-items: start;
+  padding: 12px 12px 52px;
+  border: 1px solid rgba(132,184,212,.15);
+  border-radius: 16px;
+  background: rgba(3,29,44,.64);
+}
+
+.announcement-admin-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(255,122,26,.14);
+  color: var(--fermi-orange);
+}
+
+.announcement-admin-copy {
+  min-width: 0;
+}
+
+.announcement-admin-copy h2 {
+  margin: 6px 0 5px;
+  color: var(--fermi-paper);
+  font: 800 18px/1.05 Georgia, serif;
+}
+
+.announcement-admin-copy p {
+  margin: 0;
+  color: var(--fermi-muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.announcement-admin-copy small {
+  display: block;
+  margin-top: 7px;
+  color: rgba(168,182,192,.76);
+  font-size: 8px;
+}
+
+.announcement-admin-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.announcement-admin-badges > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  font-size: 7.5px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.announcement-admin-badges .published {
+  background: rgba(84,182,123,.12);
+  color: #9ddfb8;
+}
+
+.announcement-admin-badges .hidden {
+  background: rgba(168,182,192,.10);
+  color: var(--fermi-muted);
+}
+
+.announcement-admin-badges .pinned {
+  background: rgba(255,122,26,.12);
+  color: var(--fermi-orange);
+}
+
+.announcement-admin-actions {
+  right: 12px;
+  bottom: 10px;
+}
