@@ -7340,3 +7340,11 @@ body.member-admin-modal-open{overflow:hidden}
     font-size: 32px;
   }
 }
+
+
+/* Home featured activity — show the CRM-selected featured PNG as artwork */
+.home-featured-art-live {
+  background-size: contain !important;
+  background-position: right center !important;
+  background-repeat: no-repeat !important;
+}
