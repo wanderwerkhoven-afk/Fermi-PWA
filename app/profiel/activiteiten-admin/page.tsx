@@ -580,16 +580,17 @@ export default function ActiviteitenAdminPage() {
                   </button>
 
                   {agendaContainerImages.map((image) => (
-                    <button
-                      type="button"
-                      key={`agenda-${image.path}`}
-                      className={`activity-admin-image-option ${form.imagePath === image.path ? "active" : ""}`}
-                      onClick={() => updateForm("imagePath", image.path)}
-                      aria-selected={form.imagePath === image.path}
-                    >
-                      <img src={`/Fermi-PWA${image.path}`} alt="" />
-                      <span>{image.label}</span>
-                    </button>
+                    <div className="activity-admin-image-cell" key={`agenda-${image.path}`}>
+                      <button
+                        type="button"
+                        className={`activity-admin-image-option ${form.imagePath === image.path ? "active" : ""}`}
+                        onClick={() => updateForm("imagePath", image.path)}
+                        aria-selected={form.imagePath === image.path}
+                      >
+                        <img src={`/Fermi-PWA${image.path}`} alt="" />
+                        <span>{image.label}</span>
+                      </button>
+                    </div>
                   ))}
                 </div>
 
@@ -613,16 +614,17 @@ export default function ActiviteitenAdminPage() {
                   </button>
 
                   {agendaDetailImages.map((image) => (
-                    <button
-                      type="button"
-                      key={`detail-${image.path}`}
-                      className={`activity-admin-image-option ${form.detailImagePath === image.path ? "active" : ""}`}
-                      onClick={() => updateForm("detailImagePath", image.path)}
-                      aria-selected={form.detailImagePath === image.path}
-                    >
-                      <img src={`/Fermi-PWA${image.path}`} alt="" />
-                      <span>{image.label}</span>
-                    </button>
+                    <div className="activity-admin-image-cell" key={`detail-${image.path}`}>
+                      <button
+                        type="button"
+                        className={`activity-admin-image-option ${form.detailImagePath === image.path ? "active" : ""}`}
+                        onClick={() => updateForm("detailImagePath", image.path)}
+                        aria-selected={form.detailImagePath === image.path}
+                      >
+                        <img src={`/Fermi-PWA${image.path}`} alt="" />
+                        <span>{image.label}</span>
+                      </button>
+                    </div>
                   ))}
                 </div>
 
