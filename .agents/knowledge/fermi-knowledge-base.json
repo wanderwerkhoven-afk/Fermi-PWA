@@ -113,6 +113,12 @@
       "route": "/profiel/activiteiten-admin/",
       "status": "implemented",
       "reference": "Admin-only Activities CRM for creating, editing, filtering, publishing/hiding and visually configuring agenda activities with reusable background presets."
+    },
+    {
+      "id": "announcements-admin",
+      "route": "/profiel/mededelingen-admin/",
+      "status": "implemented",
+      "reference": "Admin-only Mededelingen CRM for creating, editing, scheduling, pinning, publishing and hiding member announcements shown on Home."
     }
   ],
   "design_system": {
@@ -215,7 +221,8 @@
     "De Activities CRM bewaart alleen imagePath en detailImagePath op het activity-document; de app bouwt daar onder /Fermi-PWA de uiteindelijke asset-URL van. Dit houdt repository-assets en Firestore-data gescheiden.",
     "Nieuwe activiteiten worden als ActivityData naar Firestore collection activities geschreven en verschijnen via dezelfde service in de Agenda.",
     "Activiteiten zijn niet meer hardcoded in de repository: Firestore collection activities is de enige activity-datasource voor Agenda, Home/Binnenkort, Home/Volgende activiteit, Activities CRM en detailpagina's.",
-    "Activity detail navigation gebruikt de statische route /agenda/activiteit/?slug=<slug>, zodat nieuwe Firestore-activiteiten op GitHub Pages geen vooraf gegenereerde hardcoded slug-route nodig hebben."
+    "Activity detail navigation gebruikt de statische route /agenda/activiteit/?slug=<slug>, zodat nieuwe Firestore-activiteiten op GitHub Pages geen vooraf gegenereerde hardcoded slug-route nodig hebben.",
+    "Mededelingen worden beheerd via /profiel/mededelingen-admin/ en opgeslagen in Firestore collection announcements. Home leest alleen gepubliceerde mededelingen binnen hun start/einddatum; hardcoded Home-mededelingen zijn verwijderd."
   ],
   "open_decisions": [
     "Final custom image asset set."
