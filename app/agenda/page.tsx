@@ -74,14 +74,14 @@ function matchesAgendaFilter(event: AgendaEvent, filter: AgendaFilter) {
   const type = event.type.trim().toLowerCase();
 
   switch (filter) {
+    case "Activiteiten":
+      return type.includes("activiteit");
     case "Borrel":
       return type.includes("borrel");
     case "Lezingen":
       return type.includes("lezing") || type.includes("cursus");
     case "Reizen":
       return type.includes("reis");
-    case "Commissies":
-      return type.includes("commissie");
     default:
       return true;
   }
