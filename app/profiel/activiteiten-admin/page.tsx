@@ -21,7 +21,7 @@ import {
 import { auth } from "../../../lib/firebase";
 import { getUserProfile } from "../../../lib/services/users";
 import { listActivities, saveActivity, type ActivityData } from "../../../lib/services/activities";
-import { agendaActivityImages } from "../../../data/agenda-images.generated";
+import { agendaContainerImages, agendaDetailImages } from "../../../data/agenda-images.generated";
 import type { AgendaEvent } from "../../../data/agenda-events";
 
 const monthShort = ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AUG","SEP","OKT","NOV","DEC"];
@@ -84,6 +84,15 @@ function eventDate(event: AgendaEvent) {
   return new Date(Number(event.year), monthIndex, Number(event.day), 12);
 }
 
+function normalizeLegacyActivityImagePath(path: string) {
+  if (!path) return "";
+  if (path.includes("/container-images/") || path.includes("/detail-images/")) return path;
+  if (path.startsWith("/images/agenda/activities/")) {
+    return path.replace("/images/agenda/activities/", "/images/agenda/activities/container-images/");
+  }
+  return path;
+}
+
 function formFromActivity(event: ActivityData): FormState {
   const monthIndex = monthShort.indexOf(event.month);
   const date =
@@ -107,7 +116,9 @@ function formFromActivity(event: ActivityData): FormState {
     registrationDeadline: event.registrationDeadline,
     description: event.description,
     practicalText: (event.practical || []).join("\n"),
-    imagePath: event.imagePath || (event.backgroundPreset ? `/images/agenda/activities/${event.backgroundPreset}.png` : ""),
+    imagePath: normalizeLegacyActivityImagePath(
+      event.imagePath || (event.backgroundPreset ? `/images/agenda/activities/container-images/${event.backgroundPreset}.png` : ""),
+    ),
     detailImagePath: event.detailImagePath || "",
     showInAgenda: event.showInAgenda !== false,
   };
@@ -360,9 +371,11 @@ export default function ActiviteitenAdminPage() {
 
         <section className="activity-admin-list">
           {visibleActivities.map((activity) => {
-            const imagePath = activity.imagePath || (activity.backgroundPreset
-              ? `/images/agenda/activities/${activity.backgroundPreset}.png`
-              : "");
+            const imagePath = normalizeLegacyActivityImagePath(
+              activity.imagePath || (activity.backgroundPreset
+                ? `/images/agenda/activities/container-images/${activity.backgroundPreset}.png`
+                : ""),
+            );
             return (
               <article className="activity-admin-row" key={activity.slug}>
                 <div
@@ -566,7 +579,7 @@ export default function ActiviteitenAdminPage() {
                     <span>Geen afbeelding</span>
                   </button>
 
-                  {agendaActivityImages.map((image) => (
+                  {agendaContainerImages.map((image) => (
                     <button
                       type="button"
                       key={`agenda-${image.path}`}
@@ -586,7 +599,7 @@ export default function ActiviteitenAdminPage() {
               <section>
                 <h3>Detailpagina-afbeelding</h3>
                 <p className="activity-admin-section-help">
-                  Kies apart welke afbeelding als grote hero op de activiteit-detailpagina wordt gebruikt.
+                  Kies een afbeelding uit de aparte detail-images map voor de grote hero op de activiteit-detailpagina.
                 </p>
 
                 <div className="activity-admin-image-picker" role="listbox" aria-label="Kies detailpagina-afbeelding">
@@ -596,10 +609,10 @@ export default function ActiviteitenAdminPage() {
                     onClick={() => updateForm("detailImagePath", "")}
                     aria-selected={!form.detailImagePath}
                   >
-                    <span>Gebruik agenda-afbeelding</span>
+                    <span>Gebruik agenda-afbeelding als fallback</span>
                   </button>
 
-                  {agendaActivityImages.map((image) => (
+                  {agendaDetailImages.map((image) => (
                     <button
                       type="button"
                       key={`detail-${image.path}`}
