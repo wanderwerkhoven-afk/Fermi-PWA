@@ -6964,3 +6964,15 @@ body.member-admin-modal-open{overflow:hidden}
     max-width: calc((100% - 20px) / 3);
   }
 }
+
+
+/* Agenda — featured cards with repository artwork must not inherit the dotted featured background sizing */
+.agenda-card-redesign.featured.agenda-card-with-preset {
+  background-size: cover;
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+.agenda-card-redesign.featured.agenda-card-with-preset::after {
+  content: none;
+}
