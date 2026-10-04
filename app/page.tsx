@@ -99,33 +99,44 @@ export default function HomePage() {
   const homeUpcomingActivities = upcomingActivities.slice(featuredActivity ? 1 : 0, featuredActivity ? 4 : 3);
 
   useEffect(() => {
-    Promise.all([
-      listActivities(),
-      listPublishedAnnouncements(),
-    ])
-      .then(([activityItems, announcementItems]) => {
-        setActivities(activityItems);
-        setAnnouncements(announcementItems);
-      })
-      .catch((error) => console.error("Home data could not be loaded", error));
-  }, []);
-
-  useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
       if (!user) {
         setFermiUser(null);
         setMembership(null);
+        setActivities([]);
+        setAnnouncements([]);
         return;
       }
-      try {
-        const [profile, activeMembership] = await Promise.all([
-          getUserProfile(user.uid),
-          getActiveMembership(user.uid),
-        ]);
-        setFermiUser(profile);
-        setMembership(activeMembership);
-      } catch (error) {
-        console.error("Member pass data could not be loaded", error);
+
+      const [profileResult, membershipResult, activitiesResult, announcementsResult] = await Promise.allSettled([
+        getUserProfile(user.uid),
+        getActiveMembership(user.uid),
+        listActivities(),
+        listPublishedAnnouncements(),
+      ]);
+
+      if (profileResult.status === "fulfilled") {
+        setFermiUser(profileResult.value);
+      } else {
+        console.error("Profile data could not be loaded", profileResult.reason);
+      }
+
+      if (membershipResult.status === "fulfilled") {
+        setMembership(membershipResult.value);
+      } else {
+        console.error("Member pass data could not be loaded", membershipResult.reason);
+      }
+
+      if (activitiesResult.status === "fulfilled") {
+        setActivities(activitiesResult.value);
+      } else {
+        console.error("Upcoming activities could not be loaded", activitiesResult.reason);
+      }
+
+      if (announcementsResult.status === "fulfilled") {
+        setAnnouncements(announcementsResult.value);
+      } else {
+        console.error("Announcements could not be loaded", announcementsResult.reason);
       }
     });
   }, []);
