@@ -104,7 +104,7 @@ const months = [
 
 const agendaCardStyle = {
   standard: "agenda-card agenda-card-redesign",
-  nextUpcoming: "agenda-card agenda-card-redesign featured",
+  featured: "agenda-card agenda-card-redesign featured",
 } as const;
 
 function getEventDateParts(event: AgendaEvent) {
@@ -156,14 +156,6 @@ export default function AgendaPage() {
       active = false;
     };
   }, []);
-
-  const nextUpcomingSlug = useMemo(() => {
-    const now = Date.now();
-
-    return events
-      .filter((event) => event.showInAgenda !== false && getEventEnd(event) >= now)
-      .sort((a, b) => getEventStart(a) - getEventStart(b))[0]?.slug ?? null;
-  }, [events]);
 
   const selectedEvents = useMemo(
     () =>
@@ -260,7 +252,7 @@ export default function AgendaPage() {
 
       <section className="agenda-list agenda-list-redesign">
         {selectedEvents.map((event) => {
-          const isNextUpcoming = event.slug === nextUpcomingSlug;
+          const isFeatured = event.featured === true;
           const backgroundPreset = resolveAgendaBackgroundPreset(event);
           const backgroundImage = resolveActivityImagePath(event.imagePath)
             || (backgroundPreset ? agendaBackgroundPresets[backgroundPreset] : null);
@@ -273,7 +265,7 @@ export default function AgendaPage() {
             aria-label={`Bekijk ${event.title}`}
           >
             <article
-              className={`${isNextUpcoming ? agendaCardStyle.nextUpcoming : agendaCardStyle.standard}${backgroundImage ? " agenda-card-with-preset" : ""}`}
+              className={`${isFeatured ? agendaCardStyle.featured : agendaCardStyle.standard}${backgroundImage ? " agenda-card-with-preset" : ""}`}
               style={backgroundImage ? { backgroundImage: `url("${backgroundImage}")` } : undefined}
             >
               <div className="agenda-date agenda-date-redesign">
@@ -287,7 +279,7 @@ export default function AgendaPage() {
                 <p><Clock3 size={16} /> {event.time}</p>
                 <p><MapPin size={16} /> {event.location}</p>
 
-                {isNextUpcoming && (
+                {isFeatured && (
                   <span className="agenda-detail-button">
                     Bekijk details <ChevronRight size={19} />
                   </span>
@@ -300,7 +292,7 @@ export default function AgendaPage() {
                 </div>
               )}
 
-              {!isNextUpcoming && <ChevronRight className="agenda-card-chevron" size={22} />}
+              {!isFeatured && <ChevronRight className="agenda-card-chevron" size={22} />}
             </article>
           </Link>
           );
