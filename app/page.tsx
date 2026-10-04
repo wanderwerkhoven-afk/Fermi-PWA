@@ -243,6 +243,7 @@ export default function HomePage() {
               className={`featured-art home-featured-art${resolveHomeActivityImage(featuredActivity) ? " home-featured-art-live" : ""}`}
               style={resolveHomeActivityImage(featuredActivity) ? {
                 backgroundImage: `url("${resolveHomeActivityImage(featuredActivity)}")`,
+                backgroundPosition: "right center",
               } : undefined}
               aria-hidden="true"
             />
