@@ -47,6 +47,7 @@ type FormState = {
   imagePath: string;
   detailImagePath: string;
   showInAgenda: boolean;
+  featured: boolean;
 };
 
 const emptyForm: FormState = {
@@ -67,6 +68,7 @@ const emptyForm: FormState = {
   imagePath: "",
   detailImagePath: "",
   showInAgenda: true,
+  featured: false,
 };
 
 function slugify(value: string) {
@@ -121,6 +123,7 @@ function formFromActivity(event: ActivityData): FormState {
     ),
     detailImagePath: event.detailImagePath || "",
     showInAgenda: event.showInAgenda !== false,
+    featured: event.featured === true,
   };
 }
 
@@ -159,6 +162,7 @@ function activityFromForm(form: FormState, existing?: ActivityData): ActivityDat
     description: form.description.trim(),
     practical: form.practicalText.split("\n").map((item) => item.trim()).filter(Boolean),
     showInAgenda: form.showInAgenda,
+    featured: form.featured,
   };
 }
 
@@ -662,6 +666,17 @@ export default function ActiviteitenAdminPage() {
                   <div className="activity-admin-segmented compact" role="group" aria-label="Zichtbaarheid agenda">
                     <button type="button" className={form.showInAgenda ? "active" : ""} onClick={() => updateForm("showInAgenda", true)}>Aan</button>
                     <button type="button" className={!form.showInAgenda ? "active" : ""} onClick={() => updateForm("showInAgenda", false)}>Uit</button>
+                  </div>
+                </div>
+
+                <div className="activity-admin-visibility-card">
+                  <div>
+                    <strong>Featured op Home</strong>
+                    <small>Zet aan om deze activiteit als featured activiteit op Home te markeren.</small>
+                  </div>
+                  <div className="activity-admin-segmented compact" role="group" aria-label="Featured op Home">
+                    <button type="button" className={form.featured ? "active" : ""} onClick={() => updateForm("featured", true)}>Aan</button>
+                    <button type="button" className={!form.featured ? "active" : ""} onClick={() => updateForm("featured", false)}>Uit</button>
                   </div>
                 </div>
               </section>
