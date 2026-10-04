@@ -7007,3 +7007,33 @@ body.member-admin-modal-open{overflow:hidden}
   position: relative;
   z-index: 3;
 }
+
+
+/* Agenda — featured artwork treatment: warm orange gradient + white copy */
+.agenda-card-redesign.featured.agenda-card-with-preset::before {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(121,48,8,.94) 0%,
+      rgba(173,71,12,.82) 24%,
+      rgba(218,92,18,.56) 46%,
+      rgba(255,122,26,.20) 66%,
+      rgba(255,122,26,0) 84%
+    );
+}
+
+.agenda-card-redesign.featured.agenda-card-with-preset h2,
+.agenda-card-redesign.featured.agenda-card-with-preset p {
+  color: var(--fermi-white);
+  text-shadow: 0 2px 8px rgba(3,29,44,.46);
+}
+
+.agenda-card-redesign.featured.agenda-card-with-preset .agenda-type {
+  color: var(--fermi-navy-deep);
+  text-shadow: none;
+}
+
+.agenda-card-redesign.featured.agenda-card-with-preset .agenda-detail-button {
+  color: var(--fermi-navy-deep);
+  text-shadow: none;
+}
