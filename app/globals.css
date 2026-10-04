@@ -7356,14 +7356,14 @@ body.member-admin-modal-open{overflow:hidden}
 
 .home-featured-art-live img {
   position: absolute;
-  right: -28px;
-  bottom: -18px;
+  right: 0;
+  bottom: 0;
   width: 54%;
   height: auto;
   max-width: none;
   max-height: none;
   object-fit: contain;
-  transform: none;
+  transform: translateY(-10%);
   transform-origin: right bottom;
   pointer-events: none;
   z-index: 3;
@@ -7371,8 +7371,9 @@ body.member-admin-modal-open{overflow:hidden}
 
 @media (max-width: 420px) {
   .home-featured-art-live img {
-    right: -22px;
-    bottom: -14px;
+    right: 0;
+    bottom: 0;
     width: 56%;
+    transform: translateY(-12%);
   }
 }
