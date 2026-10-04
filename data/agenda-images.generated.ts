@@ -8,25 +8,137 @@ export type AgendaActivityImage = {
 };
 
 export const agendaContainerImages: AgendaActivityImage[] = [
-  { path: "/images/agenda/activities/container-images/boottocht.png", fileName: "boottocht.png", label: "Boottocht" },
-  { path: "/images/agenda/activities/container-images/bowlen.png", fileName: "bowlen.png", label: "Bowlen" },
-  { path: "/images/agenda/activities/container-images/karten.png", fileName: "karten.png", label: "Karten" },
-  { path: "/images/agenda/activities/container-images/kerst.png", fileName: "kerst.png", label: "Kerst" },
-  { path: "/images/agenda/activities/container-images/lasergamen.png", fileName: "lasergamen.png", label: "Lasergamen" },
-  { path: "/images/agenda/activities/container-images/nieuwjaar.png", fileName: "nieuwjaar.png", label: "Nieuwjaar" },
-  { path: "/images/agenda/activities/container-images/pasen.png", fileName: "pasen.png", label: "Pasen" },
-  { path: "/images/agenda/activities/container-images/picknick.png", fileName: "picknick.png", label: "Picknick" },
-  { path: "/images/agenda/activities/container-images/poolen.png", fileName: "poolen.png", label: "Poolen" },
-  { path: "/images/agenda/activities/container-images/schilderen.png", fileName: "schilderen.png", label: "Schilderen" }
+  {
+    "path": "/images/agenda/activities/container-images/boottocht.png",
+    "fileName": "boottocht.png",
+    "label": "Boottocht"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/borrel.png",
+    "fileName": "borrel.png",
+    "label": "Borrel"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/bowlen.png",
+    "fileName": "bowlen.png",
+    "label": "Bowlen"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/juridisch.png",
+    "fileName": "juridisch.png",
+    "label": "Juridisch"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/karten.png",
+    "fileName": "karten.png",
+    "label": "Karten"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/kerst.png",
+    "fileName": "kerst.png",
+    "label": "Kerst"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/lasergamen.png",
+    "fileName": "lasergamen.png",
+    "label": "Lasergamen"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/natuurkunde-onderwerp.png",
+    "fileName": "natuurkunde-onderwerp.png",
+    "label": "Natuurkunde Onderwerp"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/nieuwjaar.png",
+    "fileName": "nieuwjaar.png",
+    "label": "Nieuwjaar"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/pasen.png",
+    "fileName": "pasen.png",
+    "label": "Pasen"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/picknick.png",
+    "fileName": "picknick.png",
+    "label": "Picknick"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/poolen.png",
+    "fileName": "poolen.png",
+    "label": "Poolen"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/pubquiz.png",
+    "fileName": "pubquiz.png",
+    "label": "Pubquiz"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/quantum-computer.png",
+    "fileName": "quantum-computer.png",
+    "label": "Quantum Computer"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/schilderen.png",
+    "fileName": "schilderen.png",
+    "label": "Schilderen"
+  },
+  {
+    "path": "/images/agenda/activities/container-images/studiereis-eindhoven.png",
+    "fileName": "studiereis-eindhoven.png",
+    "label": "Studiereis Eindhoven"
+  }
 ];
 
 export const agendaDetailImages: AgendaActivityImage[] = [
-  { path: "/images/agenda/activities/detail-images/bowlen-fermi-colors.png", fileName: "bowlen-fermi-colors.png", label: "Bowlen Fermi Colors" },
-  { path: "/images/agenda/activities/detail-images/karten-fermi-colors.png", fileName: "karten-fermi-colors.png", label: "Karten Fermi Colors" },
-  { path: "/images/agenda/activities/detail-images/kerst-fermi-colors.png", fileName: "kerst-fermi-colors.png", label: "Kerst Fermi Colors" },
-  { path: "/images/agenda/activities/detail-images/lasergamen-fermi-colors.png", fileName: "lasergamen-fermi-colors.png", label: "Lasergamen Fermi Colors" },
-  { path: "/images/agenda/activities/detail-images/natuurkundige-lezing-fermi-colors.png", fileName: "natuurkundige-lezing-fermi-colors.png", label: "Natuurkundige Lezing Fermi Colors" },
-  { path: "/images/agenda/activities/detail-images/picknick-fermi-colors.png", fileName: "picknick-fermi-colors.png", label: "Picknick Fermi Colors" },
-  { path: "/images/agenda/activities/detail-images/poolen-fermi-colors.png", fileName: "poolen-fermi-colors.png", label: "Poolen Fermi Colors" },
-  { path: "/images/agenda/activities/detail-images/quantum-computer-fermi-colors.png", fileName: "quantum-computer-fermi-colors.png", label: "Quantum Computer Fermi Colors" }
+  {
+    "path": "/images/agenda/activities/detail-images/bowlen-fermi-colors.png",
+    "fileName": "bowlen-fermi-colors.png",
+    "label": "Bowlen Fermi Colors"
+  },
+  {
+    "path": "/images/agenda/activities/detail-images/karten-fermi-colors.png",
+    "fileName": "karten-fermi-colors.png",
+    "label": "Karten Fermi Colors"
+  },
+  {
+    "path": "/images/agenda/activities/detail-images/kerst-fermi-colors.png",
+    "fileName": "kerst-fermi-colors.png",
+    "label": "Kerst Fermi Colors"
+  },
+  {
+    "path": "/images/agenda/activities/detail-images/lasergamen-fermi-colors.png",
+    "fileName": "lasergamen-fermi-colors.png",
+    "label": "Lasergamen Fermi Colors"
+  },
+  {
+    "path": "/images/agenda/activities/detail-images/natuurkundige-lezing-fermi-colors.png",
+    "fileName": "natuurkundige-lezing-fermi-colors.png",
+    "label": "Natuurkundige Lezing Fermi Colors"
+  },
+  {
+    "path": "/images/agenda/activities/detail-images/picknick-fermi-colors.png",
+    "fileName": "picknick-fermi-colors.png",
+    "label": "Picknick Fermi Colors"
+  },
+  {
+    "path": "/images/agenda/activities/detail-images/poolen-fermi-colors.png",
+    "fileName": "poolen-fermi-colors.png",
+    "label": "Poolen Fermi Colors"
+  },
+  {
+    "path": "/images/agenda/activities/detail-images/pubquiz-fermi-colors.png",
+    "fileName": "pubquiz-fermi-colors.png",
+    "label": "Pubquiz Fermi Colors"
+  },
+  {
+    "path": "/images/agenda/activities/detail-images/quantum-computer-fermi-colors.png",
+    "fileName": "quantum-computer-fermi-colors.png",
+    "label": "Quantum Computer Fermi Colors"
+  },
+  {
+    "path": "/images/agenda/activities/detail-images/studiereis-eindhoven-fermi-colors.png",
+    "fileName": "studiereis-eindhoven-fermi-colors.png",
+    "label": "Studiereis Eindhoven Fermi Colors"
+  }
 ];
