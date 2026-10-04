@@ -7045,3 +7045,40 @@ body.member-admin-modal-open{overflow:hidden}
   background-position: center;
   background-repeat: no-repeat;
 }
+
+
+/* Activities CRM — custom paid price input */
+.activity-admin-paid-price {
+  display: grid;
+  gap: 10px;
+}
+
+.activity-admin-price-input {
+  display: grid;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.activity-admin-price-input > span {
+  color: var(--fermi-muted);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.activity-admin-price-input input {
+  width: 100%;
+  height: 42px;
+  padding: 0 11px;
+  border: 1px solid rgba(132,184,212,.20);
+  border-radius: 11px;
+  background: var(--fermi-navy-deep);
+  color: var(--fermi-white);
+  outline: none;
+  font-size: 11px;
+}
+
+.activity-admin-price-input input:focus {
+  border-color: var(--fermi-orange);
+}
