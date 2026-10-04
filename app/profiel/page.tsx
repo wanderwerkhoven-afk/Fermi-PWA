@@ -22,6 +22,7 @@ import {
   UsersRound,
   UserCog,
   CalendarCog,
+  Megaphone,
 } from "lucide-react";
 
 const menuItems = [
@@ -110,6 +111,12 @@ export default function ProfilePage() {
           subtitle: "Agenda en activiteitsgegevens beheren",
           icon: CalendarCog,
           href: "/profiel/activiteiten-admin",
+        },
+        {
+          title: "Mededelingen admin",
+          subtitle: "Berichten op Home publiceren en beheren",
+          icon: Megaphone,
+          href: "/profiel/mededelingen-admin",
         },
       ]
     : menuItems;
