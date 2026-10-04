@@ -7349,28 +7349,30 @@ body.member-admin-modal-open{overflow:hidden}
 
 .home-featured-art-live {
   overflow: visible;
-  position: relative;
+  position: static;
+  min-height: 0;
+  padding: 0;
 }
 
 .home-featured-art-live img {
   position: absolute;
-  right: -18px;
-  bottom: -10px;
-  width: auto;
-  height: 116%;
+  right: -28px;
+  bottom: -18px;
+  width: 54%;
+  height: auto;
   max-width: none;
   max-height: none;
   object-fit: contain;
   transform: none;
   transform-origin: right bottom;
   pointer-events: none;
-  z-index: 2;
+  z-index: 3;
 }
 
 @media (max-width: 420px) {
   .home-featured-art-live img {
-    right: -14px;
-    bottom: -8px;
-    height: 112%;
+    right: -22px;
+    bottom: -14px;
+    width: 56%;
   }
 }
