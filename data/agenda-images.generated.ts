@@ -157,6 +157,11 @@ export const agendaDetailImages: AgendaActivityImage[] = [
     "label": "Schilderen Fermi Colors"
   },
   {
+    "path": "/images/agenda/activities/detail-images/studiereis-barcelona-fermi-colors.png",
+    "fileName": "studiereis-barcelona-fermi-colors.png",
+    "label": "Studiereis Barcelona Fermi Colors"
+  },
+  {
     "path": "/images/agenda/activities/detail-images/studiereis-eindhoven-fermi-colors.png",
     "fileName": "studiereis-eindhoven-fermi-colors.png",
     "label": "Studiereis Eindhoven Fermi Colors"
