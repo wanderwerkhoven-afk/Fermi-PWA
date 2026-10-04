@@ -63,6 +63,16 @@ function resolveHomeActivityImage(event: AgendaEvent) {
   return path;
 }
 
+function resolveHomeFeaturedImage(event: AgendaEvent) {
+  const source = event.imagePath
+    || (event.backgroundPreset ? `/images/agenda/activities/container-images/${event.backgroundPreset}.png` : "");
+
+  const fileName = source.split("/").pop();
+  if (!fileName) return resolveHomeActivityImage(event);
+
+  return `/Fermi-PWA/images/home/featured/${fileName}`;
+}
+
 function eventEnd(event: AgendaEvent) {
   const monthIndex = monthOrder.indexOf(event.month);
   if (monthIndex < 0) return Number.NEGATIVE_INFINITY;
@@ -241,9 +251,9 @@ export default function HomePage() {
             </div>
 
             <div
-              className={`featured-art home-featured-art${resolveHomeActivityImage(featuredActivity) ? " home-featured-art-live" : ""}`}
-              style={resolveHomeActivityImage(featuredActivity) ? {
-                backgroundImage: `url("${resolveHomeActivityImage(featuredActivity)}")`,
+              className={`featured-art home-featured-art${resolveHomeFeaturedImage(featuredActivity) ? " home-featured-art-live" : ""}`}
+              style={resolveHomeFeaturedImage(featuredActivity) ? {
+                backgroundImage: `url("${resolveHomeFeaturedImage(featuredActivity)}")`,
                 backgroundPosition: "right center",
               } : undefined}
               aria-hidden="true"
