@@ -6918,3 +6918,49 @@ body.member-admin-modal-open{overflow:hidden}
 .activity-admin-agenda-image-picker .activity-admin-image-option img {
   object-position: right center;
 }
+
+
+/* Activities CRM — Safari-safe non-overlapping image layout */
+.activity-admin-image-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: 10px;
+}
+
+.activity-admin-image-cell,
+.activity-admin-image-picker > .activity-admin-image-none {
+  flex: 0 0 calc(50% - 5px);
+  width: calc(50% - 5px);
+  max-width: calc(50% - 5px);
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.activity-admin-image-cell {
+  position: relative;
+  overflow: hidden;
+}
+
+.activity-admin-image-cell .activity-admin-image-option {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.activity-admin-image-picker > .activity-admin-image-none {
+  height: auto;
+}
+
+@media (min-width: 560px) {
+  .activity-admin-image-cell,
+  .activity-admin-image-picker > .activity-admin-image-none {
+    flex-basis: calc((100% - 20px) / 3);
+    width: calc((100% - 20px) / 3);
+    max-width: calc((100% - 20px) / 3);
+  }
+}
