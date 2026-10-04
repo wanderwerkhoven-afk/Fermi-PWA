@@ -26,7 +26,7 @@ import type { AgendaEvent } from "../../../data/agenda-events";
 
 const monthShort = ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AUG","SEP","OKT","NOV","DEC"];
 const activityTypes = ["ACTIVITEIT","BORREL","CURSUS","LEZING","COMMISSIE","STUDIEREIS","VERGADERING"];
-const organizers = ["S.V. Fermi","AcCom","EduCom","Bestuur S.V. Fermi"];
+const organizers = ["AcCom","EduCom","StuReCom","Ledeninitiatief","S.V. Fermi Bestuur"];
 const capacityPresets = [20, 30, 40, 50, 60, 80];
 
 type FormState = {
@@ -58,7 +58,7 @@ const emptyForm: FormState = {
   endTime: "22:00",
   location: "",
   address: "",
-  organizer: "S.V. Fermi",
+  organizer: "S.V. Fermi Bestuur",
   price: "Gratis",
   capacity: "40",
   registrationDeadline: "",
@@ -151,7 +151,7 @@ function activityFromForm(form: FormState, existing?: ActivityData): ActivityDat
     art: existing?.art || "meeting",
     imagePath: form.imagePath || undefined,
     detailImagePath: form.detailImagePath || undefined,
-    organizer: form.organizer.trim() || "S.V. Fermi",
+    organizer: form.organizer.trim() || "S.V. Fermi Bestuur",
     price: form.price.trim() || "Gratis",
     capacity: Math.max(0, Number(form.capacity) || 0),
     registered: existing?.registered ?? 0,
