@@ -7,6 +7,10 @@ import { auth } from "../lib/firebase";
 import { getUserProfile } from "../lib/services/users";
 import { getActiveMembership } from "../lib/services/memberships";
 import { listActivities } from "../lib/services/activities";
+import {
+  listPublishedAnnouncements,
+  type AnnouncementData,
+} from "../lib/services/announcements";
 import type { AgendaEvent } from "../data/agenda-events";
 import type { FermiUser, Membership } from "../lib/models/backend";
 import MemberQrCode from "../components/MemberQrCode";
@@ -71,35 +75,15 @@ function eventEnd(event: AgendaEvent) {
   return new Date(Number(event.year), monthIndex, Number(event.day), hour, minute, 59, 999).getTime();
 }
 
-const announcements = [
-  {
-    id: "studytrip",
-    icon: "megaphone" as const,
-    title: "Inschrijvingen Studiereis geopend!",
-    summary: "De inschrijvingen voor de studiereis zijn nu open. Vergeet je niet in te schrijven!",
-    detail: "Bekijk alle informatie over de studiereis, praktische details en de inschrijving op de activiteitenpagina.",
-    href: "/agenda",
-    cta: "Bekijk agenda",
-  },
-  {
-    id: "merch",
-    icon: "shop" as const,
-    title: "Nieuw: Fermi Merchandise",
-    summary: "De nieuwe collectie is nu beschikbaar in de webshop. Scoor jouw hoodie!",
-    detail: "De merchandise-sectie wordt binnenkort uitgebreid. Houd de app in de gaten voor de volledige collectie.",
-    href: "/fermi",
-    cta: "Ga naar Fermi",
-  },
-];
-
 export default function HomePage() {
   const [memberPassOpen, setMemberPassOpen] = useState(false);
   const [fermiUser, setFermiUser] = useState<FermiUser | null>(null);
   const [membership, setMembership] = useState<Membership | null>(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [announcementsOpen, setAnnouncementsOpen] = useState(false);
-  const [activeAnnouncement, setActiveAnnouncement] = useState<(typeof announcements)[number] | null>(null);
+  const [activeAnnouncement, setActiveAnnouncement] = useState<AnnouncementData | null>(null);
   const [activities, setActivities] = useState<AgendaEvent[]>([]);
+  const [announcements, setAnnouncements] = useState<AnnouncementData[]>([]);
 
   const overlayOpen = memberPassOpen || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
 
@@ -115,9 +99,15 @@ export default function HomePage() {
   const homeUpcomingActivities = upcomingActivities.slice(featuredActivity ? 1 : 0, featuredActivity ? 4 : 3);
 
   useEffect(() => {
-    listActivities()
-      .then((items) => setActivities(items))
-      .catch((error) => console.error("Upcoming activities could not be loaded", error));
+    Promise.all([
+      listActivities(),
+      listPublishedAnnouncements(),
+    ])
+      .then(([activityItems, announcementItems]) => {
+        setActivities(activityItems);
+        setAnnouncements(announcementItems);
+      })
+      .catch((error) => console.error("Home data could not be loaded", error));
   }, []);
 
   useEffect(() => {
@@ -330,7 +320,11 @@ export default function HomePage() {
                 onClick={() => setActiveAnnouncement(item)}
               >
                 <span className="announcement-icon">
-                  {item.icon === "megaphone" ? <Megaphone size={22} /> : <ShoppingBag size={22} />}
+                  {item.icon === "shop"
+                    ? <ShoppingBag size={22} />
+                    : item.icon === "calendar"
+                      ? <CalendarDays size={22} />
+                      : <Megaphone size={22} />}
                 </span>
                 <span className="announcement-copy">
                   <strong>{item.title}</strong>
@@ -369,19 +363,28 @@ export default function HomePage() {
                 <X size={21} />
               </button>
             </div>
-            <Link className="home-notification interactive-card" href="/agenda" onClick={() => setNotificationsOpen(false)}>
-              <span className="announcement-icon"><Megaphone size={20} /></span>
-              <span>
-                <strong>Studiereis-inschrijving geopend</strong>
-                <small>Bekijk de reisdetails en inschrijving.</small>
-              </span>
-              <ChevronRight size={18} />
-            </Link>
+            {announcements[0] && (
+              <button
+                className="home-notification interactive-card"
+                type="button"
+                onClick={() => {
+                  setNotificationsOpen(false);
+                  setActiveAnnouncement(announcements[0]);
+                }}
+              >
+                <span className="announcement-icon"><Megaphone size={20} /></span>
+                <span>
+                  <strong>{announcements[0].title}</strong>
+                  <small>{announcements[0].summary}</small>
+                </span>
+                <ChevronRight size={18} />
+              </button>
+            )}
             <Link className="home-notification interactive-card" href="/agenda" onClick={() => setNotificationsOpen(false)}>
               <span className="announcement-icon"><CalendarDays size={20} /></span>
               <span>
-                <strong>Nieuwe activiteiten</strong>
-                <small>Er staan nieuwe activiteiten in de agenda.</small>
+                <strong>Agenda bekijken</strong>
+                <small>Bekijk alle komende activiteiten.</small>
               </span>
               <ChevronRight size={18} />
             </Link>
@@ -413,7 +416,11 @@ export default function HomePage() {
                   }}
                 >
                   <span className="announcement-icon">
-                    {item.icon === "megaphone" ? <Megaphone size={20} /> : <ShoppingBag size={20} />}
+                    {item.icon === "shop"
+                      ? <ShoppingBag size={20} />
+                      : item.icon === "calendar"
+                        ? <CalendarDays size={20} />
+                        : <Megaphone size={20} />}
                   </span>
                   <span>
                     <strong>{item.title}</strong>
@@ -440,8 +447,8 @@ export default function HomePage() {
               </button>
             </div>
             <p>{activeAnnouncement.detail}</p>
-            <Link className="primary-button home-sheet-cta" href={activeAnnouncement.href} onClick={() => setActiveAnnouncement(null)}>
-              {activeAnnouncement.cta} <ChevronRight size={19} />
+            <Link className="primary-button home-sheet-cta" href={activeAnnouncement.actionRoute} onClick={() => setActiveAnnouncement(null)}>
+              {activeAnnouncement.actionLabel} <ChevronRight size={19} />
             </Link>
           </section>
         </div>
