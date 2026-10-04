@@ -239,7 +239,7 @@ export default function HomePage() {
 
       <section className="content">
         {featuredActivity ? (
-          <article className="featured-event">
+          <article className="featured-event home-featured-event">
             <div className="featured-copy">
               <span className="eyebrow">Volgende activiteit</span>
               <h2>{featuredActivity.title}</h2>
@@ -260,14 +260,15 @@ export default function HomePage() {
 
             <div
               className={`featured-art home-featured-art${resolveHomeFeaturedImage(featuredActivity) ? " home-featured-art-live" : ""}`}
-              style={resolveHomeFeaturedImage(featuredActivity) ? {
-                backgroundImage: `url("${resolveHomeFeaturedImage(featuredActivity)}")`,
-                backgroundPosition: "right center",
-                backgroundSize: "contain",
-                backgroundRepeat: "no-repeat",
-              } : undefined}
               aria-hidden="true"
-            />
+            >
+              {resolveHomeFeaturedImage(featuredActivity) ? (
+                <img
+                  src={resolveHomeFeaturedImage(featuredActivity)}
+                  alt=""
+                />
+              ) : null}
+            </div>
           </article>
 ) : null}
 
