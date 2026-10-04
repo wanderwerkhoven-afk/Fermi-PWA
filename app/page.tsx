@@ -105,8 +105,10 @@ export default function HomePage() {
       .sort((a, b) => eventStart(a) - eventStart(b));
   }, [activities]);
 
-  const featuredActivity = upcomingActivities[0] ?? null;
-  const homeUpcomingActivities = upcomingActivities.slice(featuredActivity ? 1 : 0, featuredActivity ? 4 : 3);
+  const featuredActivity = upcomingActivities.find((event) => event.featured === true) ?? null;
+  const homeUpcomingActivities = upcomingActivities
+    .filter((event) => event.slug !== featuredActivity?.slug)
+    .slice(0, 3);
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
@@ -259,20 +261,7 @@ export default function HomePage() {
               aria-hidden="true"
             />
           </article>
-        ) : (
-          <article className="featured-event home-featured-empty">
-            <div className="featured-copy">
-              <span className="eyebrow">Volgende activiteit</span>
-              <h2>Nog niets gepland</h2>
-              <div className="event-meta">
-                <span><CalendarDays size={18} /> Nieuwe activiteiten verschijnen hier automatisch.</span>
-              </div>
-              <Link className="primary-button interactive-control" href="/agenda">
-                Bekijk agenda <ChevronRight size={22} />
-              </Link>
-            </div>
-          </article>
-        )}
+) : null}
 
         <section className="section-block">
           <div className="section-heading">
@@ -311,10 +300,10 @@ export default function HomePage() {
               );
             })}
 
-            {homeUpcomingActivities.length === 0 && !featuredActivity && (
+            {homeUpcomingActivities.length === 0 && (
               <div className="home-upcoming-empty">
                 <CalendarDays size={24} />
-                <span>Er staan nog geen komende activiteiten in de agenda.</span>
+                <span>{featuredActivity ? "Er staan geen andere komende activiteiten gepland." : "Er staan nog geen komende activiteiten in de agenda."}</span>
               </div>
             )}
           </div>
