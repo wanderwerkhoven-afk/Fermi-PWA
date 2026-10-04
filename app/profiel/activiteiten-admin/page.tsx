@@ -555,10 +555,24 @@ export default function ActiviteitenAdminPage() {
                     <button type="button" className={!form.price.toLowerCase().includes("gratis") ? "active" : ""} onClick={() => updateForm("price", form.price.toLowerCase().includes("gratis") ? "€ 5,00" : form.price)}>Betaald</button>
                   </div>
                   {!form.price.toLowerCase().includes("gratis") && (
-                    <div className="activity-admin-price-options">
-                      {["€ 2,50","€ 5,00","€ 7,50","€ 10,00","€ 15,00"].map((price) => (
-                        <button type="button" key={price} className={form.price === price ? "active" : ""} onClick={() => updateForm("price", price)}>{price}</button>
-                      ))}
+                    <div className="activity-admin-paid-price">
+                      <div className="activity-admin-price-options">
+                        {["€ 2,50","€ 5,00","€ 7,50","€ 10,00","€ 15,00"].map((price) => (
+                          <button type="button" key={price} className={form.price === price ? "active" : ""} onClick={() => updateForm("price", price)}>{price}</button>
+                        ))}
+                      </div>
+
+                      <label className="activity-admin-price-input">
+                        <span>Eigen bedrag</span>
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          value={form.price}
+                          onChange={(event) => updateForm("price", event.target.value)}
+                          placeholder="Bijv. € 325,00"
+                          aria-label="Eigen prijsbedrag"
+                        />
+                      </label>
                     </div>
                   )}
                 </div>
