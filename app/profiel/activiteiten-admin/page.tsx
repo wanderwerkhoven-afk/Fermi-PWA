@@ -569,7 +569,7 @@ export default function ActiviteitenAdminPage() {
                   Deze afbeelding wordt gebruikt op de agenda-overzichtspagina.
                 </p>
 
-                <div className="activity-admin-image-picker" role="listbox" aria-label="Kies agenda-afbeelding">
+                <div className="activity-admin-image-picker activity-admin-agenda-image-picker" role="listbox" aria-label="Kies agenda-afbeelding">
                   <button
                     type="button"
                     className={`activity-admin-image-option activity-admin-image-none ${form.imagePath ? "" : "active"}`}
