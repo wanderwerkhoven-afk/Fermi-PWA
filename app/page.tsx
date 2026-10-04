@@ -64,6 +64,12 @@ function resolveHomeActivityImage(event: AgendaEvent) {
 }
 
 function resolveHomeFeaturedImage(event: AgendaEvent) {
+  if (event.featuredImagePath) {
+    return event.featuredImagePath.startsWith("/images/")
+      ? `/Fermi-PWA${event.featuredImagePath}`
+      : event.featuredImagePath;
+  }
+
   const source = event.imagePath
     || (event.backgroundPreset ? `/images/agenda/activities/container-images/${event.backgroundPreset}.png` : "");
 
