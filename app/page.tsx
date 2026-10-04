@@ -38,6 +38,17 @@ function eventStart(event: AgendaEvent) {
   return new Date(Number(event.year), monthIndex, Number(event.day), hour, minute).getTime();
 }
 
+function resolveHomeActivityImage(event: AgendaEvent) {
+  const path = event.detailImagePath || event.imagePath;
+  if (!path) return null;
+
+  if (path.startsWith("/images/")) {
+    return `/Fermi-PWA${path}`;
+  }
+
+  return path;
+}
+
 function eventEnd(event: AgendaEvent) {
   const monthIndex = monthOrder.indexOf(event.month);
   if (monthIndex < 0) return Number.NEGATIVE_INFINITY;
@@ -227,16 +238,26 @@ export default function HomePage() {
           </div>
 
           <div className="event-strip">
-            {upcomingActivities.map((event) => (
+            {upcomingActivities.map((event) => {
+              const artwork = resolveHomeActivityImage(event);
+
+              return (
               <Link className="mini-event mini-event-link interactive-card" href={`/agenda/${event.slug}`} key={event.slug}>
-                <div className={`mini-art placeholder-art ${event.art}`}>
+                <div
+                  className={`mini-art placeholder-art ${event.art}${artwork ? " mini-art-activity-image" : ""}`}
+                  style={artwork ? {
+                    backgroundImage: `linear-gradient(rgba(3,29,44,.06),rgba(3,29,44,.24)),url("${artwork}")`,
+                  } : undefined}
+                >
                   <div className="date-chip">
                     <strong>{event.day}</strong>
                     <span>{event.month}</span>
                   </div>
-                  <span className="mini-art-label">
-                    {event.art === "beer" ? "● ● ●" : event.art === "legal" ? "§" : event.art === "quantum" ? "ψ" : "✦"}
-                  </span>
+                  {!artwork && (
+                    <span className="mini-art-label">
+                      {event.art === "beer" ? "● ● ●" : event.art === "legal" ? "§" : event.art === "quantum" ? "ψ" : "✦"}
+                    </span>
+                  )}
                 </div>
                 <div className="mini-event-body">
                   <h3>{event.title}</h3>
@@ -244,7 +265,8 @@ export default function HomePage() {
                   <p><MapPin size={15} /> {event.location}</p>
                 </div>
               </Link>
-            ))}
+              );
+            })}
 
             {upcomingActivities.length === 0 && (
               <div className="home-upcoming-empty">
