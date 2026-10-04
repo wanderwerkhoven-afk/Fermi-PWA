@@ -371,17 +371,18 @@ export default function ActiviteitenAdminPage() {
 
         <section className="activity-admin-list">
           {visibleActivities.map((activity) => {
-            const imagePath = normalizeLegacyActivityImagePath(
+            const containerImagePath = normalizeLegacyActivityImagePath(
               activity.imagePath || (activity.backgroundPreset
                 ? `/images/agenda/activities/container-images/${activity.backgroundPreset}.png`
                 : ""),
             );
+            const dateTileImagePath = activity.detailImagePath || containerImagePath;
             return (
               <article className="activity-admin-row" key={activity.slug}>
                 <div
                   className="activity-admin-thumb"
-                  style={imagePath ? {
-                    backgroundImage: `linear-gradient(rgba(3,29,44,.16),rgba(3,29,44,.50)),url("/Fermi-PWA${imagePath}")`,
+                  style={dateTileImagePath ? {
+                    backgroundImage: `linear-gradient(rgba(3,29,44,.18),rgba(3,29,44,.58)),url("/Fermi-PWA${dateTileImagePath}")`,
                   } : undefined}
                 >
                   <strong>{activity.day}</strong>
