@@ -7037,3 +7037,11 @@ body.member-admin-modal-open{overflow:hidden}
   color: var(--fermi-navy-deep);
   text-shadow: none;
 }
+
+
+/* Home — use activity detail artwork in Binnenkort cards */
+.mini-art-activity-image {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
