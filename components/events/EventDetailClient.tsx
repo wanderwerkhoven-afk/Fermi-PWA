@@ -21,6 +21,20 @@ import EventActions from "@/components/events/EventActions";
 import type { AgendaEvent } from "@/data/agenda-events";
 import { getActivity } from "@/lib/services/activities";
 
+function resolveEventImagePath(path: string | undefined) {
+  if (!path) return null;
+  if (path.includes("/container-images/") || path.includes("/detail-images/")) {
+    return `/Fermi-PWA${path}`;
+  }
+  if (path.startsWith("/images/agenda/activities/")) {
+    return `/Fermi-PWA${path.replace(
+      "/images/agenda/activities/",
+      "/images/agenda/activities/container-images/",
+    )}`;
+  }
+  return `/Fermi-PWA${path}`;
+}
+
 function FermiMark() {
   return (
     <img
@@ -47,6 +61,8 @@ export default function EventDetailClient({ initialEvent }: { initialEvent: Agen
   }, [initialEvent.slug]);
 
   const travel = event.detailVariant === "travel" ? event.travel : undefined;
+  const detailHeroImage = resolveEventImagePath(event.detailImagePath)
+    || resolveEventImagePath(event.imagePath);
 
   if (travel) {
     return (
@@ -117,10 +133,8 @@ export default function EventDetailClient({ initialEvent }: { initialEvent: Agen
       </header>
 
       <section
-        className={`event-detail-hero agenda-photo-${event.art}${event.detailImagePath || event.imagePath ? " event-detail-hero-custom-image" : ""}`}
-        style={event.detailImagePath || event.imagePath
-          ? { backgroundImage: `url("/Fermi-PWA${event.detailImagePath || event.imagePath}")` }
-          : undefined}
+        className={`event-detail-hero agenda-photo-${event.art}${detailHeroImage ? " event-detail-hero-custom-image" : ""}`}
+        style={detailHeroImage ? { backgroundImage: `url("${detailHeroImage}")` } : undefined}
       >
         <div className="event-detail-hero-overlay" />
         <div className="event-detail-date"><strong>{event.day}</strong><span>{event.month}</span></div>
