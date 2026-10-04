@@ -6976,3 +6976,34 @@ body.member-admin-modal-open{overflow:hidden}
 .agenda-card-redesign.featured.agenda-card-with-preset::after {
   content: none;
 }
+
+
+/* Agenda — improve featured card readability over artwork */
+.agenda-card-redesign.featured.agenda-card-with-preset::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3,29,44,.88) 0%,
+      rgba(3,29,44,.72) 24%,
+      rgba(3,29,44,.44) 44%,
+      rgba(3,29,44,.16) 64%,
+      rgba(3,29,44,0) 82%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255,122,26,.10) 0%,
+      rgba(255,122,26,.03) 42%,
+      rgba(3,29,44,.08) 100%
+    );
+}
+
+.agenda-card-redesign.featured.agenda-card-with-preset .agenda-date,
+.agenda-card-redesign.featured.agenda-card-with-preset .agenda-card-copy {
+  position: relative;
+  z-index: 3;
+}
