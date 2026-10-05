@@ -7358,22 +7358,23 @@ body.member-admin-modal-open{overflow:hidden}
   position: absolute;
   right: 0;
   bottom: 0;
-  width: 54%;
+  width: 48%;
   height: auto;
   max-width: none;
   max-height: none;
   object-fit: contain;
-  transform: translateY(-10%);
+  transform: none;
   transform-origin: right bottom;
   pointer-events: none;
   z-index: 3;
+  clip-path: polygon(8% 0, 100% 0, 100% 100%, 0 100%, 0 12%, 4% 9%);
 }
 
 @media (max-width: 420px) {
   .home-featured-art-live img {
     right: 0;
     bottom: 0;
-    width: 56%;
-    transform: translateY(-12%);
+    width: 50%;
+    transform: none;
   }
 }
