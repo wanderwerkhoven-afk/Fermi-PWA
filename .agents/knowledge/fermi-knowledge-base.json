@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-10-02",
+  "last_updated": "2026-10-05",
   "project": {
     "name": "S.V. Fermi PWA",
     "purpose": "Afgeschermde ledenapp voor leden, commissies en bestuur van S.V. Fermi.",
@@ -119,6 +119,12 @@
       "route": "/profiel/mededelingen-admin/",
       "status": "implemented",
       "reference": "Admin-only Mededelingen CRM for creating, editing, scheduling, pinning, publishing and hiding member announcements shown on Home."
+    },
+    {
+      "id": "qr-scanner",
+      "route": "/profiel/qr-scanner/",
+      "status": "implemented",
+      "reference": "Activity QR validation scanner for active committee, board and admin accounts. Scans digital member-card QR codes and validates active membership plus an active event registration."
     }
   ],
   "design_system": {
@@ -222,7 +228,10 @@
     "Nieuwe activiteiten worden als ActivityData naar Firestore collection activities geschreven en verschijnen via dezelfde service in de Agenda.",
     "Activiteiten zijn niet meer hardcoded in de repository: Firestore collection activities is de enige activity-datasource voor Agenda, Home/Binnenkort, Home/Volgende activiteit, Activities CRM en detailpagina's.",
     "Activity detail navigation gebruikt de statische route /agenda/activiteit/?slug=<slug>, zodat nieuwe Firestore-activiteiten op GitHub Pages geen vooraf gegenereerde hardcoded slug-route nodig hebben.",
-    "Mededelingen worden beheerd via /profiel/mededelingen-admin/ en opgeslagen in Firestore collection announcements. Home leest alleen gepubliceerde mededelingen binnen hun start/einddatum; hardcoded Home-mededelingen zijn verwijderd."
+    "Mededelingen worden beheerd via /profiel/mededelingen-admin/ en opgeslagen in Firestore collection announcements. Home leest alleen gepubliceerde mededelingen binnen hun start/einddatum; hardcoded Home-mededelingen zijn verwijderd.",
+    "QR-scanner is beschikbaar voor actieve commissie-, bestuurs- en adminaccounts via /profiel/qr-scanner/.",
+    "QR-validatie gebruikt de bestaande digitale ledenpas cardId en registrations-koppeling; activity-data wordt niet gedupliceerd in het membership-document.",
+    "De eerste scanner-versie is alleen validatie: groen bij actieve ledenpas + status registered voor de gekozen activiteit; rood bij ontbrekende inschrijving of ongeldige/inactieve pas. Aanwezigheidsregistratie en betaling volgen later."
   ],
   "open_decisions": [
     "Final custom image asset set."
