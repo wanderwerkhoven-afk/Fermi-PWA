@@ -7354,3 +7354,202 @@ body.member-admin-modal-open{overflow:hidden}
     max-height: 166px;
   }
 }
+
+
+/* Mededelingen CRM — interactieve routebrowser */
+.announcement-route-field {
+  display: grid;
+  gap: 9px;
+}
+
+.announcement-route-trigger {
+  width: 100%;
+  min-height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid rgba(140,191,217,.28);
+  border-radius: 13px;
+  background: #05263a;
+  color: var(--fermi-white);
+  text-align: left;
+  cursor: pointer;
+}
+
+.announcement-route-trigger.open {
+  border-color: var(--fermi-orange);
+}
+
+.announcement-route-trigger > span {
+  min-width: 0;
+}
+
+.announcement-route-trigger small,
+.announcement-route-trigger strong {
+  display: block;
+}
+
+.announcement-route-trigger small {
+  margin-bottom: 4px;
+  color: #9fb0bb;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.announcement-route-trigger strong {
+  overflow: hidden;
+  color: #f6f2ea;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.announcement-route-browser {
+  overflow: hidden;
+  border: 1px solid rgba(140,191,217,.24);
+  border-radius: 14px;
+  background: rgba(4,34,52,.92);
+}
+
+.announcement-route-browser-head {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 13px;
+  border-bottom: 1px solid rgba(140,191,217,.18);
+  color: #cbd9df;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.announcement-route-folder {
+  border-bottom: 1px solid rgba(140,191,217,.12);
+}
+
+.announcement-route-folder.nested {
+  margin-left: 15px;
+  border-left: 1px solid rgba(140,191,217,.18);
+  border-bottom: 0;
+}
+
+.announcement-route-folder-row,
+.announcement-route-item,
+.announcement-route-custom {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #eef3f5;
+  cursor: pointer;
+  text-align: left;
+}
+
+.announcement-route-folder-row {
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 20px 20px minmax(0,1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 0 13px;
+}
+
+.announcement-route-folder-row small {
+  color: #8fa5b1;
+  font-size: 11px;
+}
+
+.announcement-route-children {
+  display: grid;
+}
+
+.announcement-route-item {
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 18px minmax(0,1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 13px 7px 41px;
+  border-top: 1px solid rgba(140,191,217,.08);
+}
+
+.announcement-route-item.root {
+  grid-template-columns: 18px 18px minmax(0,1fr) auto;
+  padding-left: 13px;
+  border-bottom: 1px solid rgba(140,191,217,.12);
+}
+
+.announcement-route-item.activity {
+  padding-left: 55px;
+}
+
+.announcement-route-item.selected {
+  background: rgba(255,122,26,.13);
+  color: #ff9b48;
+}
+
+.announcement-route-item span:not(.announcement-route-file):not(.announcement-route-indent) {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.announcement-route-item small {
+  max-width: 118px;
+  overflow: hidden;
+  color: #8399a5;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.announcement-route-file {
+  color: var(--fermi-orange);
+  font-weight: 900;
+}
+
+.announcement-route-custom {
+  min-height: 49px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 13px;
+  color: #ff9b48;
+  font-weight: 850;
+}
+
+.announcement-route-empty {
+  padding: 10px 14px 12px 55px;
+  color: #8fa5b1;
+  font-size: 11px;
+}
+
+.announcement-route-custom-input {
+  margin-top: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .announcement-route-folder-row:hover,
+  .announcement-route-item:hover,
+  .announcement-route-custom:hover {
+    background: rgba(255,255,255,.035);
+  }
+}
+
+@media (max-width: 420px) {
+  .announcement-route-item small {
+    max-width: 88px;
+  }
+
+  .announcement-route-item.activity {
+    padding-left: 45px;
+  }
+}
