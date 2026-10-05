@@ -16,6 +16,7 @@ export type AgendaEvent = {
   month: string;
   year: string;
   dateLabel: string;
+  endDate?: string;
   type: string;
   title: string;
   time: string;
