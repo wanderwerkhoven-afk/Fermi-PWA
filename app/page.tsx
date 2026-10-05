@@ -258,14 +258,17 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {resolveHomeFeaturedImage(featuredActivity) ? (
-              <div className="home-featured-sticker" aria-hidden="true">
+            <div
+              className="featured-art home-featured-art"
+              aria-hidden="true"
+            >
+              {resolveHomeFeaturedImage(featuredActivity) ? (
                 <img
                   src={resolveHomeFeaturedImage(featuredActivity)}
                   alt=""
                 />
-              </div>
-            ) : null}
+              ) : null}
+            </div>
           </article>
 ) : null}
 
