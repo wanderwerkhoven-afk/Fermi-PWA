@@ -31,6 +31,30 @@ import {
 
 const monthOrder = ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AUG","SEP","OKT","NOV","DEC"];
 
+function formatHomeActivityDate(event: AgendaEvent) {
+  const monthIndex = monthOrder.indexOf(event.month);
+  if (monthIndex < 0) return event.dateLabel;
+  const date = new Date(Number(event.year), monthIndex, Number(event.day), 12);
+  return new Intl.DateTimeFormat("nl-NL", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
+function formatHomeActivityEndDate(endDate: string | undefined) {
+  if (!endDate) return null;
+  const date = new Date(`${endDate}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("nl-NL", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
 function eventStart(event: AgendaEvent) {
   const monthIndex = monthOrder.indexOf(event.month);
   if (monthIndex < 0) return Number.POSITIVE_INFINITY;
@@ -245,7 +269,14 @@ export default function HomePage() {
               <h2>{featuredActivity.title}</h2>
 
               <div className="event-meta">
-                <span><CalendarDays size={18} /> {featuredActivity.dateLabel}</span>
+                {featuredActivity.type.trim().toUpperCase() === "STUDIEREIS" && featuredActivity.endDate ? (
+                  <>
+                    <span><CalendarDays size={18} /> {formatHomeActivityDate(featuredActivity)}</span>
+                    <span className="home-featured-end-date"><CalendarDays size={18} /> t/m {formatHomeActivityEndDate(featuredActivity.endDate)}</span>
+                  </>
+                ) : (
+                  <span><CalendarDays size={18} /> {featuredActivity.dateLabel}</span>
+                )}
                 <span><Clock3 size={18} /> {featuredActivity.time}</span>
                 <span><MapPin size={18} /> {featuredActivity.location}</span>
               </div>
