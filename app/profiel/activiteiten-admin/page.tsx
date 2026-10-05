@@ -34,6 +34,7 @@ type FormState = {
   title: string;
   type: string;
   date: string;
+  endDate: string;
   startTime: string;
   endTime: string;
   location: string;
@@ -56,6 +57,7 @@ const emptyForm: FormState = {
   title: "",
   type: "ACTIVITEIT",
   date: "",
+  endDate: "",
   startTime: "19:00",
   endTime: "22:00",
   location: "",
@@ -110,6 +112,7 @@ function formFromActivity(event: ActivityData): FormState {
     title: event.title,
     type: event.type,
     date,
+    endDate: event.endDate || "",
     startTime: times[0] || "19:00",
     endTime: times[1] || times[0] || "22:00",
     location: event.location,
@@ -132,15 +135,21 @@ function formFromActivity(event: ActivityData): FormState {
 
 function activityFromForm(form: FormState, existing?: ActivityData): ActivityData {
   const date = new Date(`${form.date}T12:00:00`);
+  const isStudyTrip = form.type === "STUDIEREIS";
+  const endDateValue = isStudyTrip && form.endDate ? form.endDate : "";
+  const endDate = endDateValue ? new Date(`${endDateValue}T12:00:00`) : null;
   const day = String(date.getDate()).padStart(2, "0");
   const month = monthShort[date.getMonth()];
   const year = String(date.getFullYear());
-  const dateLabel = new Intl.DateTimeFormat("nl-NL", {
+  const longDateFormatter = new Intl.DateTimeFormat("nl-NL", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
-  }).format(date);
+  });
+  const dateLabel = endDate && endDate.getTime() !== date.getTime()
+    ? `${longDateFormatter.format(date)} t/m ${longDateFormatter.format(endDate)}`
+    : longDateFormatter.format(date);
 
   return {
     ...(existing || {}),
@@ -149,6 +158,7 @@ function activityFromForm(form: FormState, existing?: ActivityData): ActivityDat
     month,
     year,
     dateLabel,
+    endDate: endDateValue || undefined,
     type: form.type.trim().toUpperCase() || "ACTIVITEIT",
     title: form.title.trim(),
     time: `${form.startTime} – ${form.endTime}`,
@@ -256,6 +266,17 @@ export default function ActiviteitenAdminPage() {
     if (!form.title.trim() || !form.date) {
       setNotice("Vul minimaal een titel en datum in.");
       return;
+    }
+
+    if (form.type === "STUDIEREIS") {
+      if (!form.endDate) {
+        setNotice("Vul voor een studiereis ook een einddatum in.");
+        return;
+      }
+      if (new Date(`${form.endDate}T12:00:00`) < new Date(`${form.date}T12:00:00`)) {
+        setNotice("De einddatum kan niet vóór de begindatum liggen.");
+        return;
+      }
     }
 
     const generatedSlug = form.slug || slugify(form.title);
@@ -489,9 +510,25 @@ export default function ActiviteitenAdminPage() {
 
               <section>
                 <h3>Datum & tijd</h3>
-                <label>Datum
-                  <input type="date" value={form.date} onChange={(event) => updateForm("date", event.target.value)} />
-                </label>
+                {form.type === "STUDIEREIS" ? (
+                  <div className="activity-admin-form-grid two">
+                    <label>Begindatum
+                      <input type="date" value={form.date} onChange={(event) => updateForm("date", event.target.value)} />
+                    </label>
+                    <label>Einddatum
+                      <input
+                        type="date"
+                        min={form.date || undefined}
+                        value={form.endDate}
+                        onChange={(event) => updateForm("endDate", event.target.value)}
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <label>Datum
+                    <input type="date" value={form.date} onChange={(event) => updateForm("date", event.target.value)} />
+                  </label>
+                )}
                 <div className="activity-admin-form-grid two">
                   <label>Starttijd
                     <input type="time" value={form.startTime} onChange={(event) => updateForm("startTime", event.target.value)} />
