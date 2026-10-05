@@ -18,14 +18,23 @@ export function isHvaEmail(email: string) {
   return domain === "hva.nl" || domain.endsWith(".hva.nl");
 }
 
-export async function registerWithEmail(email: string, password: string, profile: Omit<RegistrationProfileInput, "email">): Promise<User> {
+async function createFermiAccount(email: string, password: string, profile: Omit<RegistrationProfileInput, "email">): Promise<User> {
   const normalizedEmail = email.trim().toLowerCase();
-  if (!isHvaEmail(normalizedEmail)) throw new Error("auth/non-hva-email");
   const result = await createUserWithEmailAndPassword(auth, normalizedEmail, password);
   await createRegisteredUserProfile(result.user, { ...profile, email: normalizedEmail });
   auth.languageCode = "nl";
   await sendEmailVerification(result.user, verificationActionCodeSettings);
   return result.user;
+}
+
+export async function registerWithEmail(email: string, password: string, profile: Omit<RegistrationProfileInput, "email">): Promise<User> {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!isHvaEmail(normalizedEmail)) throw new Error("auth/non-hva-email");
+  return createFermiAccount(normalizedEmail, password, profile);
+}
+
+export async function registerWithAlternativeEmail(email: string, password: string, profile: Omit<RegistrationProfileInput, "email">): Promise<User> {
+  return createFermiAccount(email, password, profile);
 }
 
 export async function resendVerificationEmail(user: User) {
