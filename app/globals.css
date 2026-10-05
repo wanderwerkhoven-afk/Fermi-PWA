@@ -157,6 +157,70 @@ button {
   box-shadow: 0 0 0 3px var(--fermi-navy);
 }
 
+.profile-settings-wrap {
+  position: relative;
+  z-index: 30;
+}
+
+.profile-settings-button {
+  color: var(--fermi-white);
+  cursor: pointer;
+}
+
+.profile-settings-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 190px;
+  padding: 8px;
+  border: 1px solid rgba(132,184,212,.28);
+  border-radius: 16px;
+  background: rgba(4,35,53,.96);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 38px rgba(0,0,0,.28);
+}
+
+.profile-settings-menu-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 9px 10px;
+  color: var(--fermi-paper);
+  font-weight: 800;
+  border-bottom: 1px solid rgba(132,184,212,.18);
+}
+
+.profile-settings-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 6px;
+  padding: 11px 10px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--fermi-white);
+  font: inherit;
+  font-weight: 750;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profile-settings-menu-item:hover,
+.profile-settings-menu-item:focus-visible {
+  background: rgba(255,255,255,.06);
+}
+
+.profile-settings-menu-item.danger {
+  color: #ffb197;
+}
+
+.profile-settings-menu-item:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
 .welcome-row {
   position: relative;
   min-height: 126px;
