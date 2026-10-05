@@ -7405,6 +7405,10 @@ body.member-admin-modal-open{overflow:hidden}
   overflow: visible;
 }
 
+.home-featured-end-date {
+  margin-top: -1px;
+}
+
 .home-featured-art {
   position: absolute;
   z-index: 20;
