@@ -7359,9 +7359,9 @@ body.member-admin-modal-open{overflow:hidden}
   max-height: 170px;
   display: block;
   object-fit: contain;
-  object-position: center right;
-  transform: translateX(20px) scale(1.5);
-  transform-origin: center right;
+  object-position: right bottom;
+  transform: translateX(20px) translateY(10px) scale(1.5);
+  transform-origin: right bottom;
   pointer-events: none;
 }
 
@@ -7372,6 +7372,9 @@ body.member-admin-modal-open{overflow:hidden}
 
   .home-featured-art img {
     max-height: 166px;
+    object-position: right bottom;
+    transform: translateX(20px) translateY(8px) scale(1.5);
+    transform-origin: right bottom;
   }
 }
 
