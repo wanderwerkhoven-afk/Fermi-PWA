@@ -7315,50 +7315,42 @@ body.member-admin-modal-open{overflow:hidden}
 }
 
 
-/* Home featured activity — true transparent PNG sticker overlay */
+/* Home featured activity — restored proven borrel PNG treatment */
 .home-featured-event {
   position: relative;
   overflow: visible;
 }
 
-.home-featured-sticker {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 44%;
-  height: 100%;
+.home-featured-art {
+  z-index: 20;
+  min-width: 0;
+  min-height: 100%;
+  position: relative;
   overflow: visible;
-  pointer-events: none;
-  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding: 7px 3px 7px 0;
 }
 
-.home-featured-sticker img {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: auto;
-  height: 118%;
-  max-width: none;
-  max-height: none;
+.home-featured-art img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 170px;
   display: block;
   object-fit: contain;
-  object-position: right bottom;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  background: transparent;
-  transform: none;
-  clip-path: none;
+  object-position: center right;
+  transform: translateX(20px) scale(1.5);
+  transform-origin: center right;
+  pointer-events: none;
 }
 
 @media (max-width: 420px) {
-  .home-featured-sticker {
-    width: 46%;
+  .home-featured-art {
+    padding: 5px 2px 5px 0;
   }
 
-  .home-featured-sticker img {
-    right: 0;
-    bottom: 0;
-    height: 120%;
+  .home-featured-art img {
+    max-height: 166px;
   }
 }
