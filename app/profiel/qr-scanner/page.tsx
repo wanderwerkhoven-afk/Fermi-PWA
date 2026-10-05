@@ -107,7 +107,9 @@ export default function QrScannerPage() {
       const scanner = scannerRef.current;
       scannerRef.current = null;
       if (scanner) {
-        scanner.stop().catch(() => undefined).finally(() => {\n          try { scanner.clear(); } catch { /* already cleared */ }\n        });
+        scanner.stop().catch(() => undefined).finally(() => {
+          try { scanner.clear(); } catch { /* already cleared */ }
+        });
       }
     };
   }, []);
