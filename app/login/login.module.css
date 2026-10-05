@@ -42,3 +42,7 @@
   .join{margin-top:8px}
   .join p{margin-top:5px;font-size:14px}
 }
+
+@media (max-width:520px){
+  .hero p{max-width:300px}
+}
