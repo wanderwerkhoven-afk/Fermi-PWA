@@ -163,8 +163,15 @@ export default function EventDetailClient({ slug }: { slug: string }) {
 
       <section
         className={`event-detail-hero agenda-photo-${event.art}${detailHeroImage ? " event-detail-hero-custom-image" : ""}`}
-        style={detailHeroImage ? { backgroundImage: `url("${detailHeroImage}")` } : undefined}
       >
+        {detailHeroImage ? (
+          <img
+            className="event-detail-hero-image"
+            src={detailHeroImage}
+            alt=""
+            aria-hidden="true"
+          />
+        ) : null}
         <div className="event-detail-hero-overlay" />
         <div className="event-detail-date"><strong>{event.day}</strong><span>{event.month}</span></div>
         <div className="event-detail-hero-copy">
