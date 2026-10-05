@@ -44,7 +44,7 @@ service cloud.firestore {
 
     match /memberships/{membershipId} {
       allow read: if signedIn() &&
-        (resource.data.userId == request.auth.uid || hasRole(["board", "admin"]));
+        (resource.data.userId == request.auth.uid || hasRole(["committee", "board", "admin"]));
       allow create, update, delete: if hasRole(["board", "admin"]);
     }
 
@@ -178,7 +178,7 @@ service cloud.firestore {
 
     match /registrations/{registrationId} {
       allow read: if signedIn() &&
-        (resource.data.userId == request.auth.uid || hasRole(["board", "admin"]));
+        (resource.data.userId == request.auth.uid || hasRole(["committee", "board", "admin"]));
       allow create: if hasProfile()
         && currentUser().data.status == "active"
         && request.resource.data.userId == request.auth.uid
