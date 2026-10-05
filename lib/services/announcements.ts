@@ -28,6 +28,37 @@ export type AnnouncementData = {
   updatedAt?: unknown;
 };
 
+export function normalizeAnnouncementRoute(value: string): string {
+  const route = value.trim();
+
+  if (!route) return "/";
+
+  // Keep explicit external/contact links untouched.
+  if (/^(https?:\/\/|mailto:|tel:)/i.test(route)) {
+    return route;
+  }
+
+  // Announcement routes are app routes. Always make them root-relative so
+  // Next.js does not resolve them relative to the page the user is on.
+  let normalized = route.startsWith("/") ? route : `/${route}`;
+
+  // A slash directly before a query/hash is not part of our static route.
+  // Example: /agenda/activiteit/?slug=bowlen -> /agenda/activiteit?slug=bowlen
+  normalized = normalized.replace(/\/+([?#])/g, "$1");
+
+  // Friendly shortcut used in the CRM: "activiteit?slug=..." points to the
+  // actual static activity detail route under /agenda.
+  if (
+    normalized === "/activiteit"
+    || normalized.startsWith("/activiteit?")
+    || normalized.startsWith("/activiteit#")
+  ) {
+    normalized = `/agenda${normalized}`;
+  }
+
+  return normalized;
+}
+
 function asAnnouncement(id: string, data: Record<string, unknown>): AnnouncementData {
   return {
     id,
@@ -36,7 +67,7 @@ function asAnnouncement(id: string, data: Record<string, unknown>): Announcement
     detail: String(data.detail || data.body || ""),
     icon: (data.icon as AnnouncementIcon) || "megaphone",
     actionLabel: String(data.actionLabel || "Bekijk meer"),
-    actionRoute: String(data.actionRoute || "/"),
+    actionRoute: normalizeAnnouncementRoute(String(data.actionRoute || "/")),
     published: data.published !== false,
     pinned: data.pinned === true,
     startsAt: String(data.startsAt || ""),
@@ -72,6 +103,7 @@ export async function saveAnnouncement(announcement: AnnouncementData): Promise<
     doc(db, "announcements", announcement.id),
     {
       ...announcement,
+      actionRoute: normalizeAnnouncementRoute(announcement.actionRoute),
       updatedAt: serverTimestamp(),
       ...(announcement.createdAt ? {} : { createdAt: serverTimestamp() }),
     },
