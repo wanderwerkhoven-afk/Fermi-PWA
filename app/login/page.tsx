@@ -50,13 +50,13 @@ export default function LoginPage() {
         <div className={styles.hero}>
           <div className={styles.rays} aria-hidden="true"><i /><i /><i /></div>
           <h1>Welkom<br /><em>terug</em><b>✦</b></h1>
-          <p>Log in om je activiteiten,<br />ledenpas en community<br />te bekijken.</p>
+          <p>Log in met je HvA- of persoonlijke e-mailadres om je activiteiten, ledenpas en community te bekijken.</p>
         </div>
 
         <form className={styles.card} onSubmit={submit}>
           <label className={styles.field}>
             <UserRound aria-hidden="true" />
-            <input type="email" autoComplete="email" placeholder="E-mailadres" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input type="email" autoComplete="email" placeholder="HvA- of persoonlijk e-mailadres" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </label>
           <label className={styles.field}>
             <LockKeyhole aria-hidden="true" />
