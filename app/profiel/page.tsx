@@ -71,7 +71,8 @@ function FermiMark() {
 }
 
 export default function ProfilePage() {
-  const [isAdmin, setIsAdmin] = useState(false);\n  const [canScan, setCanScan] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [canScan, setCanScan] = useState(false);
   const [fermiUser, setFermiUser] = useState<FermiUser | null>(null);
   const [membership, setMembership] = useState<Membership | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -80,7 +81,9 @@ export default function ProfilePage() {
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        setIsAdmin(false);\n        setCanScan(false);\n        return;
+        setIsAdmin(false);
+        setCanScan(false);
+        return;
       }
       try {
         const [profile, activeMembership] = await Promise.all([
@@ -89,8 +92,12 @@ export default function ProfilePage() {
         ]);
         setFermiUser(profile);
         setMembership(activeMembership);
-        const isActive = profile?.status === "active";\n        setIsAdmin(Boolean(isActive && profile.role === "admin"));\n        setCanScan(Boolean(isActive && profile && ["committee", "board", "admin"].includes(profile.role)));
-      } catch {\n        setIsAdmin(false);\n        setCanScan(false);
+        const isActive = profile?.status === "active";
+        setIsAdmin(Boolean(isActive && profile.role === "admin"));
+        setCanScan(Boolean(isActive && profile && ["committee", "board", "admin"].includes(profile.role)));
+      } catch {
+        setIsAdmin(false);
+        setCanScan(false);
       }
     });
   }, []);
