@@ -23,6 +23,7 @@ import {
   UserCog,
   CalendarCog,
   Megaphone,
+  ScanLine,
   LogOut,
 } from "lucide-react";
 
@@ -70,7 +71,7 @@ function FermiMark() {
 }
 
 export default function ProfilePage() {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);\n  const [canScan, setCanScan] = useState(false);
   const [fermiUser, setFermiUser] = useState<FermiUser | null>(null);
   const [membership, setMembership] = useState<Membership | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -79,8 +80,7 @@ export default function ProfilePage() {
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        setIsAdmin(false);
-        return;
+        setIsAdmin(false);\n        setCanScan(false);\n        return;
       }
       try {
         const [profile, activeMembership] = await Promise.all([
@@ -89,9 +89,8 @@ export default function ProfilePage() {
         ]);
         setFermiUser(profile);
         setMembership(activeMembership);
-        setIsAdmin(profile?.status === "active" && profile.role === "admin");
-      } catch {
-        setIsAdmin(false);
+        const isActive = profile?.status === "active";\n        setIsAdmin(Boolean(isActive && profile.role === "admin"));\n        setCanScan(Boolean(isActive && profile && ["committee", "board", "admin"].includes(profile.role)));
+      } catch {\n        setIsAdmin(false);\n        setCanScan(false);
       }
     });
   }, []);
@@ -111,29 +110,39 @@ export default function ProfilePage() {
     }
   }
 
-  const visibleMenuItems = isAdmin
-    ? [
-        ...menuItems,
-        {
-          title: "Leden admin",
-          subtitle: "Leden aanmelden, afmelden en beheren",
-          icon: UserCog,
-          href: "/profiel/leden-admin",
-        },
-        {
-          title: "Activiteiten admin",
-          subtitle: "Agenda en activiteitsgegevens beheren",
-          icon: CalendarCog,
-          href: "/profiel/activiteiten-admin",
-        },
-        {
-          title: "Mededelingen admin",
-          subtitle: "Berichten op Home publiceren en beheren",
-          icon: Megaphone,
-          href: "/profiel/mededelingen-admin",
-        },
-      ]
-    : menuItems;
+  const scannerItem = {
+    title: "QR scanner",
+    subtitle: "Controleer ledenpassen bij activiteiten",
+    icon: ScanLine,
+    href: "/profiel/qr-scanner",
+  };
+
+  const visibleMenuItems = [
+    ...menuItems,
+    ...(canScan ? [scannerItem] : []),
+    ...(isAdmin
+      ? [
+          {
+            title: "Leden admin",
+            subtitle: "Leden aanmelden, afmelden en beheren",
+            icon: UserCog,
+            href: "/profiel/leden-admin",
+          },
+          {
+            title: "Activiteiten admin",
+            subtitle: "Agenda en activiteitsgegevens beheren",
+            icon: CalendarCog,
+            href: "/profiel/activiteiten-admin",
+          },
+          {
+            title: "Mededelingen admin",
+            subtitle: "Berichten op Home publiceren en beheren",
+            icon: Megaphone,
+            href: "/profiel/mededelingen-admin",
+          },
+        ]
+      : []),
+  ];
 
   return (
     <main className="app-shell profile-page-shell">
