@@ -28,7 +28,7 @@ type ScannerHandle = {
     onFailure?: () => void,
   ) => Promise<unknown>;
   stop: () => Promise<unknown>;
-  clear: () => Promise<unknown>;
+  clear: () => void;
 };
 
 const allowedRoles = new Set(["committee", "board", "admin"]);
@@ -107,7 +107,7 @@ export default function QrScannerPage() {
       const scanner = scannerRef.current;
       scannerRef.current = null;
       if (scanner) {
-        scanner.stop().catch(() => undefined).finally(() => scanner.clear().catch(() => undefined));
+        scanner.stop().catch(() => undefined).finally(() => {\n          try { scanner.clear(); } catch { /* already cleared */ }\n        });
       }
     };
   }, []);
