@@ -56,7 +56,7 @@ export default function LoginPage() {
         <form className={styles.card} onSubmit={submit}>
           <label className={styles.field}>
             <UserRound aria-hidden="true" />
-            <input type="email" autoComplete="email" placeholder="HvA- of persoonlijk e-mailadres" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input type="email" autoComplete="email" placeholder="email adress" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </label>
           <label className={styles.field}>
             <LockKeyhole aria-hidden="true" />
