@@ -272,7 +272,7 @@ export default function HomePage() {
                 {featuredActivity.type.trim().toUpperCase() === "STUDIEREIS" && featuredActivity.endDate ? (
                   <>
                     <span><CalendarDays size={18} /> {formatHomeActivityDate(featuredActivity)}</span>
-                    <span className="home-featured-end-date"><CalendarDays size={18} /> t/m {formatHomeActivityEndDate(featuredActivity.endDate)}</span>
+                    <span className="home-featured-end-date">t/m {formatHomeActivityEndDate(featuredActivity.endDate)}</span>
                   </>
                 ) : (
                   <span><CalendarDays size={18} /> {featuredActivity.dateLabel}</span>
