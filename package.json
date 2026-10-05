@@ -16,7 +16,8 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "firebase": "^12.4.0",
-    "qrcode.react": "^4.2.0"
+    "qrcode.react": "^4.2.0",
+    "html5-qrcode": "^2.3.8"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
