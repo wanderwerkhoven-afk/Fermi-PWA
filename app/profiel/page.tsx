@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import { getUserProfile } from "../../lib/services/users";
 import { getActiveMembership } from "../../lib/services/memberships";
@@ -23,6 +23,7 @@ import {
   UserCog,
   CalendarCog,
   Megaphone,
+  LogOut,
 } from "lucide-react";
 
 const menuItems = [
@@ -72,6 +73,8 @@ export default function ProfilePage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [fermiUser, setFermiUser] = useState<FermiUser | null>(null);
   const [membership, setMembership] = useState<Membership | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
@@ -96,6 +99,17 @@ export default function ProfilePage() {
   const memberName = [fermiUser?.profile.firstName, fermiUser?.profile.prefix, fermiUser?.profile.lastName].filter(Boolean).join(" ") || "Fermi-lid";
   const roleLabel = fermiUser?.role === "admin" ? "Admin" : fermiUser?.role === "board" ? "Bestuur" : fermiUser?.role === "committee" ? "Commissie" : "Lid";
   const validUntil = membership?.endDate ? new Intl.DateTimeFormat("nl-NL", { day: "numeric", month: "short", year: "numeric" }).format(new Date(`${membership.endDate}T12:00:00`)) : "Niet bekend";
+
+  async function handleSignOut() {
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await signOut(auth);
+      window.location.href = "/Fermi-PWA/";
+    } finally {
+      setSigningOut(false);
+    }
+  }
 
   const visibleMenuItems = isAdmin
     ? [
@@ -132,10 +146,35 @@ export default function ProfilePage() {
             <span>SV Fermi</span>
           </div>
 
-          <button className="icon-button notification-button" aria-label="Meldingen">
-            <Bell size={22} strokeWidth={2.1} />
-            <span className="notification-dot" />
-          </button>
+          <div className="profile-settings-wrap">
+            <button
+              className="icon-button profile-settings-button"
+              aria-label="Instellingen"
+              aria-expanded={settingsOpen}
+              onClick={() => setSettingsOpen((open) => !open)}
+            >
+              <Settings size={22} strokeWidth={2.1} />
+            </button>
+
+            {settingsOpen && (
+              <div className="profile-settings-menu" role="menu">
+                <div className="profile-settings-menu-head">
+                  <Settings size={18} />
+                  <span>Instellingen</span>
+                </div>
+                <button
+                  type="button"
+                  className="profile-settings-menu-item danger"
+                  onClick={handleSignOut}
+                  disabled={signingOut}
+                  role="menuitem"
+                >
+                  <LogOut size={18} />
+                  <span>{signingOut ? "Uitloggen…" : "Uitloggen"}</span>
+                </button>
+              </div>
+            )}
+          </div>
         </header>
 
         <div className="profile-title-row">
