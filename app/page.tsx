@@ -262,12 +262,10 @@ export default function HomePage() {
               className="featured-art home-featured-art"
               aria-hidden="true"
             >
-              {resolveHomeFeaturedImage(featuredActivity) ? (
-                <img
-                  src={resolveHomeFeaturedImage(featuredActivity)}
-                  alt=""
-                />
-              ) : null}
+              {(() => {
+                const featuredImage = resolveHomeFeaturedImage(featuredActivity);
+                return featuredImage ? <img src={featuredImage} alt="" /> : null;
+              })()}
             </div>
           </article>
 ) : null}
