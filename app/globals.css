@@ -4789,29 +4789,6 @@ button {
   height: 17px;
 }
 
-.home-featured-art {
-  z-index: 20;
-  min-width: 0;
-  min-height: 100%;
-  position: relative;
-  overflow: visible;
-  display: grid;
-  place-items: center;
-  padding: 7px 3px 7px 0;
-}
-
-.home-featured-art img {
-  width: 100%;
-  height: 100%;
-  max-width: 100%;
-  max-height: 170px;
-  display: block;
-  object-fit: contain;
-  object-position: center right;
-  transform: translateX(35px) scale(1.5);
-  transform-origin: center right;
-}
-
 @media (max-width: 420px) {
   .top-hero {
     padding-inline: 16px;
@@ -4893,13 +4870,9 @@ button {
     font-size: 10px;
   }
 
-  .home-featured-art {
-    padding: 5px 2px 5px 0;
-  }
+  
 
-  .home-featured-art img {
-    max-height: 166px;
-  }
+  
 
   .section-block {
     gap: 8px;
@@ -7342,39 +7315,50 @@ body.member-admin-modal-open{overflow:hidden}
 }
 
 
-/* Home featured activity — transparent artwork behaves like a sticker */
+/* Home featured activity — true transparent PNG sticker overlay */
 .home-featured-event {
+  position: relative;
   overflow: visible;
 }
 
-.home-featured-art-live {
-  overflow: visible;
-  position: static;
-  min-height: 0;
-  padding: 0;
-}
-
-.home-featured-art-live img {
+.home-featured-sticker {
   position: absolute;
   right: 0;
   bottom: 0;
-  width: 48%;
-  height: auto;
-  max-width: none;
-  max-height: none;
-  object-fit: contain;
-  transform: none;
-  transform-origin: right bottom;
+  width: 44%;
+  height: 100%;
+  overflow: visible;
   pointer-events: none;
   z-index: 3;
-  clip-path: polygon(8% 0, 100% 0, 100% 100%, 0 100%, 0 12%, 4% 9%);
+}
+
+.home-featured-sticker img {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: 118%;
+  max-width: none;
+  max-height: none;
+  display: block;
+  object-fit: contain;
+  object-position: right bottom;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  transform: none;
+  clip-path: none;
 }
 
 @media (max-width: 420px) {
-  .home-featured-art-live img {
+  .home-featured-sticker {
+    width: 46%;
+  }
+
+  .home-featured-sticker img {
     right: 0;
     bottom: 0;
-    width: 50%;
-    transform: none;
+    height: 120%;
   }
 }
