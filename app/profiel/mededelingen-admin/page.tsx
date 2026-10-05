@@ -6,8 +6,11 @@ import { onAuthStateChanged } from "firebase/auth";
 import {
   ArrowLeft,
   CalendarDays,
+  ChevronDown,
+  ChevronRight,
   Eye,
   EyeOff,
+  Folder,
   Info,
   Megaphone,
   Pencil,
@@ -21,6 +24,7 @@ import {
 } from "lucide-react";
 import { auth } from "../../../lib/firebase";
 import { getUserProfile } from "../../../lib/services/users";
+import { listActivities, type ActivityData } from "../../../lib/services/activities";
 import {
   listAnnouncements,
   saveAnnouncement,
@@ -101,6 +105,14 @@ function iconFor(icon: AnnouncementIcon) {
 export default function MededelingenAdminPage() {
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [items, setItems] = useState<AnnouncementData[]>([]);
+  const [activities, setActivities] = useState<ActivityData[]>([]);
+  const [routePickerOpen, setRoutePickerOpen] = useState(false);
+  const [openRouteFolders, setOpenRouteFolders] = useState<Record<string, boolean>>({
+    agenda: true,
+    activities: true,
+    fermi: false,
+    community: false,
+  });
   const [query, setQuery] = useState("");
   const [mode, setMode] = useState<"all" | "published" | "hidden">("all");
   const [selected, setSelected] = useState<AnnouncementData | null>(null);
@@ -110,8 +122,21 @@ export default function MededelingenAdminPage() {
   const [notice, setNotice] = useState("");
 
   async function refresh() {
-    const data = await listAnnouncements();
-    setItems(data.sort((a, b) => Number(b.pinned) - Number(a.pinned) || a.title.localeCompare(b.title, "nl")));
+    const [announcementData, activityData] = await Promise.all([
+      listAnnouncements(),
+      listActivities(),
+    ]);
+    setItems(announcementData.sort((a, b) => Number(b.pinned) - Number(a.pinned) || a.title.localeCompare(b.title, "nl")));
+    setActivities(activityData.sort((a, b) => a.title.localeCompare(b.title, "nl")));
+  }
+
+  function toggleRouteFolder(folder: string) {
+    setOpenRouteFolders((current) => ({ ...current, [folder]: !current[folder] }));
+  }
+
+  function selectRoute(route: string) {
+    updateForm("actionRoute", route);
+    setRoutePickerOpen(false);
   }
 
   useEffect(() => {
@@ -157,6 +182,7 @@ export default function MededelingenAdminPage() {
   function openNew() {
     setSelected(null);
     setForm(emptyForm);
+    setRoutePickerOpen(false);
     setNotice("");
     setPanelOpen(true);
   }
@@ -164,6 +190,7 @@ export default function MededelingenAdminPage() {
   function openEdit(item: AnnouncementData) {
     setSelected(item);
     setForm(formFromAnnouncement(item));
+    setRoutePickerOpen(false);
     setNotice("");
     setPanelOpen(true);
   }
@@ -379,37 +406,146 @@ export default function MededelingenAdminPage() {
                 <label>Knoptekst
                   <input value={form.actionLabel} onChange={(event) => updateForm("actionLabel", event.target.value)} placeholder="Bijv. Bekijk agenda" />
                 </label>
-                <label>Route
-                  <select
-                    value={routeOptions.some((route) => route.value === form.actionRoute) ? form.actionRoute : "__custom__"}
-                    onChange={(event) => {
-                      if (event.target.value === "__custom__") {
-                        updateForm("actionRoute", "");
-                      } else {
-                        updateForm("actionRoute", event.target.value);
-                      }
-                    }}
+                <div className="announcement-route-field">
+                  <span className="activity-admin-field-label">Route</span>
+                  <button
+                    type="button"
+                    className={`announcement-route-trigger${routePickerOpen ? " open" : ""}`}
+                    onClick={() => setRoutePickerOpen((open) => !open)}
+                    aria-expanded={routePickerOpen}
                   >
-                    {routeOptions.map((route) => (
-                      <option key={route.value} value={route.value}>
-                        {route.label}
-                      </option>
-                    ))}
-                    <option value="__custom__">Zelf route invullen…</option>
-                  </select>
-                </label>
+                    <span>
+                      <small>Geselecteerd pad</small>
+                      <strong>{form.actionRoute || "Kies een route…"}</strong>
+                    </span>
+                    <ChevronDown size={18} />
+                  </button>
 
-                {!routeOptions.some((route) => route.value === form.actionRoute) && (
-                  <label>Eigen route
-                    <input
-                      value={form.actionRoute}
-                      onChange={(event) => updateForm("actionRoute", event.target.value)}
-                      placeholder="/bijv-mijn-pagina"
-                      autoCapitalize="none"
-                      autoCorrect="off"
-                    />
-                  </label>
-                )}
+                  {routePickerOpen && (
+                    <div className="announcement-route-browser">
+                      <div className="announcement-route-browser-head">
+                        <Folder size={18} />
+                        <span>PWA routes</span>
+                      </div>
+
+                      <button type="button" className="announcement-route-item root" onClick={() => selectRoute("/")}>
+                        <span className="announcement-route-indent" />
+                        <span className="announcement-route-file">⌂</span>
+                        <span>Home</span>
+                        <small>/</small>
+                      </button>
+
+                      <div className="announcement-route-folder">
+                        <button type="button" className="announcement-route-folder-row" onClick={() => toggleRouteFolder("agenda")}>
+                          {openRouteFolders.agenda ? <ChevronDown size={17} /> : <ChevronRight size={17} />}
+                          <Folder size={18} />
+                          <strong>Agenda</strong>
+                        </button>
+                        {openRouteFolders.agenda && (
+                          <div className="announcement-route-children">
+                            <button type="button" className="announcement-route-item" onClick={() => selectRoute("/agenda")}>
+                              <span className="announcement-route-file">•</span>
+                              <span>Agenda overzicht</span>
+                              <small>/agenda</small>
+                            </button>
+
+                            <div className="announcement-route-folder nested">
+                              <button type="button" className="announcement-route-folder-row" onClick={() => toggleRouteFolder("activities")}>
+                                {openRouteFolders.activities ? <ChevronDown size={17} /> : <ChevronRight size={17} />}
+                                <Folder size={18} />
+                                <strong>Activiteiten</strong>
+                                <small>{activities.length}</small>
+                              </button>
+                              {openRouteFolders.activities && (
+                                <div className="announcement-route-children">
+                                  {activities.map((activity) => {
+                                    const route = `/agenda/activiteit?slug=${encodeURIComponent(activity.slug)}`;
+                                    return (
+                                      <button
+                                        type="button"
+                                        className={`announcement-route-item activity${form.actionRoute === route ? " selected" : ""}`}
+                                        key={activity.slug}
+                                        onClick={() => selectRoute(route)}
+                                      >
+                                        <span className="announcement-route-file">↳</span>
+                                        <span>{activity.title}</span>
+                                        <small>{activity.slug}</small>
+                                      </button>
+                                    );
+                                  })}
+                                  {activities.length === 0 && (
+                                    <div className="announcement-route-empty">Nog geen activiteiten gevonden.</div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="announcement-route-folder">
+                        <button type="button" className="announcement-route-folder-row" onClick={() => toggleRouteFolder("fermi")}>
+                          {openRouteFolders.fermi ? <ChevronDown size={17} /> : <ChevronRight size={17} />}
+                          <Folder size={18} />
+                          <strong>Fermi</strong>
+                        </button>
+                        {openRouteFolders.fermi && (
+                          <div className="announcement-route-children">
+                            <button type="button" className="announcement-route-item" onClick={() => selectRoute("/fermi")}>
+                              <span className="announcement-route-file">•</span><span>Fermi overzicht</span><small>/fermi</small>
+                            </button>
+                            <button type="button" className="announcement-route-item" onClick={() => selectRoute("/fermi/bestuur")}>
+                              <span className="announcement-route-file">•</span><span>Bestuur</span><small>/fermi/bestuur</small>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="announcement-route-folder">
+                        <button type="button" className="announcement-route-folder-row" onClick={() => toggleRouteFolder("community")}>
+                          {openRouteFolders.community ? <ChevronDown size={17} /> : <ChevronRight size={17} />}
+                          <Folder size={18} />
+                          <strong>Community</strong>
+                        </button>
+                        {openRouteFolders.community && (
+                          <div className="announcement-route-children">
+                            <button type="button" className="announcement-route-item" onClick={() => selectRoute("/community")}>
+                              <span className="announcement-route-file">•</span><span>Community overzicht</span><small>/community</small>
+                            </button>
+                            <button type="button" className="announcement-route-item" onClick={() => selectRoute("/community/fotoalbums")}>
+                              <span className="announcement-route-file">•</span><span>Fotoalbums</span><small>/community/fotoalbums</small>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <button type="button" className="announcement-route-item root" onClick={() => selectRoute("/profiel")}>
+                        <span className="announcement-route-indent" />
+                        <span className="announcement-route-file">•</span>
+                        <span>Profiel</span>
+                        <small>/profiel</small>
+                      </button>
+
+                      <button type="button" className="announcement-route-custom" onClick={() => selectRoute("")}>
+                        <Plus size={17} />
+                        Zelf een route invoeren
+                      </button>
+                    </div>
+                  )}
+
+                  {!routeOptions.some((route) => route.value === form.actionRoute)
+                    && !activities.some((activity) => `/agenda/activiteit?slug=${encodeURIComponent(activity.slug)}` === form.actionRoute) && (
+                    <label className="announcement-route-custom-input">Eigen route
+                      <input
+                        value={form.actionRoute}
+                        onChange={(event) => updateForm("actionRoute", event.target.value)}
+                        placeholder="/bijv-mijn-pagina"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                      />
+                    </label>
+                  )}
+                </div>
               </section>
 
               <section>
