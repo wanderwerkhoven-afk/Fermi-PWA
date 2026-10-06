@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Bell,
   CalendarDays,
@@ -12,10 +12,8 @@ import {
   UserRound,
   UsersRound,
 } from "lucide-react";
-import {
-  listCommunityMembers,
-  type CommunityDirectoryMember,
-} from "@/lib/services/community";
+import type { CommunityDirectoryMember } from "@/lib/services/community";
+import { useAppData } from "@/components/AppDataProvider";
 
 const filters = ["Alle leden", "Bestuur", "Commissies", "Jaar 1", "Jaar 2+"];
 
@@ -45,31 +43,13 @@ function memberSubtitle(member: CommunityDirectoryMember) {
 export default function CommunityPage() {
   const [query, setQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("Alle leden");
-  const [members, setMembers] = useState<CommunityDirectoryMember[]>([]);
-  const [loadingMembers, setLoadingMembers] = useState(true);
-  const [memberLoadError, setMemberLoadError] = useState("");
+  const {
+    communityMembers: members,
+    communityLoading: loadingMembers,
+    communityError: memberLoadError,
+  } = useAppData();
 
-  useEffect(() => {
-    let active = true;
 
-    listCommunityMembers()
-      .then((items) => {
-        if (!active) return;
-        setMembers(items);
-        setMemberLoadError("");
-      })
-      .catch((error) => {
-        console.error("Communityleden laden mislukt", error);
-        if (active) setMemberLoadError("De ledenlijst kon niet worden geladen.");
-      })
-      .finally(() => {
-        if (active) setLoadingMembers(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const visibleMembers = useMemo(() => {
     const normalized = query.trim().toLowerCase();
