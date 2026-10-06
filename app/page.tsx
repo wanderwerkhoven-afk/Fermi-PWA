@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { listActivities } from "../lib/services/activities";
+import { listActivities, listActivitiesFromCache } from "../lib/services/activities";
 import {
   listPublishedAnnouncements,
+  listPublishedAnnouncementsFromCache,
   type AnnouncementData,
 } from "../lib/services/announcements";
 import type { AgendaEvent } from "../data/agenda-events";
@@ -139,6 +140,21 @@ export default function HomePage() {
 
   useEffect(() => {
     let active = true;
+
+    // Warm PWA starts: paint cached Firebase data immediately, then refresh it.
+    Promise.allSettled([listActivitiesFromCache(), listPublishedAnnouncementsFromCache()]).then(
+      ([cachedActivities, cachedAnnouncements]) => {
+        if (!active) return;
+        if (cachedActivities.status === "fulfilled" && cachedActivities.value.length > 0) {
+          setActivities(cachedActivities.value);
+          setActivitiesLoading(false);
+        }
+        if (cachedAnnouncements.status === "fulfilled" && cachedAnnouncements.value.length > 0) {
+          setAnnouncements(cachedAnnouncements.value);
+          setAnnouncementsLoading(false);
+        }
+      },
+    );
 
     Promise.allSettled([listActivities(), listPublishedAnnouncements()]).then(
       ([activitiesResult, announcementsResult]) => {
