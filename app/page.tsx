@@ -277,8 +277,6 @@ export default function HomePage() {
                 ) : (
                   <span><CalendarDays size={18} /> {featuredActivity.dateLabel}</span>
                 )}
-                <span><Clock3 size={18} /> {featuredActivity.time}</span>
-                <span><MapPin size={18} /> {featuredActivity.location}</span>
               </div>
 
               <Link
