@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  getDocsFromCache,
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
@@ -26,6 +27,11 @@ function asActivity(id: string, data: Record<string, unknown>): ActivityData {
 
 export async function listActivities(): Promise<ActivityData[]> {
   const snapshot = await getDocs(collection(db, "activities"));
+  return snapshot.docs.map((item) => asActivity(item.id, item.data()));
+}
+
+export async function listActivitiesFromCache(): Promise<ActivityData[]> {
+  const snapshot = await getDocsFromCache(collection(db, "activities"));
   return snapshot.docs.map((item) => asActivity(item.id, item.data()));
 }
 
