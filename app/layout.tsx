@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import AuthGuard from "../components/AuthGuard";\nimport { SessionProvider } from "../components/SessionProvider";
+import AuthGuard from "../components/AuthGuard";
+import { SessionProvider } from "../components/SessionProvider";
 
 export const metadata: Metadata = {
   title: "S.V. Fermi",
