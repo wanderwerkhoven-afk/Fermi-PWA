@@ -15,7 +15,9 @@ const firebaseConfig = {
 
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(firebaseApp);
-export const db = initializeFirestore(firebaseApp, {\n  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),\n});
+export const db = initializeFirestore(firebaseApp, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+});
 export const storage = getStorage(firebaseApp);
 
 export async function initializeAnalytics() {
