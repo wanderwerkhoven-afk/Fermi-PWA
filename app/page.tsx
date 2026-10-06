@@ -110,6 +110,7 @@ function eventEnd(event: AgendaEvent) {
 
 export default function HomePage() {
   const [memberPassOpen, setMemberPassOpen] = useState(false);
+  const [memberPassClosing, setMemberPassClosing] = useState(false);
   const { fermiUser, membership } = useFermiSession();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [announcementsOpen, setAnnouncementsOpen] = useState(false);
@@ -121,7 +122,16 @@ export default function HomePage() {
     announcementsLoading,
   } = useAppData();
 
-  const overlayOpen = memberPassOpen || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
+  const overlayOpen = memberPassOpen || memberPassClosing || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
+
+  const closeMemberPass = () => {
+    if (!memberPassOpen || memberPassClosing) return;
+    setMemberPassClosing(true);
+    window.setTimeout(() => {
+      setMemberPassOpen(false);
+      setMemberPassClosing(false);
+    }, 420);
+  };
 
   const upcomingActivities = useMemo(() => {
     const now = Date.now();
@@ -147,7 +157,7 @@ export default function HomePage() {
     if (!overlayOpen) return;
 
     const closeOverlays = () => {
-      setMemberPassOpen(false);
+      if (memberPassOpen) closeMemberPass();
       setNotificationsOpen(false);
       setAnnouncementsOpen(false);
       setActiveAnnouncement(null);
@@ -477,13 +487,13 @@ export default function HomePage() {
         </div>
       )}
 
-      {memberPassOpen && (
+      {(memberPassOpen || memberPassClosing) && (
         <div
-          className="member-pass-modal"
+          className={`member-pass-modal${memberPassClosing ? " is-closing" : ""}`}
           role="dialog"
           aria-modal="true"
           aria-label="Digitale ledenpas"
-          onClick={() => setMemberPassOpen(false)}
+          onClick={closeMemberPass}
         >
           <div
             className="member-pass-modal-card"
@@ -493,7 +503,7 @@ export default function HomePage() {
               className="member-pass-modal-close"
               type="button"
               aria-label="Sluit digitale ledenpas"
-              onClick={() => setMemberPassOpen(false)}
+              onClick={closeMemberPass}
             >
               <X size={22} />
             </button>
