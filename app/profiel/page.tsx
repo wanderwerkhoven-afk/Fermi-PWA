@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useState } from "react";
+import { signOut } from "firebase/auth";
 import { auth } from "../../lib/firebase";
-import { getUserProfile } from "../../lib/services/users";
-import { getActiveMembership } from "../../lib/services/memberships";
 import MemberQrCode from "../../components/MemberQrCode";
-import type { FermiUser, Membership } from "../../lib/models/backend";
+import { useFermiSession } from "../../components/SessionProvider";
 import {
   Bell,
   CalendarDays,
@@ -71,36 +69,14 @@ function FermiMark() {
 }
 
 export default function ProfilePage() {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [canScan, setCanScan] = useState(false);
-  const [fermiUser, setFermiUser] = useState<FermiUser | null>(null);
-  const [membership, setMembership] = useState<Membership | null>(null);
+  const { fermiUser, membership } = useFermiSession();
+  const isActive = fermiUser?.status === "active";
+  const isAdmin = Boolean(isActive && fermiUser?.role === "admin");
+  const canScan = Boolean(isActive && fermiUser && ["committee", "board", "admin"].includes(fermiUser.role));
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
 
-  useEffect(() => {
-    return onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        setIsAdmin(false);
-        setCanScan(false);
-        return;
-      }
-      try {
-        const [profile, activeMembership] = await Promise.all([
-          getUserProfile(user.uid),
-          getActiveMembership(user.uid),
-        ]);
-        setFermiUser(profile);
-        setMembership(activeMembership);
-        const isActive = profile?.status === "active";
-        setIsAdmin(Boolean(isActive && profile.role === "admin"));
-        setCanScan(Boolean(isActive && profile && ["committee", "board", "admin"].includes(profile.role)));
-      } catch {
-        setIsAdmin(false);
-        setCanScan(false);
-      }
-    });
-  }, []);
+
 
   const memberName = [fermiUser?.profile.firstName, fermiUser?.profile.prefix, fermiUser?.profile.lastName].filter(Boolean).join(" ") || "Fermi-lid";
   const roleLabel = fermiUser?.role === "admin" ? "Admin" : fermiUser?.role === "board" ? "Bestuur" : fermiUser?.role === "committee" ? "Commissie" : "Lid";
