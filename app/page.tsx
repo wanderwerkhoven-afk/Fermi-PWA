@@ -2,18 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../lib/firebase";
-import { getUserProfile } from "../lib/services/users";
-import { getActiveMembership } from "../lib/services/memberships";
 import { listActivities } from "../lib/services/activities";
 import {
   listPublishedAnnouncements,
   type AnnouncementData,
 } from "../lib/services/announcements";
 import type { AgendaEvent } from "../data/agenda-events";
-import type { FermiUser, Membership } from "../lib/models/backend";
 import MemberQrCode from "../components/MemberQrCode";
+import { useFermiSession } from "../components/SessionProvider";
 import {
   Bell,
   CalendarDays,
@@ -117,13 +113,14 @@ function eventEnd(event: AgendaEvent) {
 
 export default function HomePage() {
   const [memberPassOpen, setMemberPassOpen] = useState(false);
-  const [fermiUser, setFermiUser] = useState<FermiUser | null>(null);
-  const [membership, setMembership] = useState<Membership | null>(null);
+  const { fermiUser, membership } = useFermiSession();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [announcementsOpen, setAnnouncementsOpen] = useState(false);
   const [activeAnnouncement, setActiveAnnouncement] = useState<AnnouncementData | null>(null);
   const [activities, setActivities] = useState<AgendaEvent[]>([]);
   const [announcements, setAnnouncements] = useState<AnnouncementData[]>([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(true);
+  const [announcementsLoading, setAnnouncementsLoading] = useState(true);
 
   const overlayOpen = memberPassOpen || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
 
@@ -141,46 +138,31 @@ export default function HomePage() {
     .slice(0, 3);
 
   useEffect(() => {
-    return onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        setFermiUser(null);
-        setMembership(null);
-        setActivities([]);
-        setAnnouncements([]);
-        return;
-      }
+    let active = true;
 
-      const [profileResult, membershipResult, activitiesResult, announcementsResult] = await Promise.allSettled([
-        getUserProfile(user.uid),
-        getActiveMembership(user.uid),
-        listActivities(),
-        listPublishedAnnouncements(),
-      ]);
+    Promise.allSettled([listActivities(), listPublishedAnnouncements()]).then(
+      ([activitiesResult, announcementsResult]) => {
+        if (!active) return;
 
-      if (profileResult.status === "fulfilled") {
-        setFermiUser(profileResult.value);
-      } else {
-        console.error("Profile data could not be loaded", profileResult.reason);
-      }
+        if (activitiesResult.status === "fulfilled") {
+          setActivities(activitiesResult.value);
+        } else {
+          console.error("Upcoming activities could not be loaded", activitiesResult.reason);
+        }
+        setActivitiesLoading(false);
 
-      if (membershipResult.status === "fulfilled") {
-        setMembership(membershipResult.value);
-      } else {
-        console.error("Member pass data could not be loaded", membershipResult.reason);
-      }
+        if (announcementsResult.status === "fulfilled") {
+          setAnnouncements(announcementsResult.value);
+        } else {
+          console.error("Announcements could not be loaded", announcementsResult.reason);
+        }
+        setAnnouncementsLoading(false);
+      },
+    );
 
-      if (activitiesResult.status === "fulfilled") {
-        setActivities(activitiesResult.value);
-      } else {
-        console.error("Upcoming activities could not be loaded", activitiesResult.reason);
-      }
-
-      if (announcementsResult.status === "fulfilled") {
-        setAnnouncements(announcementsResult.value);
-      } else {
-        console.error("Announcements could not be loaded", announcementsResult.reason);
-      }
-    });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const memberName = [fermiUser?.profile.firstName, fermiUser?.profile.lastName].filter(Boolean).join(" ");
@@ -222,6 +204,7 @@ export default function HomePage() {
               className="fermi-logo-image"
               src="/Fermi-PWA/images/branding/fermi-logo.png"
               alt="SV Fermi"
+              decoding="async"
             />
             <span>SV Fermi</span>
           </div>
@@ -251,18 +234,22 @@ export default function HomePage() {
               className="home-hero-church"
               src="/Fermi-PWA/images/home/home-hero-church.png"
               alt=""
+              decoding="async"
             />
             <img
               className="home-hero-atom"
               src="/Fermi-PWA/images/home/home-member-pass-atom.png"
               alt=""
+              decoding="async"
             />
           </div>
         </div>
       </section>
 
       <section className="content">
-        {activities.length === 0 ? (\n          <div className="home-featured-skeleton" aria-label="Activiteit laden" aria-busy="true"><span /><span /><span /></div>\n        ) : featuredActivity ? (
+        {activitiesLoading ? (
+          <div className="home-featured-skeleton" aria-label="Activiteit laden" aria-busy="true"><span /><span /><span /></div>
+        ) : featuredActivity ? (
           <article className="featured-event home-featured-event">
             <div className="featured-copy">
               <span className="eyebrow">Volgende activiteit</span>
@@ -306,7 +293,14 @@ export default function HomePage() {
           </div>
 
           <div className="event-strip">
-            {homeUpcomingActivities.map((event) => {
+            {activitiesLoading && (
+              <>
+                <div className="home-mini-skeleton" aria-hidden="true"><span /><span /></div>
+                <div className="home-mini-skeleton" aria-hidden="true"><span /><span /></div>
+                <div className="home-mini-skeleton" aria-hidden="true"><span /><span /></div>
+              </>
+            )}
+            {!activitiesLoading && homeUpcomingActivities.map((event) => {
               const artwork = resolveHomeActivityImage(event);
 
               return (
@@ -336,7 +330,7 @@ export default function HomePage() {
               );
             })}
 
-            {homeUpcomingActivities.length === 0 && (
+            {!activitiesLoading && homeUpcomingActivities.length === 0 && (
               <div className="home-upcoming-empty">
                 <CalendarDays size={24} />
                 <span>{featuredActivity ? "Er staan geen andere komende activiteiten gepland." : "Er staan nog geen komende activiteiten in de agenda."}</span>
@@ -358,7 +352,13 @@ export default function HomePage() {
           </div>
 
           <div className="announcements">
-            {announcements.map((item) => (
+            {announcementsLoading && (
+              <>
+                <div className="home-announcement-skeleton" aria-hidden="true"><span /><span /></div>
+                <div className="home-announcement-skeleton" aria-hidden="true"><span /><span /></div>
+              </>
+            )}
+            {!announcementsLoading && announcements.map((item) => (
               <button
                 className="announcement-card interactive-card"
                 type="button"
