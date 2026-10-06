@@ -33,6 +33,7 @@ export interface FermiUser {
   profile: UserProfile;
   role: UserRole;
   status: AccountStatus;
+  membership?: CurrentMembershipSnapshot | null;
   createdAt?: unknown;
   updatedAt?: unknown;
   lastLoginAt?: unknown;
