@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import AuthGuard from "../components/AuthGuard";
+import AuthGuard from "../components/AuthGuard";\nimport { SessionProvider } from "../components/SessionProvider";
 
 export const metadata: Metadata = {
   title: "S.V. Fermi",
@@ -25,7 +25,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="nl">
-      <body><AuthGuard>{children}</AuthGuard></body>
+      <body><SessionProvider><AuthGuard>{children}</AuthGuard></SessionProvider></body>
     </html>
   );
 }
