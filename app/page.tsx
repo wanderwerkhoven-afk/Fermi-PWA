@@ -2,15 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { listActivities, listActivitiesFromCache } from "../lib/services/activities";
-import {
-  listPublishedAnnouncements,
-  listPublishedAnnouncementsFromCache,
-  type AnnouncementData,
-} from "../lib/services/announcements";
+import type { AnnouncementData } from "../lib/services/announcements";
 import type { AgendaEvent } from "../data/agenda-events";
 import MemberQrCode from "../components/MemberQrCode";
 import { useFermiSession } from "../components/SessionProvider";
+import { useAppData } from "../components/AppDataProvider";
 import {
   Bell,
   CalendarDays,
@@ -118,10 +114,12 @@ export default function HomePage() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [announcementsOpen, setAnnouncementsOpen] = useState(false);
   const [activeAnnouncement, setActiveAnnouncement] = useState<AnnouncementData | null>(null);
-  const [activities, setActivities] = useState<AgendaEvent[]>([]);
-  const [announcements, setAnnouncements] = useState<AnnouncementData[]>([]);
-  const [activitiesLoading, setActivitiesLoading] = useState(true);
-  const [announcementsLoading, setAnnouncementsLoading] = useState(true);
+  const {
+    activities,
+    announcements,
+    activitiesLoading,
+    announcementsLoading,
+  } = useAppData();
 
   const overlayOpen = memberPassOpen || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
 
@@ -138,48 +136,7 @@ export default function HomePage() {
     .filter((event) => event.slug !== featuredActivity?.slug)
     .slice(0, 3);
 
-  useEffect(() => {
-    let active = true;
 
-    // Warm PWA starts: paint cached Firebase data immediately, then refresh it.
-    Promise.allSettled([listActivitiesFromCache(), listPublishedAnnouncementsFromCache()]).then(
-      ([cachedActivities, cachedAnnouncements]) => {
-        if (!active) return;
-        if (cachedActivities.status === "fulfilled" && cachedActivities.value.length > 0) {
-          setActivities(cachedActivities.value);
-          setActivitiesLoading(false);
-        }
-        if (cachedAnnouncements.status === "fulfilled" && cachedAnnouncements.value.length > 0) {
-          setAnnouncements(cachedAnnouncements.value);
-          setAnnouncementsLoading(false);
-        }
-      },
-    );
-
-    Promise.allSettled([listActivities(), listPublishedAnnouncements()]).then(
-      ([activitiesResult, announcementsResult]) => {
-        if (!active) return;
-
-        if (activitiesResult.status === "fulfilled") {
-          setActivities(activitiesResult.value);
-        } else {
-          console.error("Upcoming activities could not be loaded", activitiesResult.reason);
-        }
-        setActivitiesLoading(false);
-
-        if (announcementsResult.status === "fulfilled") {
-          setAnnouncements(announcementsResult.value);
-        } else {
-          console.error("Announcements could not be loaded", announcementsResult.reason);
-        }
-        setAnnouncementsLoading(false);
-      },
-    );
-
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const memberName = [fermiUser?.profile.firstName, fermiUser?.profile.lastName].filter(Boolean).join(" ");
   const memberRole = fermiUser?.role === "admin" ? "Admin" : fermiUser?.role === "board" ? "Bestuur" : fermiUser?.role === "committee" ? "Commissie" : "Lid";
