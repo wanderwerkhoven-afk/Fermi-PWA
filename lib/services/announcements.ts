@@ -4,6 +4,7 @@ import {
   collection,
   doc,
   getDocs,
+  getDocsFromCache,
   query,
   where,
   serverTimestamp,
@@ -85,7 +86,7 @@ export async function listAnnouncements(): Promise<AnnouncementData[]> {
   return snapshot.docs.map((item) => asAnnouncement(item.id, item.data()));
 }
 
-export async function listPublishedAnnouncements(): Promise<AnnouncementData[]> {
+function activePublishedAnnouncements(snapshot: Awaited<ReturnType<typeof getDocs>>): AnnouncementData[] {
   const now = new Date();
   const today = [
     now.getFullYear(),
@@ -93,11 +94,20 @@ export async function listPublishedAnnouncements(): Promise<AnnouncementData[]> 
     String(now.getDate()).padStart(2, "0"),
   ].join("-");
 
-  const snapshot = await getDocs(query(collection(db, "announcements"), where("published", "==", true)));
   return snapshot.docs.map((item) => asAnnouncement(item.id, item.data()))
     .filter((item) => !item.startsAt || item.startsAt <= today)
     .filter((item) => !item.expiresAt || item.expiresAt >= today)
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
+}
+
+export async function listPublishedAnnouncements(): Promise<AnnouncementData[]> {
+  const snapshot = await getDocs(query(collection(db, "announcements"), where("published", "==", true)));
+  return activePublishedAnnouncements(snapshot);
+}
+
+export async function listPublishedAnnouncementsFromCache(): Promise<AnnouncementData[]> {
+  const snapshot = await getDocsFromCache(query(collection(db, "announcements"), where("published", "==", true)));
+  return activePublishedAnnouncements(snapshot);
 }
 
 export async function saveAnnouncement(announcement: AnnouncementData): Promise<void> {
