@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { AgendaEvent } from "../data/agenda-events";
+import { useFermiSession } from "./SessionProvider";
 import {
   listActivities,
   listActivitiesFromCache,
@@ -30,6 +31,7 @@ type AppDataState = {
 const AppDataContext = createContext<AppDataState | null>(null);
 
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
+  const { firebaseUser, loading: sessionLoading } = useFermiSession();
   const [activities, setActivities] = useState<AgendaEvent[]>([]);
   const [announcements, setAnnouncements] = useState<AnnouncementData[]>([]);
   const [communityMembers, setCommunityMembers] = useState<CommunityDirectoryMember[]>([]);
@@ -39,6 +41,18 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [communityError, setCommunityError] = useState("");
 
   useEffect(() => {
+    if (sessionLoading) return;
+    if (!firebaseUser) {
+      setActivities([]);
+      setAnnouncements([]);
+      setCommunityMembers([]);
+      setActivitiesLoading(false);
+      setAnnouncementsLoading(false);
+      setCommunityLoading(false);
+      setCommunityError("");
+      return;
+    }
+
     let active = true;
 
     Promise.allSettled([
@@ -98,7 +112,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [firebaseUser, sessionLoading]);
 
   const value = useMemo(
     () => ({
