@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Bell,
   CalendarDays,
@@ -17,7 +17,7 @@ import {
   type AgendaBackgroundPreset,
   type AgendaEvent,
 } from "@/data/agenda-events";
-import { listActivities } from "@/lib/services/activities";
+import { useAppData } from "@/components/AppDataProvider";
 
 const filters = ["Alles", "Activiteiten", "Borrel", "Lezingen", "Reizen"] as const;
 
@@ -142,20 +142,10 @@ function getEventEnd(event: AgendaEvent) {
 export default function AgendaPage() {
   const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
-  const [events, setEvents] = useState<AgendaEvent[]>([]);
+  const { activities: events } = useAppData();
   const [activeFilter, setActiveFilter] = useState<AgendaFilter>("Alles");
 
-  useEffect(() => {
-    let active = true;
-    listActivities()
-      .then((items) => {
-        if (active) setEvents(items);
-      })
-      .catch((error) => console.error("Activiteiten laden uit Firebase mislukt", error));
-    return () => {
-      active = false;
-    };
-  }, []);
+
 
   const selectedEvents = useMemo(
     () =>
