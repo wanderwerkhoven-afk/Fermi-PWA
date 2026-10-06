@@ -6,7 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import type { FermiUser, Membership } from "../lib/models/backend";
 import { getUserProfile } from "../lib/services/users";
-import { getActiveMembership } from "../lib/services/memberships";
+import { getActiveMembership, getPendingMembership } from "../lib/services/memberships";
 
 type SessionState = {
   firebaseUser: User | null;
@@ -58,6 +58,9 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       // Board/admin users do not need this read for access.
       if (!membership && fermiUser && fermiUser.role !== "admin" && fermiUser.role !== "board") {
         membership = await getActiveMembership(firebaseUser.uid);
+        if (!membership) {
+          membership = await getPendingMembership(firebaseUser.uid);
+        }
       }
 
       setState({ firebaseUser, fermiUser, membership, loading: false, error: null });
