@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
 import { auth } from "../lib/firebase";
 import { resendVerificationEmail } from "../lib/services/auth";
-import { getMembershipAccess } from "../lib/services/memberships";
-import { getUserProfile } from "../lib/services/users";
+import { useFermiSession } from "./SessionProvider";
 
 const PUBLIC_ROUTES = ["/login", "/register"];
 type AccessState = "loading" | "unauthenticated" | "verify-email" | "suspended" | "member" | "membership-pending" | "archive" | "missing-profile" | "error";
@@ -19,53 +17,69 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [verifyMessage, setVerifyMessage] = useState("");
   const [verifyBusy, setVerifyBusy] = useState(false);
   const isPublic = PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
+  const {
+    firebaseUser,
+    fermiUser: profile,
+    membership,
+    loading: sessionLoading,
+    error: sessionError,
+  } = useFermiSession();
 
   useEffect(() => {
     setPreviewBypass(window.sessionStorage.getItem("fermi-preview-bypass") === "1");
   }, []);
 
   useEffect(() => {
-    setAccess("loading");
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        setAccess("unauthenticated");
-        if (!isPublic) router.replace("/login/");
-        return;
-      }
+    if (sessionLoading) {
+      setAccess("loading");
+      return;
+    }
+    if (sessionError) {
+      setAccess("error");
+      return;
+    }
+    if (!firebaseUser) {
+      setAccess("unauthenticated");
+      if (!isPublic) router.replace("/login/");
+      return;
+    }
+    if (!profile) {
+      setAccess("missing-profile");
+      return;
+    }
+    if (!firebaseUser.emailVerified) {
+      setAccess("verify-email");
+      return;
+    }
+    if (profile.status === "suspended") {
+      setAccess("suspended");
+      return;
+    }
 
-      try {
-        const profile = await getUserProfile(user.uid);
-        if (!profile) {
-          setAccess("missing-profile");
-          return;
-        }
-        if (!user.emailVerified) {
-          setAccess("verify-email");
-          return;
-        }
-        if (profile.status === "suspended") {
-          setAccess("suspended");
-          return;
-        }
+    if (profile.status === "active" && (profile.role === "admin" || profile.role === "board")) {
+      setAccess("member");
+      if (isPublic) router.replace("/");
+      return;
+    }
 
-        // Active board/admin accounts must remain able to operate the association
-        // even when their personal annual membership is not active.
-        if (profile.status === "active" && (profile.role === "admin" || profile.role === "board")) {
-          setAccess("member");
-          if (isPublic) router.replace("/");
-          return;
-        }
+    const snapshotStatus = profile.membership?.status;
+    const membershipAccess =
+      snapshotStatus === "pending" || membership?.status === "pending"
+        ? "pending"
+        : snapshotStatus === "active" || membership?.status === "active"
+          ? "active"
+          : "archive";
 
-        const membershipAccess = await getMembershipAccess(user.uid);
-        setAccess(membershipAccess === "active" ? "member" : membershipAccess === "pending" ? "membership-pending" : "archive");
-        if (isPublic) router.replace("/");
-      } catch (error) {
-        console.error("Fermi access check failed", error);
-        setAccess("error");
-      }
-    });
-    return unsubscribe;
-  }, [isPublic, pathname, router]);
+    setAccess(
+      membershipAccess === "active"
+        ? "member"
+        : membershipAccess === "pending"
+          ? "membership-pending"
+          : "archive",
+    );
+
+    if (isPublic) router.replace("/");
+  }, [sessionLoading, sessionError, firebaseUser, profile, membership, isPublic, router]);
 
   if (previewBypass && !isPublic) {
     return <>{children}</>;
@@ -98,7 +112,18 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         setVerifyBusy(false);
       }
     };
-    return <AccessCard title="Check je HvA-mail" body="We hebben een verificatielink naar je HvA-mailadres gestuurd. Open die link en log daarna opnieuw in. Controleer ook je ongewenste e-mail of spammap." actionLabel={verifyBusy ? "Versturen…" : "Verificatiemail opnieuw sturen"} onAction={() => void resend()} actionDisabled={verifyBusy} message={verifyMessage} previewBypass />;
+
+    return (
+      <AccessCard
+        title="Check je HvA-mail"
+        body="We hebben een verificatielink naar je HvA-mailadres gestuurd. Open die link en log daarna opnieuw in. Controleer ook je ongewenste e-mail of spammap."
+        actionLabel={verifyBusy ? "Versturen…" : "Verificatiemail opnieuw sturen"}
+        onAction={() => void resend()}
+        actionDisabled={verifyBusy}
+        message={verifyMessage}
+        previewBypass
+      />
+    );
   }
 
   if (access === "suspended") {
@@ -128,13 +153,32 @@ function AccessLoading({ text }: { text: string }) {
         src="/Fermi-PWA/images/branding/atoom-loader.png"
         alt=""
         aria-hidden="true"
+        decoding="async"
       />
       <p>{text}</p>
     </div>
   );
 }
 
-function AccessCard({ title, body, retry = false, actionLabel, previewBypass = false, onAction, actionDisabled = false, message }: { title: string; body: string; retry?: boolean; actionLabel?: string; previewBypass?: boolean; onAction?: () => void; actionDisabled?: boolean; message?: string }) {
+function AccessCard({
+  title,
+  body,
+  retry = false,
+  actionLabel,
+  previewBypass = false,
+  onAction,
+  actionDisabled = false,
+  message,
+}: {
+  title: string;
+  body: string;
+  retry?: boolean;
+  actionLabel?: string;
+  previewBypass?: boolean;
+  onAction?: () => void;
+  actionDisabled?: boolean;
+  message?: string;
+}) {
   return (
     <main className="pending-access">
       <div className="pending-card">
@@ -165,46 +209,4 @@ function AccessCard({ title, body, retry = false, actionLabel, previewBypass = f
       )}
     </main>
   );
-}  const { firebaseUser, fermiUser: profile, membership, loading: sessionLoading, error: sessionError } = useFermiSession();
-
-  useEffect(() => {
-    if (sessionLoading) {
-      setAccess("loading");
-      return;
-    }
-    if (sessionError) {
-      setAccess("error");
-      return;
-    }
-    if (!firebaseUser) {
-      setAccess("unauthenticated");
-      if (!isPublic) router.replace("/login/");
-      return;
-    }
-    if (!profile) {
-      setAccess("missing-profile");
-      return;
-    }
-    if (!firebaseUser.emailVerified) {
-      setAccess("verify-email");
-      return;
-    }
-    if (profile.status === "suspended") {
-      setAccess("suspended");
-      return;
-    }
-    if (profile.status === "active" && (profile.role === "admin" || profile.role === "board")) {
-      setAccess("member");
-      if (isPublic) router.replace("/");
-      return;
-    }
-
-    const snapshotStatus = profile.membership?.status;
-    const membershipAccess = snapshotStatus === "pending"
-      ? "pending"
-      : membership?.status === "active" || snapshotStatus === "active"
-        ? "active"
-        : "archive";
-    setAccess(membershipAccess === "active" ? "member" : membershipAccess === "pending" ? "membership-pending" : "archive");
-    if (isPublic) router.replace("/");
-  }, [sessionLoading, sessionError, firebaseUser, profile, membership, isPublic, router]);
+}
