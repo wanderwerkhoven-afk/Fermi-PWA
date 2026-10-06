@@ -165,4 +165,46 @@ function AccessCard({ title, body, retry = false, actionLabel, previewBypass = f
       )}
     </main>
   );
-}
+}  const { firebaseUser, fermiUser: profile, membership, loading: sessionLoading, error: sessionError } = useFermiSession();
+
+  useEffect(() => {
+    if (sessionLoading) {
+      setAccess("loading");
+      return;
+    }
+    if (sessionError) {
+      setAccess("error");
+      return;
+    }
+    if (!firebaseUser) {
+      setAccess("unauthenticated");
+      if (!isPublic) router.replace("/login/");
+      return;
+    }
+    if (!profile) {
+      setAccess("missing-profile");
+      return;
+    }
+    if (!firebaseUser.emailVerified) {
+      setAccess("verify-email");
+      return;
+    }
+    if (profile.status === "suspended") {
+      setAccess("suspended");
+      return;
+    }
+    if (profile.status === "active" && (profile.role === "admin" || profile.role === "board")) {
+      setAccess("member");
+      if (isPublic) router.replace("/");
+      return;
+    }
+
+    const snapshotStatus = profile.membership?.status;
+    const membershipAccess = snapshotStatus === "pending"
+      ? "pending"
+      : membership?.status === "active" || snapshotStatus === "active"
+        ? "active"
+        : "archive";
+    setAccess(membershipAccess === "active" ? "member" : membershipAccess === "pending" ? "membership-pending" : "archive");
+    if (isPublic) router.replace("/");
+  }, [sessionLoading, sessionError, firebaseUser, profile, membership, isPublic, router]);
