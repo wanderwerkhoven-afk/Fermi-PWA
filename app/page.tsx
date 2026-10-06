@@ -251,12 +251,16 @@ export default function HomePage() {
               src="/Fermi-PWA/images/home/home-hero-church.png"
               alt=""
               decoding="async"
+              loading="lazy"
+              fetchPriority="low"
             />
             <img
               className="home-hero-atom"
               src="/Fermi-PWA/images/home/home-member-pass-atom.png"
               alt=""
               decoding="async"
+              loading="lazy"
+              fetchPriority="low"
             />
           </div>
         </div>
