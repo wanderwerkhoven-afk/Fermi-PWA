@@ -148,13 +148,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 function AccessLoading({ text }: { text: string }) {
   return (
     <div className="auth-loading" role="status" aria-live="polite">
-      <img
-        className="auth-loader-mark"
-        src="/Fermi-PWA/images/branding/atoom-loader.png"
-        alt=""
-        aria-hidden="true"
-        decoding="async"
-      />
+      <span className="auth-loader-mark" aria-hidden="true">⚛</span>
       <p>{text}</p>
     </div>
   );
