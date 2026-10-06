@@ -6,7 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import type { FermiUser, Membership } from "../lib/models/backend";
 import { getUserProfile } from "../lib/services/users";
-import { getActiveMembership, getMembershipAccess } from "../lib/services/memberships";
+import { getActiveMembership } from "../lib/services/memberships";
 
 type SessionState = {
   firebaseUser: User | null;
