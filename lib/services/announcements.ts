@@ -4,6 +4,8 @@ import {
   collection,
   doc,
   getDocs,
+  query,
+  where,
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
@@ -91,8 +93,8 @@ export async function listPublishedAnnouncements(): Promise<AnnouncementData[]> 
     String(now.getDate()).padStart(2, "0"),
   ].join("-");
 
-  return (await listAnnouncements())
-    .filter((item) => item.published)
+  const snapshot = await getDocs(query(collection(db, "announcements"), where("published", "==", true)));
+  return snapshot.docs.map((item) => asAnnouncement(item.id, item.data()))
     .filter((item) => !item.startsAt || item.startsAt <= today)
     .filter((item) => !item.expiresAt || item.expiresAt >= today)
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));

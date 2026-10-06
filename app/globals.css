@@ -7654,3 +7654,48 @@ body.member-admin-modal-open{overflow:hidden}
     padding-left: 45px;
   }
 }
+
+
+/* Progressive Home loading: keep the app interactive while Firebase content hydrates. */
+.home-featured-skeleton,
+.home-mini-skeleton,
+.home-announcement-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(132,184,212,.16);
+}
+.home-featured-skeleton {
+  min-height: 210px;
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  display: grid;
+  align-content: center;
+  gap: 14px;
+}
+.home-featured-skeleton span,
+.home-mini-skeleton span,
+.home-announcement-skeleton span {
+  display: block;
+  border-radius: 999px;
+  background: rgba(255,255,255,.11);
+  animation: fermi-skeleton-pulse 1.25s ease-in-out infinite alternate;
+}
+.home-featured-skeleton span:nth-child(1) { width: 38%; height: 12px; }
+.home-featured-skeleton span:nth-child(2) { width: 68%; height: 32px; }
+.home-featured-skeleton span:nth-child(3) { width: 48%; height: 14px; }
+.home-mini-skeleton { min-height: 158px; padding: 14px 10px; }
+.home-mini-skeleton span:first-child { height: 86px; border-radius: 12px; }
+.home-mini-skeleton span:last-child { width: 72%; height: 15px; margin-top: 13px; }
+.home-announcement-skeleton { min-height: 88px; padding: 20px; display: grid; gap: 10px; }
+.home-announcement-skeleton span:first-child { width: 45%; height: 16px; }
+.home-announcement-skeleton span:last-child { width: 75%; height: 12px; }
+@keyframes fermi-skeleton-pulse {
+  from { opacity: .48; }
+  to { opacity: .9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-featured-skeleton span,
+  .home-mini-skeleton span,
+  .home-announcement-skeleton span { animation: none; }
+}

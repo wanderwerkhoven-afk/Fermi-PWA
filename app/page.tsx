@@ -262,7 +262,7 @@ export default function HomePage() {
       </section>
 
       <section className="content">
-        {featuredActivity ? (
+        {activities.length === 0 ? (\n          <div className="home-featured-skeleton" aria-label="Activiteit laden" aria-busy="true"><span /><span /><span /></div>\n        ) : featuredActivity ? (
           <article className="featured-event home-featured-event">
             <div className="featured-copy">
               <span className="eyebrow">Volgende activiteit</span>
@@ -293,7 +293,7 @@ export default function HomePage() {
             >
               {(() => {
                 const featuredImage = resolveHomeFeaturedImage(featuredActivity);
-                return featuredImage ? <img src={featuredImage} alt="" /> : null;
+                return featuredImage ? <img src={featuredImage} alt="" decoding="async" /> : null;
               })()}
             </div>
           </article>
