@@ -5071,6 +5071,7 @@ body.member-pass-modal-open {
     rgba(244, 234, 220, .24);
   backdrop-filter: blur(22px) saturate(.78);
   -webkit-backdrop-filter: blur(22px) saturate(.78);
+  animation: memberPassBackdropIn .32s ease-out both;
 }
 
 .member-pass-modal-card {
@@ -5079,7 +5080,17 @@ body.member-pass-modal-open {
   max-height: calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   display: grid;
   place-items: center;
-  animation: memberPassIn .22s ease-out;
+  will-change: transform, opacity;
+  animation: memberPassSlideIn .52s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.member-pass-modal.is-closing {
+  pointer-events: none;
+  animation: memberPassBackdropOut .38s ease-in both;
+}
+
+.member-pass-modal.is-closing .member-pass-modal-card {
+  animation: memberPassSlideOut .42s cubic-bezier(.4, 0, .7, .2) both;
 }
 
 .member-pass-modal-image {
@@ -5111,14 +5122,47 @@ body.member-pass-modal-open {
   transform: scale(.96);
 }
 
-@keyframes memberPassIn {
+@keyframes memberPassBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes memberPassBackdropOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes memberPassSlideIn {
+  0% {
+    opacity: .15;
+    transform: translate3d(0, calc(100dvh + 80px), 0) scale(.985);
+  }
+  68% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes memberPassSlideOut {
   from {
-    opacity: 0;
-    transform: translateY(12px) scale(.97);
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
   }
   to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    opacity: .2;
+    transform: translate3d(0, calc(100dvh + 80px), 0) scale(.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .member-pass-modal,
+  .member-pass-modal-card,
+  .member-pass-modal.is-closing,
+  .member-pass-modal.is-closing .member-pass-modal-card {
+    animation-duration: .01ms;
   }
 }
 
