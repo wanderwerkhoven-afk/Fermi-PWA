@@ -16,7 +16,19 @@ export interface UserProfile {
   bio: string | null;
 }
 
-export interface CurrentMembershipSnapshot {\n  id?: string;\n  academicYear: string;\n  membershipType: "student" | "alumni" | "honorary";\n  status: MembershipStatus;\n  memberNumber: string;\n  startDate: string;\n  startYear?: number | null;\n  endDate: string;\n  digitalCard: { enabled: boolean; cardId: string };\n}\n\nexport interface FermiUser {
+export interface CurrentMembershipSnapshot {
+  id?: string;
+  academicYear: string;
+  membershipType: "student" | "alumni" | "honorary";
+  status: MembershipStatus;
+  memberNumber: string;
+  startDate: string;
+  startYear?: number | null;
+  endDate: string;
+  digitalCard: { enabled: boolean; cardId: string };
+}
+
+export interface FermiUser {
   uid: string;
   profile: UserProfile;
   role: UserRole;
