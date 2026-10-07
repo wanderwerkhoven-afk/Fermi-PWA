@@ -8,12 +8,14 @@ import {
   ChevronRight,
   Home,
   Image as ImageIcon,
+  LockKeyhole,
   Search,
   UserRound,
   UsersRound,
 } from "lucide-react";
 import type { CommunityDirectoryMember } from "@/lib/services/community";
 import { useAppData } from "@/components/AppDataProvider";
+import { useFermiSession } from "@/components/SessionProvider";
 
 const filters = ["Alle leden", "Bestuur", "Commissies", "Jaar 1", "Jaar 2+"];
 
@@ -43,6 +45,9 @@ function memberSubtitle(member: CommunityDirectoryMember) {
 export default function CommunityPage() {
   const [query, setQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("Alle leden");
+  const { fermiUser, membership } = useFermiSession();
+  const membershipStatus = fermiUser?.membership?.status ?? membership?.status;
+  const isMembershipPending = membershipStatus === "pending" || fermiUser?.status === "pending";
   const {
     communityMembers: members,
     communityLoading: loadingMembers,
@@ -119,7 +124,7 @@ export default function CommunityPage() {
           </Link>
         </nav>
 
-        <label className="community-search">
+        {!isMembershipPending && <label className="community-search">
           <Search size={22} />
           <input
             value={query}
@@ -127,9 +132,9 @@ export default function CommunityPage() {
             placeholder="Zoek op naam, commissie of jaar..."
             aria-label="Zoek leden"
           />
-        </label>
+        </label>}
 
-        <div className="community-filters" aria-label="Filter leden">
+        {!isMembershipPending && <div className="community-filters" aria-label="Filter leden">
           {filters.map((filter) => (
             <button
               key={filter}
@@ -139,7 +144,7 @@ export default function CommunityPage() {
               {filter}
             </button>
           ))}
-        </div>
+        </div>}
       </section>
 
       <section className="community-content">
@@ -169,6 +174,13 @@ export default function CommunityPage() {
         </Link>
 
         <section className="community-members-section">
+          {isMembershipPending ? (
+            <div className="community-membership-lock" role="status">
+              <span><LockKeyhole size={30} /></span>
+              <strong>Community opent na goedkeuring</strong>
+              <p>De ledenlijst bevat privégegevens van Fermi-leden. Zodra je lidmaatschap is goedgekeurd, krijg je hier automatisch toegang.</p>
+            </div>
+          ) : (<>
           <div className="community-members-heading">
             <h2>Leden van Fermi</h2>
             <span>{loadingMembers ? "Laden…" : `${members.length} leden`}</span>
@@ -220,6 +232,7 @@ export default function CommunityPage() {
               </div>
             )}
           </div>
+          </>)}
         </section>
       </section>
 
