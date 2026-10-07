@@ -117,6 +117,8 @@ export default function HomePage() {
   const [memberPassClosing, setMemberPassClosing] = useState(false);
   const [memberPassImageReady, setMemberPassImageReady] = useState(false);
   const [memberPassReady, setMemberPassReady] = useState(false);
+  const [homeVisualReady, setHomeVisualReady] = useState(false);
+  const [loadedActivityImages, setLoadedActivityImages] = useState<Set<string>>(() => new Set());
   const { fermiUser, membership, membershipJustApproved } = useFermiSession();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [announcementsOpen, setAnnouncementsOpen] = useState(false);
@@ -213,7 +215,84 @@ export default function HomePage() {
     .filter((event) => event.slug !== featuredActivity?.slug)
     .slice(0, 3);
 
+  useEffect(() => {
+    if (activitiesLoading) {
+      setHomeVisualReady(false);
+      return;
+    }
 
+    const criticalSources = [
+      "/Fermi-PWA/images/home/home-hero-church.png",
+      "/Fermi-PWA/images/home/home-member-pass-atom.png",
+      featuredActivity ? resolveHomeFeaturedImage(featuredActivity) : null,
+    ].filter(Boolean) as string[];
+
+    if (criticalSources.length === 0) {
+      setHomeVisualReady(true);
+      return;
+    }
+
+    let active = true;
+    Promise.all(
+      criticalSources.map((src) => new Promise<void>((resolve) => {
+        const image = new Image();
+        image.onload = () => resolve();
+        image.onerror = () => resolve();
+        image.src = src;
+        if (image.complete) resolve();
+      })),
+    ).then(() => {
+      if (!active) return;
+      window.requestAnimationFrame(() => setHomeVisualReady(true));
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [activitiesLoading, featuredActivity]);
+
+  useEffect(() => {
+    if (!homeUpcomingActivities.length) return;
+    let active = true;
+
+    homeUpcomingActivities.forEach((event) => {
+      const src = resolveHomeActivityImage(event);
+      if (!src) return;
+      const image = new Image();
+      const markReady = () => {
+        if (!active) return;
+        setLoadedActivityImages((current) => {
+          const next = new Set(current);
+          next.add(event.slug);
+          return next;
+        });
+      };
+      image.onload = markReady;
+      image.onerror = markReady;
+      image.src = src;
+      if (image.complete) markReady();
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [homeUpcomingActivities]);
+
+  useEffect(() => {
+    if (!homeVisualReady) return;
+    const preloadAgendaHero = () => {
+      const image = new Image();
+      image.src = "/Fermi-PWA/images/agenda/agenda-hero-illustration.png";
+    };
+
+    if ("requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(preloadAgendaHero, { timeout: 1400 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timer = window.setTimeout(preloadAgendaHero, 500);
+    return () => window.clearTimeout(timer);
+  }, [homeVisualReady]);
 
   const membershipStatus = fermiUser?.membership?.status ?? membership?.status;
   const isMembershipPending = membershipStatus === "pending" || fermiUser?.status === "pending";
@@ -246,7 +325,13 @@ export default function HomePage() {
   }, [overlayOpen]);
 
   return (
-    <main className="app-shell">
+    <main className={`app-shell home-shell${homeVisualReady ? " home-visual-ready" : " home-visual-loading"}`}>
+      {!homeVisualReady && (
+        <div className="home-visual-loader" role="status" aria-live="polite">
+          <img src="/Fermi-PWA/images/branding/atoom-loader.png" alt="" aria-hidden="true" />
+          <span>Fermi laden…</span>
+        </div>
+      )}
       <div className="noise" aria-hidden="true" />
 
       <section className="top-hero">
@@ -287,16 +372,16 @@ export default function HomePage() {
               src="/Fermi-PWA/images/home/home-hero-church.png"
               alt=""
               decoding="async"
-              loading="lazy"
-              fetchPriority="low"
+              loading="eager"
+              fetchPriority="high"
             />
             <img
               className="home-hero-atom"
               src="/Fermi-PWA/images/home/home-member-pass-atom.png"
               alt=""
               decoding="async"
-              loading="lazy"
-              fetchPriority="low"
+              loading="eager"
+              fetchPriority="high"
             />
           </div>
         </div>
@@ -368,7 +453,7 @@ export default function HomePage() {
             >
               {(() => {
                 const featuredImage = resolveHomeFeaturedImage(featuredActivity);
-                return featuredImage ? <img src={featuredImage} alt="" decoding="async" /> : null;
+                return featuredImage ? <img className="home-featured-image is-ready" src={featuredImage} alt="" decoding="async" /> : null;
               })()}
             </div>
           </article>
@@ -394,7 +479,7 @@ export default function HomePage() {
               return (
               <Link className="mini-event mini-event-link interactive-card" href={`/agenda/activiteit?slug=${encodeURIComponent(event.slug)}`} key={event.slug}>
                 <div
-                  className={`mini-art placeholder-art ${event.art}${artwork ? " mini-art-activity-image" : ""}`}
+                  className={`mini-art placeholder-art ${event.art}${artwork ? " mini-art-activity-image" : ""}${artwork && loadedActivityImages.has(event.slug) ? " is-image-ready" : ""}`}
                   style={artwork ? {
                     backgroundImage: `linear-gradient(rgba(3,29,44,.06),rgba(3,29,44,.24)),url("${artwork}")`,
                   } : undefined}
