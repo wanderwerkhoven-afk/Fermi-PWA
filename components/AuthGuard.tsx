@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { auth } from "../lib/firebase";
-import { resendVerificationEmail } from "../lib/services/auth";
+import { isHvaEmail, resendVerificationEmail } from "../lib/services/auth";
 import { useFermiSession } from "./SessionProvider";
 
 const PUBLIC_ROUTES = ["/login", "/register"];
@@ -113,10 +113,16 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       }
     };
 
+    const usesHvaEmail = Boolean(firebaseUser?.email && isHvaEmail(firebaseUser.email));
+
     return (
       <AccessCard
-        title="Check je HvA-mail"
-        body="We hebben een verificatielink naar je HvA-mailadres gestuurd. Open die link en log daarna opnieuw in. Controleer ook je ongewenste e-mail of spammap."
+        title={usesHvaEmail ? "Check je HvA-mail" : "Check je e-mail"}
+        body={
+          usesHvaEmail
+            ? "We hebben een verificatielink naar je HvA-mailadres gestuurd. Open die link en log daarna opnieuw in. Controleer ook je ongewenste e-mail of spammap."
+            : "We hebben een verificatielink naar je e-mailadres gestuurd. Open die link en log daarna opnieuw in. Controleer ook je ongewenste e-mail of spammap."
+        }
         actionLabel={verifyBusy ? "Versturen…" : "Verificatiemail opnieuw sturen"}
         onAction={() => void resend()}
         actionDisabled={verifyBusy}
