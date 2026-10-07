@@ -1,0 +1,23 @@
+/* First full-access guided app tour */
+.guided-tour{position:fixed;z-index:50000;inset:0;pointer-events:none}
+.guided-tour-mask{position:fixed;background:rgba(1,16,25,.76);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);pointer-events:auto}
+.guided-tour-mask.top{inset:0 0 auto}
+.guided-tour-mask.left{left:0}
+.guided-tour-mask.right{right:0}
+.guided-tour-mask.bottom{left:0;right:0;bottom:0}
+.guided-tour-spotlight{position:fixed;border:2px solid var(--fermi-orange);border-radius:18px;box-shadow:0 0 0 4px rgba(255,122,26,.16),0 10px 34px rgba(0,0,0,.28);pointer-events:none;transition:all .22s ease}
+.guided-tour-card{position:fixed;z-index:2;left:14px;right:14px;width:min(calc(100% - 28px),470px);margin-inline:auto;padding:18px;border:1px solid rgba(255,122,26,.34);border-radius:20px;background:#f4eadc;color:#06283b;box-shadow:0 24px 70px rgba(0,0,0,.38);pointer-events:auto}
+.guided-tour-card>small{display:block;color:#d96313;font-size:9px;font-weight:950;letter-spacing:.11em;text-transform:uppercase}
+.guided-tour-card h2{margin:5px 34px 6px 0;font:800 28px/1 Georgia,serif}
+.guided-tour-card p{margin:0;color:#315062;font-size:13px;line-height:1.45}
+.guided-tour-close{position:absolute;top:11px;right:11px;width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:50%;background:rgba(6,40,59,.08);color:#06283b;cursor:pointer}
+.guided-tour-progress{display:flex;gap:5px;margin:15px 0 13px}
+.guided-tour-progress span{width:17px;height:4px;border-radius:999px;background:rgba(6,40,59,.16)}
+.guided-tour-progress span.active{width:28px;background:var(--fermi-orange)}
+.guided-tour-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.guided-tour-nav-actions{display:flex;gap:7px}
+.guided-tour-actions button{min-height:40px;padding:0 13px;border-radius:11px;font-size:11px;font-weight:900;cursor:pointer}
+.guided-tour-actions .secondary{border:1px solid rgba(6,40,59,.20);background:transparent;color:#06283b}
+.guided-tour-actions .secondary.icon{width:40px;padding:0;display:grid;place-items:center}
+.guided-tour-actions .primary{display:flex;align-items:center;justify-content:center;gap:5px;border:0;background:var(--fermi-orange);color:#1f170f}
+@media(max-width:420px){.guided-tour-card{left:10px;right:10px;width:calc(100% - 20px);padding:16px}.guided-tour-card h2{font-size:25px}.guided-tour-card p{font-size:12px}.profile-settings-menu{width:230px}}
