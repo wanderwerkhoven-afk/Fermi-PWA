@@ -237,7 +237,8 @@
     "Leden admin member rows prioritize payment attention: unpaid members use an orange hatched/high-attention state with a prominent 'Niet betaald' badge; waived memberships use a desaturated dark blue-gray low-attention state; paid members remain visually neutral with a subtle paid badge.",
     "When an admin marks a pending account as paid or waived, membership and user state are written atomically: pending promotes to active. Changing payment on an already-active unpaid member does not automatically demote the membership back to pending.",
     "SessionProvider listens realtime to the signed-in user's Firestore profile. A membership transition from pending to active immediately unlocks member-only UI/data without refresh or re-login and shows a short approval confirmation on Home.",
-    "A guided six-step app tour auto-runs once per user on first full active membership access. It spotlights Home, Agenda, Fermi, Community, Profile and Profile bewerken, supports Previous/Next/Skip/Done, persists completion in localStorage per uid/version, and can be restarted from Profile settings."
+    "A guided six-step app tour auto-runs once per user on first full active membership access. It spotlights Home, Agenda, Fermi, Community, Profile and Profile bewerken, supports Previous/Next/Skip/Done, persists completion in localStorage per uid/version, and can be restarted from Profile settings.",
+    "Home preloads critical hero and featured artwork before revealing the page, then idle-preloads the Agenda header image. Home upcoming activity art and Agenda card imagery use fixed-layout shimmer placeholders followed by a subtle ~1.04 to 1 zoom/fade reveal, avoiding layout shifts."
   ],
   "open_decisions": [
     "Final custom image asset set."
