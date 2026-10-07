@@ -1,6 +1,16 @@
 export type UserRole = "member" | "committee" | "board" | "admin";
 export type AccountStatus = "active" | "suspended";
 export type MembershipStatus = "active" | "expired" | "cancelled" | "pending";
+export type MembershipPaymentStatus = "unpaid" | "paid" | "waived" | "refunded";
+export type MembershipPaymentSource = "manual" | "mollie";
+
+export interface MembershipPayment {
+  status: MembershipPaymentStatus;
+  source: MembershipPaymentSource;
+  paidAt?: unknown;
+  confirmedBy?: string | null;
+  molliePaymentId?: string | null;
+}
 
 export interface UserProfile {
   firstName: string;
@@ -26,6 +36,7 @@ export interface CurrentMembershipSnapshot {
   startYear?: number | null;
   endDate: string;
   digitalCard: { enabled: boolean; cardId: string };
+  payment?: MembershipPayment;
 }
 
 export interface FermiUser {
@@ -50,6 +61,7 @@ export interface Membership {
   startYear?: number | null;
   endDate: string;
   digitalCard: { enabled: boolean; cardId: string };
+  payment?: MembershipPayment;
   createdAt?: unknown;
   updatedAt?: unknown;
 }
