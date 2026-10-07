@@ -124,12 +124,17 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         firebaseUser.uid,
         async (fermiUser) => {
           try {
-            let membership = membershipFromUser(fermiUser);
+            const snapshotMembership = membershipFromUser(fermiUser);
+            let membership = snapshotMembership;
 
-            // Legacy fallback for older accounts without a current membership snapshot.
-            if (!membership && fermiUser && fermiUser.role !== "admin" && fermiUser.role !== "board") {
-              membership = await getActiveMembership(firebaseUser.uid);
-              if (!membership) membership = await getPendingMembership(firebaseUser.uid);
+            // For regular members, the memberships collection is canonical for
+            // cardId/memberNumber/registration linkage. Prefer that document over
+            // the embedded user snapshot so the QR scanner and event registration
+            // always resolve the exact same membership identity.
+            if (fermiUser && fermiUser.role !== "admin" && fermiUser.role !== "board") {
+              const activeMembership = await getActiveMembership(firebaseUser.uid);
+              const pendingMembership = activeMembership ? null : await getPendingMembership(firebaseUser.uid);
+              membership = activeMembership || pendingMembership || snapshotMembership;
             }
 
             if (
