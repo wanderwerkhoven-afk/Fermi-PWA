@@ -17,7 +17,7 @@ export interface CommunityDirectoryMember {
 
 function mapCommunityMembers(snapshot: Awaited<ReturnType<typeof getDocs>>): CommunityDirectoryMember[] {
   return snapshot.docs
-    .map((item) => ({ id: item.id, ...item.data() }) as CommunityDirectoryMember & { active?: boolean })
+    .map((item) => ({ id: item.id, ...(item.data() as Record<string, unknown>) }) as CommunityDirectoryMember & { active?: boolean })
     .filter((member) => member.active !== false)
     .sort((a, b) =>
       `${a.lastName} ${a.firstName}`.localeCompare(`${b.lastName} ${b.firstName}`, "nl"),
