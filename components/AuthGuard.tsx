@@ -114,6 +114,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     };
 
     const usesHvaEmail = Boolean(firebaseUser?.email && isHvaEmail(firebaseUser.email));
+    const goToLogin = async () => {
+      await auth.signOut();
+      router.replace("/login/");
+    };
 
     return (
       <AccessCard
@@ -127,6 +131,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         onAction={() => void resend()}
         actionDisabled={verifyBusy}
         message={verifyMessage}
+        secondaryLabel="Naar inloggen"
+        onSecondary={() => void goToLogin()}
         previewBypass
       />
     );
@@ -174,6 +180,8 @@ function AccessCard({
   onAction,
   actionDisabled = false,
   message,
+  secondaryLabel,
+  onSecondary,
 }: {
   title: string;
   body: string;
@@ -183,6 +191,8 @@ function AccessCard({
   onAction?: () => void;
   actionDisabled?: boolean;
   message?: string;
+  secondaryLabel?: string;
+  onSecondary?: () => void;
 }) {
   return (
     <main className="pending-access">
@@ -192,10 +202,14 @@ function AccessCard({
         <h1>{title}</h1>
         <p>{body}</p>
         <div className="pending-email">{auth.currentUser?.email}</div>
-        {actionLabel && <button type="button" onClick={onAction} disabled={actionDisabled}>{actionLabel}</button>}
+        <div className="pending-card-actions">
+          {actionLabel && <button type="button" onClick={onAction} disabled={actionDisabled}>{actionLabel}</button>}
+          {retry && <button type="button" onClick={() => window.location.reload()}>Opnieuw proberen</button>}
+          {secondaryLabel
+            ? <button type="button" className="pending-card-secondary" onClick={onSecondary}>{secondaryLabel}</button>
+            : <button type="button" className="pending-card-secondary" onClick={() => auth.signOut()}>Uitloggen</button>}
+        </div>
         {message && <p className="pending-card-message" role="status">{message}</p>}
-        {retry && <button onClick={() => window.location.reload()}>Opnieuw proberen</button>}
-        <button onClick={() => auth.signOut()}>Uitloggen</button>
       </div>
 
       {previewBypass && (
