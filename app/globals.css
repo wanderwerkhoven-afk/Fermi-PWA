@@ -8174,3 +8174,13 @@ body.member-admin-modal-open{overflow:hidden}
 .community-membership-lock strong{font:700 24px/1.05 Georgia,serif;color:var(--fermi-white)}
 .community-membership-lock p{max-width:330px;margin:0;color:var(--fermi-muted);font-size:12px;line-height:1.5}
 .photoalbums-membership-lock{margin-top:8px}
+
+
+/* Admin approval notifications */
+.admin-approval-banner{width:100%;display:flex;align-items:center;gap:11px;margin:0 0 18px;padding:13px 14px;border:1px solid rgba(255,122,26,.42);border-radius:16px;background:linear-gradient(135deg,rgba(255,122,26,.19),rgba(3,29,44,.84));color:var(--fermi-white);text-align:left;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.12)}
+.admin-approval-banner-icon{width:36px;height:36px;flex:0 0 36px;display:grid;place-items:center;border-radius:50%;background:var(--fermi-orange);color:var(--fermi-navy-deep)}
+.admin-approval-banner-copy{min-width:0;flex:1}
+.admin-approval-banner-copy strong{display:block;font:700 14px/1.2 Georgia,serif}
+.admin-approval-banner-copy small{display:block;margin-top:4px;color:var(--fermi-muted);font-size:10px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-notification-list{display:grid;gap:9px;max-height:min(48svh,420px);overflow-y:auto;overscroll-behavior:contain;padding-right:2px;margin-bottom:10px;-webkit-overflow-scrolling:touch}
+.admin-home-notification{border-color:rgba(255,122,26,.24)!important}
