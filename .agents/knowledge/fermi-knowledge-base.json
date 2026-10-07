@@ -235,7 +235,8 @@
     "Verified users with a pending membership may browse Home, Agenda, Fermi and their own Profile. Private member features stay locked until approval: Community/member directory, photo albums, event registration, committee signup and the digital member pass.",
     "Active admins receive a persistent Home banner for pending member approvals. Clicking opens the shared notification overlay with all pending applications; selecting one deep-links to that member in Leden admin via ?member=<uid>.",
     "Leden admin member rows prioritize payment attention: unpaid members use an orange hatched/high-attention state with a prominent 'Niet betaald' badge; waived memberships use a desaturated dark blue-gray low-attention state; paid members remain visually neutral with a subtle paid badge.",
-    "When an admin marks a pending account as paid or waived, membership and user state are written atomically: pending promotes to active. Changing payment on an already-active unpaid member does not automatically demote the membership back to pending."
+    "When an admin marks a pending account as paid or waived, membership and user state are written atomically: pending promotes to active. Changing payment on an already-active unpaid member does not automatically demote the membership back to pending.",
+    "SessionProvider listens realtime to the signed-in user's Firestore profile. A membership transition from pending to active immediately unlocks member-only UI/data without refresh or re-login and shows a short approval confirmation on Home."
   ],
   "open_decisions": [
     "Final custom image asset set."
