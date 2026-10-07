@@ -8,7 +8,14 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import type { AccountStatus, FermiUser, Membership, UserRole } from "../models/backend";
+import type {
+  AccountStatus,
+  FermiUser,
+  Membership,
+  MembershipPayment,
+  MembershipPaymentStatus,
+  UserRole,
+} from "../models/backend";
 
 export type AdminMemberLifecycle = "active" | "pending" | "suspended" | "archived";
 
@@ -25,6 +32,7 @@ export interface DirectoryMember {
   status: AdminMemberLifecycle;
   role: UserRole;
   linkedUserId: string | null;
+  payment?: MembershipPayment;
   createdAt?: unknown;
   endDate?: string;
   updatedAt?: unknown;
@@ -48,6 +56,10 @@ export interface AdminMemberRow {
   endDate: string;
   digitalCardId: string;
   digitalCardEnabled: boolean;
+  paymentStatus: MembershipPaymentStatus;
+  paymentSource: "manual" | "mollie";
+  paymentPaidAt?: unknown;
+  paymentConfirmedBy?: string | null;
 }
 
 function normalizeEmail(email: string) {
@@ -101,7 +113,22 @@ function usableDigitalCardId(value: string | null | undefined) {
   return value && !value.startsWith("card-") ? value : newDigitalCardId();
 }
 
-function membershipSnapshot(row: AdminMemberRow, status: "active" | "pending" | "expired", cardId: string) {
+function membershipPayment(row: AdminMemberRow): MembershipPayment {
+  return {
+    status: row.paymentStatus,
+    source: row.paymentSource || "manual",
+    paidAt: row.paymentPaidAt ?? null,
+    confirmedBy: row.paymentConfirmedBy ?? null,
+    molliePaymentId: null,
+  };
+}
+
+function membershipSnapshot(
+  row: AdminMemberRow,
+  status: "active" | "pending" | "expired",
+  cardId: string,
+  payment: MembershipPayment = membershipPayment(row),
+) {
   return {
     ...(row.membershipId ? { id: row.membershipId } : {}),
     academicYear: row.academicYear || "2026/2027",
@@ -111,7 +138,11 @@ function membershipSnapshot(row: AdminMemberRow, status: "active" | "pending" | 
     startDate: row.startYear ? `${row.startYear}-09-01` : "2026-09-01",
     startYear: row.startYear ?? 2026,
     endDate: row.endDate || "2027-08-31",
-    digitalCard: { enabled: status === "active", cardId },
+    digitalCard: {
+      enabled: status === "active" && (payment.status === "paid" || payment.status === "waived"),
+      cardId,
+    },
+    payment,
   };
 }
 
@@ -157,6 +188,17 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
     linkedEmails.add(email);
     const membership = pickMembership(membershipsByUser.get(user.uid) ?? []);
     const directory = directoryByEmail.get(email);
+    const snapshotMembership = user.membership || null;
+    const resolvedMembership = membership || (snapshotMembership ? {
+      id: snapshotMembership.id || `current-${user.uid}`,
+      userId: user.uid,
+      ...snapshotMembership,
+    } as Membership : undefined);
+    const resolvedStatus = lifecycleFor(user, resolvedMembership);
+    const payment = resolvedMembership?.payment || directory?.payment;
+    const paymentStatus: MembershipPaymentStatus =
+      payment?.status
+      || (resolvedStatus === "active" ? "paid" : "unpaid");
 
     return {
       id: user.uid,
@@ -165,17 +207,21 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
       firstName: user.profile?.firstName ?? directory?.firstName ?? "",
       lastName: user.profile?.lastName ?? directory?.lastName ?? "",
       email,
-      memberNumber: membership?.memberNumber ?? directory?.memberNumber ?? "",
-      academicYear: membership?.academicYear ?? directory?.academicYear ?? "2026/2027",
+      memberNumber: resolvedMembership?.memberNumber ?? directory?.memberNumber ?? "",
+      academicYear: resolvedMembership?.academicYear ?? directory?.academicYear ?? "2026/2027",
       phone: user.profile?.phone ?? directory?.phone ?? "",
       city: user.profile?.city ?? directory?.city ?? "",
-      startYear: membership?.startYear ?? (membership?.startDate ? Number(membership.startDate.slice(0, 4)) : directory?.startYear ?? null),
-      status: lifecycleFor(user, membership),
+      startYear: resolvedMembership?.startYear ?? (resolvedMembership?.startDate ? Number(resolvedMembership.startDate.slice(0, 4)) : directory?.startYear ?? null),
+      status: resolvedStatus,
       role: user.role,
-      membershipId: membership?.id ?? null,
-      endDate: membership?.endDate ?? directory?.endDate ?? "",
-      digitalCardId: membership?.digitalCard?.cardId ?? "",
-      digitalCardEnabled: Boolean(membership?.digitalCard?.enabled),
+      membershipId: membership?.id ?? snapshotMembership?.id ?? null,
+      endDate: resolvedMembership?.endDate ?? directory?.endDate ?? "",
+      digitalCardId: resolvedMembership?.digitalCard?.cardId ?? "",
+      digitalCardEnabled: Boolean(resolvedMembership?.digitalCard?.enabled),
+      paymentStatus,
+      paymentSource: payment?.source || "manual",
+      paymentPaidAt: payment?.paidAt,
+      paymentConfirmedBy: payment?.confirmedBy ?? null,
     };
   });
 
@@ -199,6 +245,10 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
       endDate: record.endDate ?? "",
       digitalCardId: "",
       digitalCardEnabled: false,
+      paymentStatus: record.payment?.status || (record.status === "active" ? "paid" : "unpaid"),
+      paymentSource: record.payment?.source || "manual",
+      paymentPaidAt: record.payment?.paidAt,
+      paymentConfirmedBy: record.payment?.confirmedBy ?? null,
     }));
 
   return [...accountRows, ...directoryRows].sort((a, b) =>
@@ -240,6 +290,10 @@ export async function upsertDirectoryMember(input: Omit<DirectoryMember, "id" | 
     endDate: input.endDate ?? "",
     digitalCardId: "",
     digitalCardEnabled: false,
+    paymentStatus: input.payment?.status || (input.status === "active" ? "paid" : "unpaid"),
+    paymentSource: input.payment?.source || "manual",
+    paymentPaidAt: input.payment?.paidAt,
+    paymentConfirmedBy: input.payment?.confirmedBy ?? null,
   });
 }
 
@@ -310,6 +364,86 @@ export async function setAdminMemberLifecycle(row: AdminMemberRow, status: Admin
   await updateDoc(doc(db, "users", row.uid), {
     membership: {
       ...membershipSnapshot(row, status === "active" ? "active" : "pending", cardId),
+      id: created.id,
+    },
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function setAdminMemberPaymentStatus(
+  row: AdminMemberRow,
+  paymentStatus: "unpaid" | "paid" | "waived",
+  confirmedBy: string | null,
+) {
+  const settled = paymentStatus === "paid" || paymentStatus === "waived";
+  const payment: MembershipPayment = {
+    status: paymentStatus,
+    source: "manual",
+    paidAt: settled ? serverTimestamp() : null,
+    confirmedBy: settled ? confirmedBy : null,
+    molliePaymentId: null,
+  };
+
+  if (row.source === "directory") {
+    await updateDoc(doc(db, "memberDirectory", row.id), {
+      status: settled ? "active" : "pending",
+      payment,
+      updatedAt: serverTimestamp(),
+    });
+    return;
+  }
+
+  if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
+
+  const cardId = usableDigitalCardId(row.digitalCardId);
+  const membershipStatus = settled ? "active" : "pending";
+  const nextRow = {
+    ...row,
+    status: membershipStatus as AdminMemberLifecycle,
+    paymentStatus,
+    paymentSource: "manual" as const,
+    paymentPaidAt: payment.paidAt,
+    paymentConfirmedBy: payment.confirmedBy ?? null,
+  };
+
+  if (row.membershipId && !row.membershipId.startsWith("current-")) {
+    await updateDoc(doc(db, "memberships", row.membershipId), {
+      status: membershipStatus,
+      payment,
+      digitalCard: { enabled: settled, cardId },
+      updatedAt: serverTimestamp(),
+    });
+
+    await updateDoc(doc(db, "users", row.uid), {
+      status: "active" satisfies AccountStatus,
+      membership: {
+        ...membershipSnapshot(nextRow, membershipStatus, cardId, payment),
+        id: row.membershipId,
+      },
+      updatedAt: serverTimestamp(),
+    });
+    return;
+  }
+
+  const created = await addDoc(collection(db, "memberships"), {
+    userId: row.uid,
+    academicYear: row.academicYear || "2026/2027",
+    membershipType: "student",
+    status: membershipStatus,
+    memberNumber: row.memberNumber || `FERMI-${row.uid.slice(0, 6).toUpperCase()}`,
+    startDate: row.startYear ? `${row.startYear}-09-01` : "2026-09-01",
+    startYear: row.startYear ?? 2026,
+    endDate: row.endDate || "2027-08-31",
+    payment,
+    digitalCard: { enabled: settled, cardId },
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+
+  await updateDoc(doc(db, "users", row.uid), {
+    status: "active" satisfies AccountStatus,
+    membership: {
+      ...membershipSnapshot(nextRow, membershipStatus, cardId, payment),
       id: created.id,
     },
     updatedAt: serverTimestamp(),
