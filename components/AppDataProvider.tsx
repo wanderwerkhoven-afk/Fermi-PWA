@@ -31,7 +31,7 @@ type AppDataState = {
 const AppDataContext = createContext<AppDataState | null>(null);
 
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
-  const { firebaseUser, loading: sessionLoading } = useFermiSession();
+  const { firebaseUser, fermiUser, membership, loading: sessionLoading } = useFermiSession();
   const [activities, setActivities] = useState<AgendaEvent[]>([]);
   const [announcements, setAnnouncements] = useState<AnnouncementData[]>([]);
   const [communityMembers, setCommunityMembers] = useState<CommunityDirectoryMember[]>([]);
@@ -54,11 +54,15 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     }
 
     let active = true;
+    const membershipStatus = fermiUser?.membership?.status ?? membership?.status;
+    const canLoadCommunity =
+      fermiUser?.status === "active"
+      && (fermiUser.role === "admin" || fermiUser.role === "board" || membershipStatus === "active");
 
     Promise.allSettled([
       listActivitiesFromCache(),
       listPublishedAnnouncementsFromCache(),
-      listCommunityMembersFromCache(),
+      canLoadCommunity ? listCommunityMembersFromCache() : Promise.resolve([]),
     ]).then(([cachedActivities, cachedAnnouncements, cachedCommunity]) => {
       if (!active) return;
 
@@ -81,7 +85,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     Promise.allSettled([
       listActivities(),
       listPublishedAnnouncements(),
-      listCommunityMembers(),
+      canLoadCommunity ? listCommunityMembers() : Promise.resolve([]),
     ]).then(([activitiesResult, announcementsResult, communityResult]) => {
       if (!active) return;
 
@@ -112,7 +116,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return () => {
       active = false;
     };
-  }, [firebaseUser, sessionLoading]);
+  }, [firebaseUser, fermiUser, membership, sessionLoading]);
 
   const value = useMemo(
     () => ({
