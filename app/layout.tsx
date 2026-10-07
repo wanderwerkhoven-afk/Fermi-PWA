@@ -3,6 +3,7 @@ import "./globals.css";
 import AuthGuard from "../components/AuthGuard";
 import { SessionProvider } from "../components/SessionProvider";
 import { AppDataProvider } from "../components/AppDataProvider";
+import GuidedAppTour from "../components/GuidedAppTour";
 
 export const metadata: Metadata = {
   title: "S.V. Fermi",
@@ -27,7 +28,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="nl">
-      <body><SessionProvider><AppDataProvider><AuthGuard>{children}</AuthGuard></AppDataProvider></SessionProvider></body>
+      <body><SessionProvider><AppDataProvider><AuthGuard>{children}</AuthGuard><GuidedAppTour /></AppDataProvider></SessionProvider></body>
     </html>
   );
 }
