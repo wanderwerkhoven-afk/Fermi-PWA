@@ -309,7 +309,7 @@ export default function HomePage() {
     };
   }, [homeVisualReady]);
 
-  const membershipStatus = fermiUser?.membership?.status ?? membership?.status;
+  const membershipStatus = membership?.status ?? fermiUser?.membership?.status;
   const isMembershipPending = membershipStatus === "pending" || fermiUser?.status === "pending";
   const memberName = [fermiUser?.profile.firstName, fermiUser?.profile.lastName].filter(Boolean).join(" ");
   const memberRole = fermiUser?.role === "admin" ? "Admin" : fermiUser?.role === "board" ? "Bestuur" : fermiUser?.role === "committee" ? "Commissie" : "Lid";
