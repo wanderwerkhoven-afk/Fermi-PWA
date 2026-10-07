@@ -303,7 +303,7 @@ export default function HomePage() {
 
       <section className="content">
         {fermiUser?.role === "admin" && pendingApprovals.length > 0 && (
-          <button className="admin-approval-banner" type="button" onClick={() => setNotificationsOpen(true)}>
+          <button className="admin-approval-banner" type="button" onClick={() => pendingApprovals.length === 1 ? openPendingMember(pendingApprovals[0].uid) : setNotificationsOpen(true)}>
             <span className="admin-approval-banner-icon"><ShieldCheck size={19} /></span>
             <span className="admin-approval-banner-copy">
               <strong>{pendingApprovals.length === 1 ? "Nieuw lid wacht op goedkeuring" : `${pendingApprovals.length} nieuwe leden wachten op goedkeuring`}</strong>
