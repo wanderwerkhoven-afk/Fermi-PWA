@@ -111,6 +111,8 @@ function eventEnd(event: AgendaEvent) {
 export default function HomePage() {
   const [memberPassOpen, setMemberPassOpen] = useState(false);
   const [memberPassClosing, setMemberPassClosing] = useState(false);
+  const [memberPassImageReady, setMemberPassImageReady] = useState(false);
+  const [memberPassReady, setMemberPassReady] = useState(false);
   const { fermiUser, membership } = useFermiSession();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [announcementsOpen, setAnnouncementsOpen] = useState(false);
@@ -124,14 +126,31 @@ export default function HomePage() {
 
   const overlayOpen = memberPassOpen || memberPassClosing || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
 
+  const openMemberPass = () => {
+    setMemberPassClosing(false);
+    setMemberPassImageReady(false);
+    setMemberPassReady(false);
+    setMemberPassOpen(true);
+  };
+
   const closeMemberPass = () => {
     if (!memberPassOpen || memberPassClosing) return;
     setMemberPassClosing(true);
     window.setTimeout(() => {
       setMemberPassOpen(false);
       setMemberPassClosing(false);
-    }, 420);
+      setMemberPassImageReady(false);
+      setMemberPassReady(false);
+    }, 520);
   };
+
+  useEffect(() => {
+    if (!memberPassOpen || memberPassClosing || !memberPassImageReady) return;
+
+    // Give the QR and live member data a paint cycle before revealing the pass.
+    const timer = window.setTimeout(() => setMemberPassReady(true), 260);
+    return () => window.clearTimeout(timer);
+  }, [memberPassOpen, memberPassClosing, memberPassImageReady]);
 
   const upcomingActivities = useMemo(() => {
     const now = Date.now();
@@ -372,7 +391,7 @@ export default function HomePage() {
         <button
           className="member-pass-preview interactive-card"
           type="button"
-          onClick={() => setMemberPassOpen(true)}
+          onClick={openMemberPass}
           aria-haspopup="dialog"
         >
           <span className="pass-icon"><IdCard size={30} /></span>
@@ -489,12 +508,19 @@ export default function HomePage() {
 
       {(memberPassOpen || memberPassClosing) && (
         <div
-          className={`member-pass-modal${memberPassClosing ? " is-closing" : ""}`}
+          className={`member-pass-modal${memberPassReady ? " is-ready" : " is-loading"}${memberPassClosing ? " is-closing" : ""}`}
           role="dialog"
           aria-modal="true"
           aria-label="Digitale ledenpas"
           onClick={closeMemberPass}
         >
+          {!memberPassReady && !memberPassClosing && (
+            <div className="member-pass-loading" role="status" aria-live="polite">
+              <span className="member-pass-loading-atom" aria-hidden="true">⚛</span>
+              <span>Ledenpas laden…</span>
+            </div>
+          )}
+
           <div
             className="member-pass-modal-card"
             onClick={(event) => event.stopPropagation()}
@@ -513,6 +539,8 @@ export default function HomePage() {
                 className="member-pass-modal-image"
                 src="/Fermi-PWA/images/home/member-pass-popup.png"
                 alt="Digitale ledenpas van SV Fermi"
+                decoding="async"
+                onLoad={() => setMemberPassImageReady(true)}
               />
               <div className="member-pass-live-data">
                 <strong className="member-pass-live-name">{memberName || fermiUser?.profile.email || "S.V. Fermi-lid"}</strong>
