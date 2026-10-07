@@ -211,9 +211,12 @@ export default function HomePage() {
   }, [activities]);
 
   const featuredActivity = upcomingActivities.find((event) => event.featured === true) ?? null;
-  const homeUpcomingActivities = upcomingActivities
-    .filter((event) => event.slug !== featuredActivity?.slug)
-    .slice(0, 3);
+  const homeUpcomingActivities = useMemo(
+    () => upcomingActivities
+      .filter((event) => event.slug !== featuredActivity?.slug)
+      .slice(0, 3),
+    [upcomingActivities, featuredActivity],
+  );
 
   useEffect(() => {
     if (activitiesLoading) {
