@@ -136,30 +136,41 @@ function getEventEnd(event: AgendaEvent) {
   const hour = lastTime ? Number(lastTime[1]) : 23;
   const minute = lastTime ? Number(lastTime[2]) : 59;
 
+  if (event.endDate) {
+    const endDate = new Date(`${event.endDate}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:59`);
+    if (!Number.isNaN(endDate.getTime())) return endDate.getTime();
+  }
+
   return new Date(parts.year, parts.monthIndex, parts.day, hour, minute, 59, 999).getTime();
 }
 
 export default function AgendaPage() {
   const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
+  const [showAllFuture, setShowAllFuture] = useState(false);
   const { activities: events } = useAppData();
   const [activeFilter, setActiveFilter] = useState<AgendaFilter>("Alles");
 
 
 
-  const selectedEvents = useMemo(
-    () =>
-      events.filter(
-        (event) =>
-          event.showInAgenda !== false &&
-          event.month === months[selectedMonth].short &&
-          Number(event.year) === selectedYear &&
-          matchesAgendaFilter(event, activeFilter),
-      ),
-    [events, selectedMonth, selectedYear, activeFilter],
-  );
+  const selectedEvents = useMemo(() => {
+    const now = Date.now();
+
+    return events
+      .filter((event) =>
+        event.showInAgenda !== false
+        && matchesAgendaFilter(event, activeFilter)
+        && (
+          showAllFuture
+            ? getEventEnd(event) >= now
+            : event.month === months[selectedMonth].short && Number(event.year) === selectedYear
+        )
+      )
+      .sort((a, b) => getEventStart(a) - getEventStart(b));
+  }, [events, selectedMonth, selectedYear, activeFilter, showAllFuture]);
 
   function changeMonth(direction: -1 | 1) {
+    setShowAllFuture(false);
     setSelectedMonth((currentMonth) => {
       const nextMonth = currentMonth + direction;
 
@@ -215,13 +226,23 @@ export default function AgendaPage() {
           </div>
         </div>
 
-        <div className="month-switcher month-switcher-redesign">
-          <button aria-label="Vorige maand" onClick={() => changeMonth(-1)}>
-            <ChevronLeft size={23} />
-          </button>
-          <strong aria-live="polite">{monthLabel}</strong>
-          <button aria-label="Volgende maand" onClick={() => changeMonth(1)}>
-            <ChevronRight size={23} />
+        <div className="agenda-date-selector-row">
+          <div className="month-switcher month-switcher-redesign">
+            <button aria-label="Vorige maand" onClick={() => changeMonth(-1)}>
+              <ChevronLeft size={23} />
+            </button>
+            <strong aria-live="polite">{monthLabel}</strong>
+            <button aria-label="Volgende maand" onClick={() => changeMonth(1)}>
+              <ChevronRight size={23} />
+            </button>
+          </div>
+          <button
+            type="button"
+            className={`agenda-all-future-button${showAllFuture ? " active" : ""}`}
+            aria-pressed={showAllFuture}
+            onClick={() => setShowAllFuture((value) => !value)}
+          >
+            Alles
           </button>
         </div>
 
@@ -292,14 +313,20 @@ export default function AgendaPage() {
           <div className="agenda-empty-month">
             <CalendarDays size={30} />
             <strong>
-              {activeFilter === "Alles"
-                ? `Geen activiteiten in ${months[selectedMonth].name}`
-                : `Geen ${activeFilter.toLowerCase()} in ${months[selectedMonth].name}`}
+              {showAllFuture
+                ? activeFilter === "Alles"
+                  ? "Geen toekomstige activiteiten"
+                  : `Geen toekomstige ${activeFilter.toLowerCase()}`
+                : activeFilter === "Alles"
+                  ? `Geen activiteiten in ${months[selectedMonth].name}`
+                  : `Geen ${activeFilter.toLowerCase()} in ${months[selectedMonth].name}`}
             </strong>
             <span>
-              {activeFilter === "Alles"
-                ? "Gebruik de pijlen om naar een andere maand te gaan."
-                : "Kies een ander filter of blader naar een andere maand."}
+              {showAllFuture
+                ? "Er staan momenteel geen activiteiten binnen deze selectie gepland."
+                : activeFilter === "Alles"
+                  ? "Gebruik de pijlen om naar een andere maand te gaan."
+                  : "Kies een ander filter of blader naar een andere maand."}
             </span>
           </div>
         )}
