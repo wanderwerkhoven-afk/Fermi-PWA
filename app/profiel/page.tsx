@@ -6,6 +6,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import MemberQrCode from "../../components/MemberQrCode";
 import { useFermiSession } from "../../components/SessionProvider";
+import { restartFermiTour } from "../../components/GuidedAppTour";
 import {
   Bell,
   CalendarDays,
@@ -23,6 +24,7 @@ import {
   Megaphone,
   ScanLine,
   LogOut,
+  Compass,
 } from "lucide-react";
 
 const menuItems = [
@@ -154,6 +156,18 @@ export default function ProfilePage() {
                   <Settings size={18} />
                   <span>Instellingen</span>
                 </div>
+                <button
+                  type="button"
+                  className="profile-settings-menu-item"
+                  onClick={() => {
+                    setSettingsOpen(false);
+                    restartFermiTour();
+                  }}
+                  role="menuitem"
+                >
+                  <Compass size={18} />
+                  <span>App-rondleiding opnieuw starten</span>
+                </button>
                 <button
                   type="button"
                   className="profile-settings-menu-item danger"
