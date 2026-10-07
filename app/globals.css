@@ -7785,3 +7785,56 @@ body.member-admin-modal-open{overflow:hidden}
   .home-mini-skeleton span,
   .home-announcement-skeleton span { animation: none; }
 }
+
+/* Agenda date selector + all future activities */
+.agenda-date-selector-row {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.agenda-date-selector-row .month-switcher-redesign {
+  width: auto;
+  flex: 1 1 auto;
+}
+
+.agenda-all-future-button {
+  flex: 0 0 86px;
+  min-height: 48px;
+  border: 1px solid rgba(132,184,212,.42);
+  border-radius: 17px;
+  background: rgba(4,34,53,.9);
+  color: var(--fermi-white);
+  font-weight: 800;
+  cursor: pointer;
+  transition: background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease;
+}
+
+.agenda-all-future-button:active {
+  transform: scale(.96);
+}
+
+.agenda-all-future-button.active {
+  border-color: var(--fermi-orange);
+  background: var(--fermi-orange);
+  color: #21170f;
+}
+
+@media (max-width: 420px) {
+  .agenda-date-selector-row {
+    gap: 8px;
+  }
+
+  .agenda-date-selector-row .month-switcher-redesign {
+    width: auto;
+    min-height: 47px;
+  }
+
+  .agenda-all-future-button {
+    flex-basis: 78px;
+    min-height: 47px;
+    font-size: 13px;
+  }
+}
