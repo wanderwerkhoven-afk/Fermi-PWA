@@ -119,7 +119,7 @@ function parseMemberCsv(text: string) {
       role,
       linkedUserId: null,
       payment: {
-        status: status === "active" ? "paid" : "unpaid",
+        status: status === "active" ? ("paid" as const) : ("unpaid" as const),
         source: "manual" as const,
         paidAt: null,
         confirmedBy: null,
