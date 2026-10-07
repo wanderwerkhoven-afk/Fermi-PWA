@@ -1,5 +1,5 @@
 import type { User } from "firebase/auth";
-import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import type { FermiUser } from "../models/backend";
 
@@ -55,6 +55,18 @@ export async function ensureUserProfile(user: User) {
 export async function getUserProfile(uid: string): Promise<FermiUser | null> {
   const snapshot = await getDoc(doc(db, "users", uid));
   return snapshot.exists() ? (snapshot.data() as FermiUser) : null;
+}
+
+export function subscribeUserProfile(
+  uid: string,
+  callback: (user: FermiUser | null) => void,
+  onError?: (error: Error) => void,
+) {
+  return onSnapshot(
+    doc(db, "users", uid),
+    (snapshot) => callback(snapshot.exists() ? (snapshot.data() as FermiUser) : null),
+    (error) => onError?.(error),
+  );
 }
 
 function currentAcademicMembership() {
