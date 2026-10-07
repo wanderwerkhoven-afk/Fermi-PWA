@@ -9,6 +9,9 @@ export async function ensureUserProfile(user: User) {
 
   if (!snapshot.exists()) {
     const names = (user.displayName ?? "").trim().split(/\s+/);
+    const membershipDates = currentAcademicMembership();
+    const cardId = crypto.randomUUID();
+
     await setDoc(ref, {
       uid: user.uid,
       profile: {
@@ -25,7 +28,20 @@ export async function ensureUserProfile(user: User) {
       },
       role: "member",
       status: "active",
-      membership: null,
+      membership: {
+        ...membershipDates,
+        membershipType: "student",
+        status: "pending",
+        memberNumber: "",
+        digitalCard: { enabled: false, cardId },
+        payment: {
+          status: "unpaid",
+          source: "manual",
+          paidAt: null,
+          confirmedBy: null,
+          molliePaymentId: null,
+        },
+      },
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       lastLoginAt: serverTimestamp(),
