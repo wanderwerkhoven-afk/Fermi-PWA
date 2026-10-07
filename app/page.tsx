@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { AnnouncementData } from "../lib/services/announcements";
 import type { AgendaEvent } from "../data/agenda-events";
+import { subscribePendingApprovals, type AdminPendingApproval } from "../lib/services/memberAdmin";
 import MemberQrCode from "../components/MemberQrCode";
 import { useFermiSession } from "../components/SessionProvider";
 import { useAppData } from "../components/AppDataProvider";
@@ -16,6 +17,7 @@ import {
   IdCard,
   MapPin,
   Megaphone,
+  ShieldCheck,
   ShoppingBag,
   LockKeyhole,
   UserRound,
@@ -118,12 +120,37 @@ export default function HomePage() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [announcementsOpen, setAnnouncementsOpen] = useState(false);
   const [activeAnnouncement, setActiveAnnouncement] = useState<AnnouncementData | null>(null);
+  const [pendingApprovals, setPendingApprovals] = useState<AdminPendingApproval[]>([]);
   const {
     activities,
     announcements,
     activitiesLoading,
     announcementsLoading,
   } = useAppData();
+
+  useEffect(() => {
+    if (fermiUser?.role !== "admin" || fermiUser.status !== "active") {
+      setPendingApprovals([]);
+      return;
+    }
+    return subscribePendingApprovals(
+      setPendingApprovals,
+      (error) => console.error("Pending lidmeldingen laden mislukt", error),
+    );
+  }, [fermiUser?.role, fermiUser?.status]);
+
+  const formatApprovalTime = (value: unknown) => {
+    const date =
+      value && typeof (value as { toDate?: () => Date }).toDate === "function"
+        ? (value as { toDate: () => Date }).toDate()
+        : null;
+    if (!date) return "zojuist";
+    return new Intl.DateTimeFormat("nl-NL", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(date);
+  };
+
+  const openPendingMember = (uid: string) => {
+    window.location.href = `/Fermi-PWA/profiel/leden-admin/?member=${encodeURIComponent(uid)}`;
+  };
 
   const overlayOpen = memberPassOpen || memberPassClosing || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
 
@@ -275,6 +302,20 @@ export default function HomePage() {
       </section>
 
       <section className="content">
+        {fermiUser?.role === "admin" && pendingApprovals.length > 0 && (
+          <button className="admin-approval-banner" type="button" onClick={() => setNotificationsOpen(true)}>
+            <span className="admin-approval-banner-icon"><ShieldCheck size={19} /></span>
+            <span className="admin-approval-banner-copy">
+              <strong>{pendingApprovals.length === 1 ? "Nieuw lid wacht op goedkeuring" : `${pendingApprovals.length} nieuwe leden wachten op goedkeuring`}</strong>
+              <small>
+                {[pendingApprovals[0].firstName, pendingApprovals[0].lastName].filter(Boolean).join(" ") || pendingApprovals[0].email}
+                {" · "}{formatApprovalTime(pendingApprovals[0].requestedAt)}
+                {pendingApprovals.length > 1 ? ` · +${pendingApprovals.length - 1}` : ""}
+              </small>
+            </span>
+            <ChevronRight size={19} />
+          </button>
+        )}
         {isMembershipPending && (
           <aside className="pending-membership-banner" role="status">
             <span className="pending-membership-banner-icon"><LockKeyhole size={18} /></span>
@@ -447,6 +488,25 @@ export default function HomePage() {
                 <X size={21} />
               </button>
             </div>
+            {pendingApprovals.length > 0 && (
+              <div className="admin-notification-list">
+                {pendingApprovals.map((item) => (
+                  <button
+                    className="home-notification admin-home-notification interactive-card"
+                    type="button"
+                    key={item.uid}
+                    onClick={() => openPendingMember(item.uid)}
+                  >
+                    <span className="announcement-icon"><ShieldCheck size={20} /></span>
+                    <span>
+                      <strong>Nieuw lid wacht op goedkeuring</strong>
+                      <small>{[item.firstName, item.lastName].filter(Boolean).join(" ") || item.email} · {formatApprovalTime(item.requestedAt)}</small>
+                    </span>
+                    <ChevronRight size={18} />
+                  </button>
+                ))}
+              </div>
+            )}
             {announcements[0] && (
               <button
                 className="home-notification interactive-card"
