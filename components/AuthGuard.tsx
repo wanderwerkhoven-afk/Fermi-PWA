@@ -187,7 +187,7 @@ function AccessCard({
   return (
     <main className="pending-access">
       <div className="pending-card">
-        <div className="pending-atom">⚛</div>
+        <img className="pending-fermi-logo" src="/Fermi-PWA/images/branding/fermi-logo.png" alt="S.V. Fermi" />
         <p className="pending-kicker">S.V. Fermi</p>
         <h1>{title}</h1>
         <p>{body}</p>
