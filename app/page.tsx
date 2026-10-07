@@ -535,7 +535,7 @@ export default function HomePage() {
         >
           {!memberPassReady && !memberPassClosing && (
             <div className="member-pass-loading" role="status" aria-live="polite">
-              <span className="member-pass-loading-atom" aria-hidden="true">⚛</span>
+              <img className="member-pass-loading-atom" src="/Fermi-PWA/images/branding/atoom-loader.png" alt="" aria-hidden="true" />
               <span>Ledenpas laden…</span>
             </div>
           )}
