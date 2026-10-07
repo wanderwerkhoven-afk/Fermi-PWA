@@ -41,6 +41,18 @@ export async function getUserProfile(uid: string): Promise<FermiUser | null> {
   return snapshot.exists() ? (snapshot.data() as FermiUser) : null;
 }
 
+function currentAcademicMembership() {
+  const now = new Date();
+  const startYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+  const endYear = startYear + 1;
+  return {
+    academicYear: `${startYear}/${endYear}`,
+    startDate: `${startYear}-09-01`,
+    endDate: `${endYear}-08-31`,
+    startYear,
+  };
+}
+
 export interface RegistrationProfileInput {
   firstName: string;
   prefix?: string;
@@ -53,6 +65,9 @@ export interface RegistrationProfileInput {
 }
 
 export async function createRegisteredUserProfile(user: User, input: RegistrationProfileInput) {
+  const membershipDates = currentAcademicMembership();
+  const cardId = crypto.randomUUID();
+
   await setDoc(doc(db, "users", user.uid), {
     uid: user.uid,
     profile: {
@@ -69,7 +84,20 @@ export async function createRegisteredUserProfile(user: User, input: Registratio
     },
     role: "member",
     status: "active",
-    membership: null,
+    membership: {
+      ...membershipDates,
+      membershipType: "student",
+      status: "pending",
+      memberNumber: "",
+      digitalCard: { enabled: false, cardId },
+      payment: {
+        status: "unpaid",
+        source: "manual",
+        paidAt: null,
+        confirmedBy: null,
+        molliePaymentId: null,
+      },
+    },
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
     lastLoginAt: serverTimestamp(),
