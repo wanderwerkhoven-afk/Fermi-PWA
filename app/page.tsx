@@ -17,6 +17,7 @@ import {
   MapPin,
   Megaphone,
   ShoppingBag,
+  LockKeyhole,
   UserRound,
   UsersRound,
   X,
@@ -127,7 +128,7 @@ export default function HomePage() {
   const overlayOpen = memberPassOpen || memberPassClosing || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
 
   const openMemberPass = () => {
-    if (memberPassOpen || memberPassClosing) return;
+    if (isMembershipPending || memberPassOpen || memberPassClosing) return;
 
     // Always start a fresh animation cycle, even when the pass image is already cached.
     setMemberPassClosing(false);
@@ -186,6 +187,8 @@ export default function HomePage() {
 
 
 
+  const membershipStatus = fermiUser?.membership?.status ?? membership?.status;
+  const isMembershipPending = membershipStatus === "pending" || fermiUser?.status === "pending";
   const memberName = [fermiUser?.profile.firstName, fermiUser?.profile.lastName].filter(Boolean).join(" ");
   const memberRole = fermiUser?.role === "admin" ? "Admin" : fermiUser?.role === "board" ? "Bestuur" : fermiUser?.role === "committee" ? "Commissie" : "Lid";
   const memberNumber = membership?.memberNumber?.trim() || (membership?.digitalCard?.cardId ? `FERMI-${membership.digitalCard.cardId.slice(0, 6).toUpperCase()}` : "Nog niet toegewezen");
@@ -272,6 +275,15 @@ export default function HomePage() {
       </section>
 
       <section className="content">
+        {isMembershipPending && (
+          <aside className="pending-membership-banner" role="status">
+            <span className="pending-membership-banner-icon"><LockKeyhole size={18} /></span>
+            <span>
+              <strong>Je aanmelding wordt gecontroleerd door S.V. Fermi</strong>
+              <small>Kijk alvast rond in de app. Ledenfuncties worden beschikbaar zodra je aanmelding is goedgekeurd.</small>
+            </span>
+          </aside>
+        )}
         {activitiesLoading ? (
           <div className="home-featured-skeleton" aria-label="Activiteit laden" aria-busy="true"><span /><span /><span /></div>
         ) : featuredActivity ? (
@@ -408,17 +420,18 @@ export default function HomePage() {
         </section>
 
         <button
-          className="member-pass-preview interactive-card"
+          className={`member-pass-preview interactive-card${isMembershipPending ? " is-membership-locked" : ""}`}
           type="button"
           onClick={openMemberPass}
-          aria-haspopup="dialog"
+          aria-haspopup={isMembershipPending ? undefined : "dialog"}
+          aria-disabled={isMembershipPending}
         >
           <span className="pass-icon"><IdCard size={30} /></span>
           <span className="pass-copy">
             <strong>Digitale ledenpas</strong>
-            <small>Toon je ledenpas bij activiteiten en ontvang kortingen</small>
+            <small>{isMembershipPending ? "Beschikbaar zodra je lidmaatschap is goedgekeurd" : "Toon je ledenpas bij activiteiten en ontvang kortingen"}</small>
           </span>
-          <ChevronRight size={20} />
+          {isMembershipPending ? <LockKeyhole size={20} /> : <ChevronRight size={20} />}
         </button>
       </section>
 
