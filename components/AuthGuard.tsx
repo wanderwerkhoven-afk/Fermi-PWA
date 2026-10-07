@@ -142,10 +142,6 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     return <AccessCard title="Account niet actief" body="Je account is momenteel niet actief. Denk je dat dit niet klopt? Neem dan contact op met S.V. Fermi." previewBypass />;
   }
 
-  if (access === "membership-pending") {
-    return <AccessCard title="Aanmelding ontvangen" body="Je nieuwe lidmaatschapsaanmelding is ontvangen en wordt nog verwerkt. Je eerdere Fermi-geschiedenis blijft bewaard." previewBypass />;
-  }
-
   if (access === "archive") {
     return <AccessCard title="Welkom terug" body="Je hebt momenteel geen actief Fermi-lidmaatschap. Je account en eerdere Fermi-geschiedenis blijven bewaard. Meld je opnieuw aan om voor het nieuwe verenigingsjaar weer volledige toegang te krijgen." actionLabel="Opnieuw lid worden" previewBypass />;
   }
