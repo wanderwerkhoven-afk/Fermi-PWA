@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type TouchEvent } from "react";
 import {
   Bell,
   CalendarDays,
@@ -236,7 +236,7 @@ export default function AgendaPage() {
     setCalendarView(true);
   }
 
-  function handleCalendarTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
+  function handleCalendarTouchEnd(event: TouchEvent<HTMLDivElement>) {
     if (touchStartX === null) return;
     const delta = event.changedTouches[0]?.clientX - touchStartX;
     setTouchStartX(null);
