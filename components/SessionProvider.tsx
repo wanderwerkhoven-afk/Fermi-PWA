@@ -5,7 +5,7 @@ import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import type { FermiUser, Membership } from "../lib/models/backend";
-import { getUserProfile } from "../lib/services/users";
+import { subscribeUserProfile } from "../lib/services/users";
 import { getActiveMembership, getPendingMembership } from "../lib/services/memberships";
 
 type SessionState = {
@@ -14,6 +14,7 @@ type SessionState = {
   membership: Membership | null;
   loading: boolean;
   error: unknown;
+  membershipJustApproved: boolean;
 };
 
 const SessionContext = createContext<SessionState | null>(null);
@@ -82,43 +83,117 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     membership: null,
     loading: true,
     error: null,
+    membershipJustApproved: false,
   });
 
-  useEffect(() => onAuthStateChanged(auth, async (firebaseUser) => {
-    if (!firebaseUser) {
-      setState({ firebaseUser: null, fermiUser: null, membership: null, loading: false, error: null });
-      return;
-    }
+  useEffect(() => {
+    let unsubscribeProfile: (() => void) | null = null;
+    let approvalTimer: ReturnType<typeof setTimeout> | null = null;
+    let previousMembershipStatus: Membership["status"] | null = null;
 
-    try {
-      const fermiUser = await getUserProfile(firebaseUser.uid);
-      let membership = membershipFromUser(fermiUser);
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      unsubscribeProfile?.();
+      unsubscribeProfile = null;
+      if (approvalTimer) {
+        clearTimeout(approvalTimer);
+        approvalTimer = null;
+      }
+      previousMembershipStatus = null;
 
-      // Legacy fallback: prefer an existing membership document when one exists,
-      // because it may contain an assigned member number and custom validity date.
-      if (!membership && fermiUser && fermiUser.role !== "admin" && fermiUser.role !== "board") {
-        membership = await getActiveMembership(firebaseUser.uid);
-        if (!membership) {
-          membership = await getPendingMembership(firebaseUser.uid);
-        }
+      if (!firebaseUser) {
+        setState({
+          firebaseUser: null,
+          fermiUser: null,
+          membership: null,
+          loading: false,
+          error: null,
+          membershipJustApproved: false,
+        });
+        return;
       }
 
-      // Board/admin accounts are operational accounts and may use a waived pass
-      // until a formal membership record has been assigned.
-      if (
-        !membership
-        && fermiUser?.status === "active"
-        && (fermiUser.role === "admin" || fermiUser.role === "board")
-      ) {
-        membership = privilegedMembership(fermiUser);
-      }
+      setState((current) => ({
+        ...current,
+        firebaseUser,
+        loading: true,
+        error: null,
+        membershipJustApproved: false,
+      }));
 
-      setState({ firebaseUser, fermiUser, membership, loading: false, error: null });
-    } catch (error) {
-      console.error("Fermi session could not be loaded", error);
-      setState({ firebaseUser, fermiUser: null, membership: null, loading: false, error });
-    }
-  }), []);
+      unsubscribeProfile = subscribeUserProfile(
+        firebaseUser.uid,
+        async (fermiUser) => {
+          try {
+            let membership = membershipFromUser(fermiUser);
+
+            // Legacy fallback for older accounts without a current membership snapshot.
+            if (!membership && fermiUser && fermiUser.role !== "admin" && fermiUser.role !== "board") {
+              membership = await getActiveMembership(firebaseUser.uid);
+              if (!membership) membership = await getPendingMembership(firebaseUser.uid);
+            }
+
+            if (
+              !membership
+              && fermiUser?.status === "active"
+              && (fermiUser.role === "admin" || fermiUser.role === "board")
+            ) {
+              membership = privilegedMembership(fermiUser);
+            }
+
+            const currentMembershipStatus = membership?.status ?? null;
+            const justApproved =
+              previousMembershipStatus === "pending"
+              && currentMembershipStatus === "active";
+
+            previousMembershipStatus = currentMembershipStatus;
+
+            setState({
+              firebaseUser,
+              fermiUser,
+              membership,
+              loading: false,
+              error: null,
+              membershipJustApproved: justApproved,
+            });
+
+            if (justApproved) {
+              if (approvalTimer) clearTimeout(approvalTimer);
+              approvalTimer = setTimeout(() => {
+                setState((current) => ({ ...current, membershipJustApproved: false }));
+              }, 6000);
+            }
+          } catch (error) {
+            console.error("Fermi session could not be refreshed", error);
+            setState({
+              firebaseUser,
+              fermiUser: null,
+              membership: null,
+              loading: false,
+              error,
+              membershipJustApproved: false,
+            });
+          }
+        },
+        (error) => {
+          console.error("Realtime Fermi session listener failed", error);
+          setState({
+            firebaseUser,
+            fermiUser: null,
+            membership: null,
+            loading: false,
+            error,
+            membershipJustApproved: false,
+          });
+        },
+      );
+    });
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeProfile?.();
+      if (approvalTimer) clearTimeout(approvalTimer);
+    };
+  }, []);
 
   const value = useMemo(() => state, [state]);
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
