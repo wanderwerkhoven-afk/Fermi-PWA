@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Share2, Ticket } from "lucide-react";
+import { Check, LockKeyhole, Share2, Ticket } from "lucide-react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { useFermiSession } from "@/components/SessionProvider";
 import { getActiveMembership } from "@/lib/services/memberships";
 import {
   cancelEventRegistrationAtomic,
@@ -22,6 +23,9 @@ export default function EventActions({
   capacity: number;
   shareTitle?: string;
 }) {
+  const { fermiUser, membership: sessionMembership } = useFermiSession();
+  const membershipStatus = fermiUser?.membership?.status ?? sessionMembership?.status;
+  const isMembershipPending = membershipStatus === "pending" || fermiUser?.status === "pending";
   const [userId, setUserId] = useState<string | null>(auth.currentUser?.uid ?? null);
   const [joined, setJoined] = useState(false);
   const [registeredCount, setRegisteredCount] = useState(initialRegistered);
@@ -43,7 +47,7 @@ export default function EventActions({
   }, [eventId, userId, initialRegistered]);
 
   async function toggleRegistration() {
-    if (!userId || busy) return;
+    if (!userId || busy || isMembershipPending) return;
 
     setBusy(true);
     setFeedback("");
@@ -95,10 +99,10 @@ export default function EventActions({
         className={`event-register-button ${joined ? "joined" : ""}`}
         onClick={toggleRegistration}
         aria-pressed={joined}
-        disabled={!userId || busy || full}
+        disabled={!userId || busy || full || isMembershipPending}
       >
-        {joined ? <Check size={20} /> : <Ticket size={20} />}
-        {busy ? "Bezig…" : joined ? "Ingeschreven" : full ? "Vol" : "Schrijf je in"}
+        {isMembershipPending ? <LockKeyhole size={20} /> : joined ? <Check size={20} /> : <Ticket size={20} />}
+        {isMembershipPending ? "Beschikbaar na goedkeuring" : busy ? "Bezig…" : joined ? "Ingeschreven" : full ? "Vol" : "Schrijf je in"}
       </button>
 
       <button className="event-share-button" onClick={shareEvent}>
@@ -110,7 +114,12 @@ export default function EventActions({
         <strong>{registeredCount}</strong> / {capacity} plekken bezet
       </p>
 
-      {feedback && (
+      {isMembershipPending && (
+        <p className="event-action-feedback event-action-locked" role="status">
+          Inschrijven kan zodra S.V. Fermi je lidmaatschap heeft goedgekeurd.
+        </p>
+      )}
+      {!isMembershipPending && feedback && (
         <p className="event-action-feedback" role="status">
           {feedback}
         </p>
