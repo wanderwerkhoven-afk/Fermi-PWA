@@ -5137,7 +5137,7 @@ body.member-pass-modal-open {
   max-height: inherit;
   display: block;
   object-fit: contain;
-  filter: drop-shadow(0 24px 54px rgba(0, 0, 0, .34));
+  filter: none;
 }
 
 .member-pass-modal-close {
