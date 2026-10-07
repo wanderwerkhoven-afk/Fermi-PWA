@@ -63,10 +63,11 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     }
 
     const snapshotStatus = profile.membership?.status;
+    const canonicalStatus = membership?.status ?? snapshotStatus;
     const membershipAccess =
-      snapshotStatus === "pending" || membership?.status === "pending"
+      canonicalStatus === "pending"
         ? "pending"
-        : snapshotStatus === "active" || membership?.status === "active"
+        : canonicalStatus === "active"
           ? "active"
           : "archive";
 
