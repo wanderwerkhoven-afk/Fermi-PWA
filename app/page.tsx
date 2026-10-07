@@ -127,6 +127,9 @@ export default function HomePage() {
   const overlayOpen = memberPassOpen || memberPassClosing || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
 
   const openMemberPass = () => {
+    if (memberPassOpen || memberPassClosing) return;
+
+    // Always start a fresh animation cycle, even when the pass image is already cached.
     setMemberPassClosing(false);
     setMemberPassImageReady(false);
     setMemberPassReady(false);
@@ -145,10 +148,26 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    if (!memberPassOpen || memberPassClosing || !memberPassImageReady) return;
+    if (!memberPassOpen || memberPassClosing) return;
 
-    // Give the QR and live member data a paint cycle before revealing the pass.
-    const timer = window.setTimeout(() => setMemberPassReady(true), 260);
+    // Cached images may not produce a useful loading phase on later opens.
+    // Check the mounted image as well so every opening gets a fresh reveal cycle.
+    const image = document.querySelector<HTMLImageElement>(".member-pass-modal-image");
+    if (image?.complete && image.naturalWidth > 0 && !memberPassImageReady) {
+      setMemberPassImageReady(true);
+      return;
+    }
+
+    if (!memberPassImageReady) return;
+
+    // Keep the pass hidden for a short paint window so QR/data are ready,
+    // then trigger the slide animation from its off-screen start state.
+    const timer = window.setTimeout(() => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => setMemberPassReady(true));
+      });
+    }, 260);
+
     return () => window.clearTimeout(timer);
   }, [memberPassOpen, memberPassClosing, memberPassImageReady]);
 
