@@ -189,6 +189,14 @@ export default function LedenAdminPage() {
   }, []);
 
   useEffect(() => {
+    if (!authorized || members.length === 0 || selected) return;
+    const memberId = new URLSearchParams(window.location.search).get("member");
+    if (!memberId) return;
+    const match = members.find((member) => member.uid === memberId || member.id === memberId);
+    if (match) openMember(match);
+  }, [authorized, members, selected]);
+
+  useEffect(() => {
     document.body.classList.toggle("member-admin-modal-open", Boolean(selected));
     return () => document.body.classList.remove("member-admin-modal-open");
   }, [selected]);
