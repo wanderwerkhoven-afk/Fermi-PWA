@@ -8065,3 +8065,95 @@ body.member-admin-modal-open{overflow:hidden}
     font-size: 8px;
   }
 }
+
+/* Member admin — membership payment workflow */
+.member-admin-payment-section h3{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.member-payment-status{
+  display:grid;
+  gap:3px;
+  padding:11px 12px;
+  border:1px solid rgba(132,184,212,.18);
+  border-radius:12px;
+  background:#031d2c;
+}
+.member-payment-status strong{
+  font-size:12px;
+  color:var(--fermi-paper);
+}
+.member-payment-status span{
+  font-size:9.5px;
+  line-height:1.35;
+  color:var(--fermi-muted);
+}
+.member-payment-status.is-paid,
+.member-payment-status.is-waived{
+  border-color:rgba(76,203,130,.38);
+  background:rgba(24,83,59,.26);
+}
+.member-payment-status.is-paid strong,
+.member-payment-status.is-waived strong{
+  color:#7be0a6;
+}
+.member-payment-status.is-unpaid{
+  border-color:rgba(255,122,26,.34);
+  background:rgba(255,122,26,.07);
+}
+.member-payment-status.is-unpaid strong{
+  color:var(--fermi-orange);
+}
+.member-payment-note{
+  margin:0;
+  color:var(--fermi-muted);
+  font-size:9.5px;
+  line-height:1.45;
+}
+.member-payment-actions{
+  display:grid;
+  grid-template-columns:1.45fr .9fr .9fr;
+  gap:7px;
+}
+.member-payment-actions button{
+  min-height:40px;
+  border-radius:10px;
+  border:1px solid rgba(244,234,220,.14);
+  background:#06283b;
+  color:var(--fermi-white);
+  font-size:9px;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+}
+.member-payment-actions .payment-paid{
+  border:0;
+  background:var(--fermi-orange);
+  color:var(--fermi-navy-deep);
+}
+.member-payment-actions .payment-waived{
+  border-color:rgba(76,203,130,.34);
+}
+.member-payment-actions .payment-unpaid{
+  color:#d9e1e5;
+}
+.member-payment-actions button:disabled{
+  opacity:.38;
+  cursor:default;
+}
+.member-admin-modal-section input:disabled{
+  opacity:.62;
+  cursor:not-allowed;
+}
+@media(max-width:420px){
+  .member-payment-actions{
+    grid-template-columns:1fr 1fr;
+  }
+  .member-payment-actions .payment-paid{
+    grid-column:1 / -1;
+  }
+}
