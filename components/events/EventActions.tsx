@@ -24,7 +24,7 @@ export default function EventActions({
   shareTitle?: string;
 }) {
   const { fermiUser, membership: sessionMembership } = useFermiSession();
-  const membershipStatus = fermiUser?.membership?.status ?? sessionMembership?.status;
+  const membershipStatus = sessionMembership?.status ?? fermiUser?.membership?.status;
   const isMembershipPending = membershipStatus === "pending" || fermiUser?.status === "pending";
   const [userId, setUserId] = useState<string | null>(auth.currentUser?.uid ?? null);
   const [joined, setJoined] = useState(false);
