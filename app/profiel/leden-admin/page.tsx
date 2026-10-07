@@ -8,6 +8,7 @@ import {
   CalendarDays,
   CheckCircle2,
   ChevronRight,
+  CreditCard,
   FileUp,
   IdCard,
   Mail,
@@ -27,6 +28,7 @@ import {
   AdminMemberRow,
   listAdminMembers,
   saveAdminMemberDetails,
+  setAdminMemberPaymentStatus,
   syncCommunityMembers,
   upsertDirectoryMember,
   upsertDirectoryMembers,
@@ -92,7 +94,7 @@ function parseMemberCsv(text: string) {
 
   return lines.slice(1).map((line) => {
     const values = splitCsvLine(line, separator);
-    const rawStatus = (values[statusIndex] || "active").toLowerCase();
+    const rawStatus = (values[statusIndex] || "pending").toLowerCase();
     const status: AdminMemberLifecycle =
       rawStatus === "pending" || rawStatus === "in overgang" ? "pending"
       : rawStatus === "suspended" || rawStatus === "geblokkeerd" ? "suspended"
@@ -116,6 +118,13 @@ function parseMemberCsv(text: string) {
       status,
       role,
       linkedUserId: null,
+      payment: {
+        status: status === "active" ? "paid" : "unpaid",
+        source: "manual" as const,
+        paidAt: null,
+        confirmedBy: null,
+        molliePaymentId: null,
+      },
     };
   }).filter((item) => item.email);
 }
@@ -149,13 +158,14 @@ export default function LedenAdminPage() {
     phone: "",
     city: "",
     startYear: null as number | null,
-    status: "active" as AdminMemberLifecycle,
+    status: "pending" as AdminMemberLifecycle,
   });
 
   async function refresh() {
     const rows = await listAdminMembers();
     setMembers(rows);
     await syncCommunityMembers(rows);
+    return rows;
   }
 
   useEffect(() => {
@@ -250,14 +260,43 @@ export default function LedenAdminPage() {
         endDate: "2027-08-31",
         role: "member",
         linkedUserId: null,
+        payment: {
+          status: "unpaid",
+          source: "manual",
+          paidAt: null,
+          confirmedBy: null,
+          molliePaymentId: null,
+        },
       });
-      setForm({ firstName: "", lastName: "", email: "", memberNumber: "", phone: "", city: "", startYear: null, status: "active" });
+      setForm({ firstName: "", lastName: "", email: "", memberNumber: "", phone: "", city: "", startYear: null, status: "pending" });
       setShowAdd(false);
       await refresh();
       setNotice("Lid toegevoegd aan de ledenadministratie.");
     } catch (error) {
       console.error(error);
       setNotice("Lid toevoegen is niet gelukt.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function changePayment(paymentStatus: "unpaid" | "paid" | "waived") {
+    if (!selected) return;
+    setBusyId(`payment-${selected.id}`);
+    setNotice("");
+    try {
+      await setAdminMemberPaymentStatus(selected, paymentStatus, auth.currentUser?.uid ?? null);
+      const rows = await refresh();
+      const updated = rows.find((item) => item.source === selected.source && item.id === selected.id) || null;
+      setSelected(updated);
+      const label =
+        paymentStatus === "paid" ? "Betaling ontvangen en lidmaatschap geactiveerd."
+        : paymentStatus === "waived" ? "Lidmaatschap vrijgesteld en geactiveerd."
+        : "Betaling teruggezet naar niet betaald; lidmaatschap staat weer in overgang.";
+      setNotice(label);
+    } catch (error) {
+      console.error(error);
+      setNotice("Betaalstatus aanpassen is niet gelukt.");
     } finally {
       setBusyId(null);
     }
@@ -346,9 +385,7 @@ export default function LedenAdminPage() {
             <div>
               <label>Lidnummer<input value={form.memberNumber} onChange={(event) => setForm({ ...form, memberNumber: event.target.value })} /></label>
               <label>Status
-                <select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value as AdminMemberLifecycle })}>
-                  {Object.entries(lifecycleLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
-                </select>
+                <input value="In overgang · Niet betaald" disabled />
               </label>
             </div>
             <button type="button" onClick={addMember} disabled={busyId === "new"}>
@@ -374,6 +411,7 @@ export default function LedenAdminPage() {
                 <small>
                   {member.memberNumber ? `Lidnr. ${member.memberNumber}` : "Nog geen lidnummer"}
                   {" · "}{member.source === "account" ? "Account gekoppeld" : "Ledenlijst"}
+                  {" · "}{member.paymentStatus === "paid" ? "Betaald" : member.paymentStatus === "waived" ? "Vrijgesteld" : "Niet betaald"}
                 </small>
               </div>
               <div className="member-admin-row-meta">
@@ -433,10 +471,59 @@ export default function LedenAdminPage() {
                 <label><span><CalendarDays size={14} /> Einddatum lidmaatschap</span><input type="date" value={edit.endDate} onChange={(e) => setEdit({ ...edit, endDate: e.target.value })} /></label>
               </section>
 
+              <section className="member-admin-modal-section member-admin-payment-section">
+                <h3><CreditCard size={17} /> Betaling lidmaatschap</h3>
+                <div className={`member-payment-status is-${selected.paymentStatus}`}>
+                  <strong>
+                    {selected.paymentStatus === "paid"
+                      ? "Betaald"
+                      : selected.paymentStatus === "waived"
+                        ? "Vrijgesteld"
+                        : "Niet betaald"}
+                  </strong>
+                  <span>
+                    {selected.paymentStatus === "paid"
+                      ? "Handmatig bevestigd door bestuur/admin"
+                      : selected.paymentStatus === "waived"
+                        ? "Geen betaling vereist"
+                        : "QR en lidmaatschap worden geactiveerd na bevestiging"}
+                  </span>
+                </div>
+                {selected.source === "directory" && (
+                  <p className="member-payment-note">Dit lid heeft nog geen gekoppeld account. De betaling kan al worden geregistreerd; de digitale ledenpas wordt beschikbaar zodra het account gekoppeld is.</p>
+                )}
+                <div className="member-payment-actions">
+                  <button
+                    type="button"
+                    className="payment-paid"
+                    disabled={busyId === `payment-${selected.id}` || selected.paymentStatus === "paid"}
+                    onClick={() => void changePayment("paid")}
+                  >
+                    <CheckCircle2 size={17} /> Betaling ontvangen
+                  </button>
+                  <button
+                    type="button"
+                    className="payment-waived"
+                    disabled={busyId === `payment-${selected.id}` || selected.paymentStatus === "waived"}
+                    onClick={() => void changePayment("waived")}
+                  >
+                    Vrijstellen
+                  </button>
+                  <button
+                    type="button"
+                    className="payment-unpaid"
+                    disabled={busyId === `payment-${selected.id}` || selected.paymentStatus === "unpaid"}
+                    onClick={() => void changePayment("unpaid")}
+                  >
+                    Niet betaald
+                  </button>
+                </div>
+              </section>
+
               <section className="member-admin-modal-section">
                 <h3>Status & rol</h3>
                 <div className="member-admin-choice-grid">
-                  <label>Status<select value={edit.status} onChange={(e) => setEdit({ ...edit, status: e.target.value as AdminMemberLifecycle })}>{Object.entries(lifecycleLabels).map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+                  <label>Status<select value={edit.status} onChange={(e) => setEdit({ ...edit, status: e.target.value as AdminMemberLifecycle })}>{Object.entries(lifecycleLabels).map(([value,label]) => <option key={value} value={value} disabled={value === "active" && selected.paymentStatus === "unpaid"}>{label}</option>)}</select></label>
                   <label>Rol<select value={edit.role} onChange={(e) => setEdit({ ...edit, role: e.target.value as UserRole })}>{Object.entries(roleLabels).map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></label>
                 </div>
               </section>
