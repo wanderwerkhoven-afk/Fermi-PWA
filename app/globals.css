@@ -1212,8 +1212,10 @@ button {
   position: relative;
   min-width: 0;
   overflow: hidden;
-  background-position: center;
+  margin-right: -1px;
+  background-position: right center;
   background-size: cover;
+  border-radius: 0 16px 16px 0;
 }
 
 .agenda-photo::before {
@@ -5981,9 +5983,13 @@ body.member-admin-modal-open{overflow:hidden}
 /* Agenda activity background images */
 .agenda-card-with-preset {
   grid-template-columns: 64px minmax(0, 1fr);
+  overflow: hidden;
   background-size: cover;
-  background-position: center;
+  background-position: right center;
   background-repeat: no-repeat;
+  background-origin: border-box;
+  background-clip: border-box;
+  border-right-color: transparent;
   color: var(--fermi-navy-deep);
 }
 
@@ -8232,9 +8238,9 @@ body.member-admin-modal-open{overflow:hidden}
 
 .agenda-hero-image{opacity:0;transform:scale(1.025);transition:opacity .3s ease,transform .35s ease}
 .agenda-hero-image.is-ready{opacity:1;transform:scale(1)}
-.agenda-card-with-preset{position:relative;background-size:104%;background-position:center;background-repeat:no-repeat;transition:background-size .4s ease}
+.agenda-card-with-preset{position:relative;background-size:104% auto;background-position:right center;background-repeat:no-repeat;transition:background-size .4s ease}
 .agenda-card-with-preset::after{content:"";position:absolute;z-index:1;inset:0;border-radius:inherit;background:linear-gradient(110deg,rgba(244,234,220,.18) 18%,rgba(255,255,255,.32) 38%,rgba(244,234,220,.18) 58%);background-size:220% 100%;animation:activityImageShimmer 1.15s linear infinite;transition:opacity .25s ease;pointer-events:none}
-.agenda-card-with-preset.is-image-ready{background-size:100%}
+.agenda-card-with-preset.is-image-ready{background-size:100% auto;background-position:right center}
 .agenda-card-with-preset.is-image-ready::after{opacity:0;animation:none}
 .agenda-card-with-preset>.agenda-date,
 .agenda-card-with-preset>.agenda-card-copy,
