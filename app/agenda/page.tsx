@@ -144,10 +144,44 @@ function getEventEnd(event: AgendaEvent) {
   return new Date(parts.year, parts.monthIndex, parts.day, hour, minute, 59, 999).getTime();
 }
 
+function addMonths(year: number, monthIndex: number, amount: number) {
+  const date = new Date(year, monthIndex + amount, 1, 12);
+  return { year: date.getFullYear(), monthIndex: date.getMonth() };
+}
+
+function eventDateRange(event: AgendaEvent) {
+  const parts = getEventDateParts(event);
+  if (!parts) return null;
+  const start = new Date(parts.year, parts.monthIndex, parts.day, 12);
+  const end = event.endDate ? new Date(`${event.endDate}T12:00:00`) : start;
+  return { start, end: Number.isNaN(end.getTime()) ? start : end };
+}
+
+function eventOccursOnDate(event: AgendaEvent, date: Date) {
+  const range = eventDateRange(event);
+  if (!range) return false;
+  const target = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12).getTime();
+  return target >= range.start.getTime() && target <= range.end.getTime();
+}
+
+function monthCalendarCells(year: number, monthIndex: number) {
+  const firstDay = new Date(year, monthIndex, 1, 12);
+  const daysInMonth = new Date(year, monthIndex + 1, 0, 12).getDate();
+  const mondayOffset = (firstDay.getDay() + 6) % 7;
+  return [
+    ...Array.from({ length: mondayOffset }, () => null),
+    ...Array.from({ length: daysInMonth }, (_, index) => new Date(year, monthIndex, index + 1, 12)),
+  ];
+}
+
 export default function AgendaPage() {
   const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
   const [showAllFuture, setShowAllFuture] = useState(false);
+  const [calendarView, setCalendarView] = useState(false);
+  const [calendarStartMonth, setCalendarStartMonth] = useState(() => new Date().getMonth());
+  const [calendarStartYear, setCalendarStartYear] = useState(() => new Date().getFullYear());
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const { activities: events } = useAppData();
   const [activeFilter, setActiveFilter] = useState<AgendaFilter>("Alles");
 
@@ -190,6 +224,85 @@ export default function AgendaPage() {
 
   const monthLabel = `${months[selectedMonth].name} ${selectedYear}`;
 
+  function changeCalendarPair(direction: -1 | 1) {
+    const next = addMonths(calendarStartYear, calendarStartMonth, direction * 2);
+    setCalendarStartYear(next.year);
+    setCalendarStartMonth(next.monthIndex);
+  }
+
+  function openCalendarView() {
+    setCalendarStartYear(selectedYear);
+    setCalendarStartMonth(selectedMonth);
+    setCalendarView(true);
+  }
+
+  function handleCalendarTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
+    if (touchStartX === null) return;
+    const delta = event.changedTouches[0]?.clientX - touchStartX;
+    setTouchStartX(null);
+    if (Math.abs(delta) < 45) return;
+    changeCalendarPair(delta < 0 ? 1 : -1);
+  }
+
+  function renderCalendarMonth(year: number, monthIndex: number) {
+    const cells = monthCalendarCells(year, monthIndex);
+    const today = new Date();
+
+    return (
+      <section className="agenda-calendar-month" key={`${year}-${monthIndex}`}>
+        <div className="agenda-calendar-month-title">
+          <strong>{months[monthIndex].name}</strong>
+          <span>{year}</span>
+        </div>
+
+        <div className="agenda-calendar-weekdays" aria-hidden="true">
+          {["ma","di","wo","do","vr","za","zo"].map((day) => <span key={day}>{day}</span>)}
+        </div>
+
+        <div className="agenda-calendar-grid">
+          {cells.map((date, index) => {
+            if (!date) return <span className="agenda-calendar-day empty" key={`empty-${index}`} />;
+
+            const dayEvents = events
+              .filter((event) => event.showInAgenda !== false && eventOccursOnDate(event, date))
+              .sort((a, b) => getEventStart(a) - getEventStart(b));
+            const firstEvent = dayEvents[0];
+            const detailImage = firstEvent
+              ? resolveActivityImagePath(firstEvent.detailImagePath || firstEvent.imagePath)
+              : null;
+            const isToday =
+              date.getFullYear() === today.getFullYear()
+              && date.getMonth() === today.getMonth()
+              && date.getDate() === today.getDate();
+
+            const content = (
+              <>
+                {detailImage ? <img src={detailImage} alt="" aria-hidden="true" /> : null}
+                <span className="agenda-calendar-day-number">{date.getDate()}</span>
+                {dayEvents.length > 1 ? <span className="agenda-calendar-event-count">+{dayEvents.length - 1}</span> : null}
+              </>
+            );
+
+            return firstEvent ? (
+              <Link
+                className={`agenda-calendar-day has-event${isToday ? " today" : ""}`}
+                href={`/agenda/activiteit?slug=${encodeURIComponent(firstEvent.slug)}`}
+                key={date.toISOString()}
+                aria-label={`${date.getDate()} ${months[monthIndex].name}: ${firstEvent.title}`}
+              >
+                {content}
+              </Link>
+            ) : (
+              <span className={`agenda-calendar-day${isToday ? " today" : ""}`} key={date.toISOString()}>
+                {content}
+              </span>
+            );
+          })}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <main className="app-shell agenda-shell">
       <div className="noise" aria-hidden="true" />
@@ -224,43 +337,74 @@ export default function AgendaPage() {
               alt=""
             />
           </div>
-        </div>
-
-        <div className="agenda-date-selector-row">
-          <div className="month-switcher month-switcher-redesign">
-            <button aria-label="Vorige maand" onClick={() => changeMonth(-1)}>
-              <ChevronLeft size={23} />
-            </button>
-            <strong aria-live="polite">{monthLabel}</strong>
-            <button aria-label="Volgende maand" onClick={() => changeMonth(1)}>
-              <ChevronRight size={23} />
-            </button>
-          </div>
           <button
             type="button"
-            className={`agenda-all-future-button${showAllFuture ? " active" : ""}`}
-            aria-pressed={showAllFuture}
-            onClick={() => setShowAllFuture((value) => !value)}
+            className={`agenda-calendar-hero-button${calendarView ? " active" : ""}`}
+            aria-label={calendarView ? "Terug naar agenda-overzicht" : "Open kalenderweergave"}
+            aria-pressed={calendarView}
+            onClick={() => calendarView ? setCalendarView(false) : openCalendarView()}
           >
-            Alles
+            <CalendarDays size={22} />
           </button>
         </div>
 
-        <div className="agenda-filters agenda-filters-redesign" aria-label="Agenda filters">
-          {filters.map((filter) => (
-            <button
-              key={filter}
-              type="button"
-              className={activeFilter === filter ? "active" : ""}
-              aria-pressed={activeFilter === filter}
-              onClick={() => setActiveFilter(filter)}
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
+        {!calendarView && (
+          <>
+            <div className="agenda-date-selector-row">
+              <div className="month-switcher month-switcher-redesign">
+                <button aria-label="Vorige maand" onClick={() => changeMonth(-1)}>
+                  <ChevronLeft size={23} />
+                </button>
+                <strong aria-live="polite">{monthLabel}</strong>
+                <button aria-label="Volgende maand" onClick={() => changeMonth(1)}>
+                  <ChevronRight size={23} />
+                </button>
+              </div>
+              <button
+                type="button"
+                className={`agenda-all-future-button${showAllFuture ? " active" : ""}`}
+                aria-pressed={showAllFuture}
+                onClick={() => setShowAllFuture((value) => !value)}
+              >
+                Alles
+              </button>
+            </div>
+
+            <div className="agenda-filters agenda-filters-redesign" aria-label="Agenda filters">
+              {filters.map((filter) => (
+                <button
+                  key={filter}
+                  type="button"
+                  className={activeFilter === filter ? "active" : ""}
+                  aria-pressed={activeFilter === filter}
+                  onClick={() => setActiveFilter(filter)}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </section>
 
+      {calendarView ? (
+        <section
+          className="agenda-calendar-view"
+          onTouchStart={(event) => setTouchStartX(event.touches[0]?.clientX ?? null)}
+          onTouchEnd={handleCalendarTouchEnd}
+        >
+          <div className="agenda-calendar-pair-head">
+            <button type="button" onClick={() => changeCalendarPair(-1)} aria-label="Vorige twee maanden"><ChevronLeft size={20} /></button>
+            <span>Swipe voor volgende maanden</span>
+            <button type="button" onClick={() => changeCalendarPair(1)} aria-label="Volgende twee maanden"><ChevronRight size={20} /></button>
+          </div>
+          {renderCalendarMonth(calendarStartYear, calendarStartMonth)}
+          {(() => {
+            const next = addMonths(calendarStartYear, calendarStartMonth, 1);
+            return renderCalendarMonth(next.year, next.monthIndex);
+          })()}
+        </section>
+      ) : (
       <section className="agenda-list agenda-list-redesign">
         {selectedEvents.map((event) => {
           const isFeatured = event.featured === true;
@@ -331,6 +475,7 @@ export default function AgendaPage() {
           </div>
         )}
       </section>
+      )}
 
       <nav className="bottom-nav" aria-label="Hoofdnavigatie">
         <Link className="nav-item" href="/">
