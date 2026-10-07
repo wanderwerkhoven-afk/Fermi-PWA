@@ -241,7 +241,8 @@
     "Home preloads critical hero and featured artwork before revealing the page, then idle-preloads the Agenda header image. Home upcoming activity art and Agenda card imagery use fixed-layout shimmer placeholders followed by a subtle ~1.04 to 1 zoom/fade reveal, avoiding layout shifts.",
     "Agenda activity artwork is anchored to the right edge. Preset backgrounds render under the outer card edge with the right border made transparent, while fallback photo columns overlap by 1px and inherit the right-side rounding to prevent a visible seam.",
     "After Home's critical visuals are painted, the Agenda header illustration is immediately preloaded and decoded (not deferred to idle time). Agenda itself requests the same image eager/high-priority and marks it ready from onLoad, so fast Home→Agenda navigation reuses the warm browser/decoded cache.",
-    "Regular-member sessions prefer the canonical memberships document over the embedded users.membership snapshot for cardId, member number and membership ID. This keeps the displayed QR, scanner lookup and activity registration tied to the same membership record."
+    "Regular-member sessions prefer the canonical memberships document over the embedded users.membership snapshot for cardId, member number and membership ID. This keeps the displayed QR, scanner lookup and activity registration tied to the same membership record.",
+    "Home first paint is never blocked by Firestore/activity loading. The full-page visual loader only waits for the two fixed Home hero assets and has a 900 ms safety timeout; featured/activity content continues with its own skeleton/reveal states."
   ],
   "open_decisions": [
     "Final custom image asset set."
