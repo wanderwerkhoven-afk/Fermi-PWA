@@ -5503,6 +5503,20 @@ body.member-pass-modal-open {
 .member-admin-row-meta{display:grid;justify-items:end;gap:4px}
 .member-admin-row-meta span{padding:4px 7px;border-radius:999px;background:rgba(255,122,26,.10);color:var(--fermi-paper);font-size:8px;font-weight:900;white-space:nowrap}
 .member-admin-row-chevron{color:var(--fermi-orange)}
+.member-admin-payment-badge{grid-column:2;justify-self:start;margin-top:2px;padding:5px 9px;border-radius:999px;font-size:8px;font-weight:950;line-height:1;text-transform:uppercase;letter-spacing:.07em;background:rgba(244,234,220,.10);color:var(--fermi-paper)}
+.member-admin-row-button.is-unpaid{border-color:rgba(255,122,26,.62);background:
+  repeating-linear-gradient(135deg,rgba(255,122,26,.09) 0 8px,rgba(255,122,26,.025) 8px 16px),
+  rgba(71,45,24,.48);
+  box-shadow:inset 4px 0 0 var(--fermi-orange)}
+.member-admin-row-button.is-unpaid .member-admin-avatar{background:var(--fermi-orange);box-shadow:0 0 0 3px rgba(255,122,26,.14)}
+.member-admin-row-button.is-unpaid .member-admin-payment-badge{padding:7px 11px;background:var(--fermi-orange);color:var(--fermi-navy-deep);font-size:9px;box-shadow:0 4px 12px rgba(255,122,26,.18)}
+.member-admin-row-button.is-unpaid .member-admin-row-meta span{background:rgba(255,122,26,.16)}
+.member-admin-row-button.is-waived{border-color:rgba(115,137,151,.14);background:linear-gradient(135deg,rgba(20,48,64,.78),rgba(24,42,54,.78));filter:saturate(.55);opacity:.66}
+.member-admin-row-button.is-waived .member-admin-avatar{background:#586a75;color:#d7dee2}
+.member-admin-row-button.is-waived .member-admin-payment-badge{background:rgba(151,164,171,.12);color:#aebbc2}
+.member-admin-row-button.is-waived .member-admin-row-meta span{background:rgba(151,164,171,.08);color:#9aaab2}
+.member-admin-row-button.is-waived .member-admin-row-chevron{color:#7d929d}
+.member-admin-row-button.is-paid .member-admin-payment-badge{background:rgba(87,156,116,.15);color:#b9d7c4}
 body.member-admin-modal-open{overflow:hidden}
 .member-admin-modal-backdrop{
   position:fixed;z-index:20000;inset:0;display:flex;align-items:flex-end;justify-content:center;
@@ -5548,6 +5562,7 @@ body.member-admin-modal-open{overflow:hidden}
 @media(max-width:420px){
   .member-admin-row-button{grid-template-columns:40px minmax(0,1fr) 18px}
   .member-admin-row-meta{display:none}
+  .member-admin-payment-badge{grid-column:2;max-width:100%}
   .member-admin-modal{max-height:91dvh;border-radius:24px 24px 20px 20px}
   .member-admin-modal-grid.two,.member-admin-choice-grid{grid-template-columns:1fr 1fr}
 }
