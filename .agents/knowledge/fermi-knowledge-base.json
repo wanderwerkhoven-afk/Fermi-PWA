@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-10-05",
+  "last_updated": "2026-10-07",
   "project": {
     "name": "S.V. Fermi PWA",
     "purpose": "Afgeschermde ledenapp voor leden, commissies en bestuur van S.V. Fermi.",
@@ -231,7 +231,8 @@
     "Mededelingen worden beheerd via /profiel/mededelingen-admin/ en opgeslagen in Firestore collection announcements. Home leest alleen gepubliceerde mededelingen binnen hun start/einddatum; hardcoded Home-mededelingen zijn verwijderd.",
     "QR-scanner is beschikbaar voor actieve commissie-, bestuurs- en adminaccounts via /profiel/qr-scanner/.",
     "QR-validatie gebruikt de bestaande digitale ledenpas cardId en registrations-koppeling; activity-data wordt niet gedupliceerd in het membership-document.",
-    "De eerste scanner-versie is alleen validatie: groen bij actieve ledenpas + status registered voor de gekozen activiteit; rood bij ontbrekende inschrijving of ongeldige/inactieve pas. Aanwezigheidsregistratie en betaling volgen later."
+    "De eerste scanner-versie is alleen validatie: groen bij actieve ledenpas + status registered voor de gekozen activiteit; rood bij ontbrekende inschrijving of ongeldige/inactieve pas. Aanwezigheidsregistratie en betaling volgen later.",
+    "Verified users with a pending membership may browse Home, Agenda, Fermi and their own Profile. Private member features stay locked until approval: Community/member directory, photo albums, event registration, committee signup and the digital member pass."
   ],
   "open_decisions": [
     "Final custom image asset set."
