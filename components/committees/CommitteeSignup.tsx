@@ -6,7 +6,7 @@ import { useState } from "react";
 
 export default function CommitteeSignup({ committeeName }: { committeeName: string }) {
   const { fermiUser, membership } = useFermiSession();
-  const membershipStatus = fermiUser?.membership?.status ?? membership?.status;
+  const membershipStatus = membership?.status ?? fermiUser?.membership?.status;
   const isMembershipPending = membershipStatus === "pending" || fermiUser?.status === "pending";
   const [signedUp, setSignedUp] = useState(false);
 
