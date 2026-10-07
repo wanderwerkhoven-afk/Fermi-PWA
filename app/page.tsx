@@ -283,18 +283,30 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!homeVisualReady) return;
-    const preloadAgendaHero = () => {
-      const image = new Image();
-      image.src = "/Fermi-PWA/images/agenda/agenda-hero-illustration.png";
-    };
 
-    if ("requestIdleCallback" in window) {
-      const idleId = window.requestIdleCallback(preloadAgendaHero, { timeout: 1400 });
-      return () => window.cancelIdleCallback(idleId);
+    const src = "/Fermi-PWA/images/agenda/agenda-hero-illustration.png";
+    const existing = document.querySelector<HTMLLinkElement>('link[data-fermi-agenda-hero-preload="true"]');
+    const preload = existing ?? document.createElement("link");
+
+    if (!existing) {
+      preload.rel = "preload";
+      preload.as = "image";
+      preload.href = src;
+      preload.setAttribute("data-fermi-agenda-hero-preload", "true");
+      document.head.appendChild(preload);
     }
 
-    const timer = window.setTimeout(preloadAgendaHero, 500);
-    return () => window.clearTimeout(timer);
+    // Decode the same asset as soon as Home is painted. This warms both the
+    // browser cache and the decoded image cache before a fast Agenda switch.
+    const image = new Image();
+    image.decoding = "async";
+    image.src = src;
+    void image.decode?.().catch(() => undefined);
+
+    return () => {
+      // Keep the preload hint in <head> while the SPA session is alive so a
+      // quick back/forward navigation does not have to rediscover the asset.
+    };
   }, [homeVisualReady]);
 
   const membershipStatus = fermiUser?.membership?.status ?? membership?.status;
