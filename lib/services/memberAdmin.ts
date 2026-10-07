@@ -324,20 +324,24 @@ export async function setAdminMemberLifecycle(row: AdminMemberRow, status: Admin
     return;
   }
 
-  const membershipStatus = status === "active" ? "active" : status === "pending" ? "pending" : "expired";
+  const paymentSettled = row.paymentStatus === "paid" || row.paymentStatus === "waived";
+  const effectiveStatus = status === "active" && !paymentSettled ? "pending" : status;
+  const membershipStatus = effectiveStatus === "active" ? "active" : effectiveStatus === "pending" ? "pending" : "expired";
   const cardId = usableDigitalCardId(row.digitalCardId);
+  const payment = membershipPayment(row);
 
   await updateDoc(doc(db, "users", row.uid), {
     status: "active" satisfies AccountStatus,
-    membership: membershipSnapshot(row, membershipStatus, cardId),
+    membership: membershipSnapshot(row, membershipStatus, cardId, payment),
     updatedAt: serverTimestamp(),
   });
 
   if (row.membershipId) {
     await updateDoc(doc(db, "memberships", row.membershipId), {
       status: membershipStatus,
+      payment,
       digitalCard: {
-        enabled: status === "active",
+        enabled: membershipStatus === "active" && paymentSettled,
         cardId,
       },
       updatedAt: serverTimestamp(),
@@ -351,19 +355,20 @@ export async function setAdminMemberLifecycle(row: AdminMemberRow, status: Admin
     userId: row.uid,
     academicYear: row.academicYear || "2026/2027",
     membershipType: "student",
-    status: status === "active" ? "active" : "pending",
+    status: membershipStatus,
     memberNumber: row.memberNumber || `FERMI-${row.uid.slice(0, 6).toUpperCase()}`,
     startDate: row.startYear ? `${row.startYear}-09-01` : "2026-09-01",
     startYear: row.startYear ?? 2026,
     endDate: "2027-08-31",
-    digitalCard: { enabled: status === "active", cardId },
+    payment,
+    digitalCard: { enabled: membershipStatus === "active" && paymentSettled, cardId },
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
 
   await updateDoc(doc(db, "users", row.uid), {
     membership: {
-      ...membershipSnapshot(row, status === "active" ? "active" : "pending", cardId),
+      ...membershipSnapshot(row, membershipStatus === "active" ? "active" : "pending", cardId, payment),
       id: created.id,
     },
     updatedAt: serverTimestamp(),
@@ -479,6 +484,9 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
   if (!normalized) throw new Error("E-mailadres ontbreekt.");
 
   if (row.source === "directory") {
+    const directoryPaymentSettled = row.paymentStatus === "paid" || row.paymentStatus === "waived";
+    const directoryStatus = input.status === "active" && !directoryPaymentSettled ? "pending" : input.status;
+
     await setDoc(doc(db, "memberDirectory", row.id), {
       firstName: input.firstName.trim(),
       lastName: input.lastName.trim(),
@@ -489,9 +497,10 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
       city: input.city.trim(),
       startYear: input.startYear,
       endDate: input.endDate,
-      status: input.status,
+      status: directoryStatus,
       role: input.role,
       linkedUserId: row.uid,
+      payment: membershipPayment(row),
       updatedAt: serverTimestamp(),
     }, { merge: true });
 
@@ -506,7 +515,7 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
       city: input.city.trim(),
       startYear: input.startYear,
       endDate: input.endDate,
-      status: input.status,
+      status: directoryStatus,
       role: input.role,
     });
     return;
@@ -514,10 +523,13 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
 
   if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
 
+  const paymentSettled = row.paymentStatus === "paid" || row.paymentStatus === "waived";
+  const effectiveStatus = input.status === "active" && !paymentSettled ? "pending" : input.status;
   const membershipStatus =
-    input.status === "active" ? "active"
-    : input.status === "pending" ? "pending"
+    effectiveStatus === "active" ? "active"
+    : effectiveStatus === "pending" ? "pending"
     : "expired";
+  const payment = membershipPayment(row);
   const cardId = usableDigitalCardId(row.digitalCardId);
   const snapshotRow: AdminMemberRow = {
     ...row,
@@ -535,7 +547,7 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
     "profile.city": input.city.trim() || null,
     role: input.role,
     status: input.status === "suspended" ? "suspended" : "active",
-    membership: membershipSnapshot(snapshotRow, membershipStatus, cardId),
+    membership: membershipSnapshot(snapshotRow, membershipStatus, cardId, payment),
     updatedAt: serverTimestamp(),
   });
 
@@ -561,8 +573,9 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
       startYear: input.startYear,
       endDate: input.endDate,
       status: membershipStatus,
+      payment,
       digitalCard: {
-        enabled: input.status === "active",
+        enabled: membershipStatus === "active" && paymentSettled,
         cardId,
       },
       updatedAt: serverTimestamp(),
@@ -581,14 +594,15 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
     startDate: input.startYear ? `${input.startYear}-09-01` : "2026-09-01",
     startYear: input.startYear,
     endDate: input.endDate || "2027-08-31",
-    digitalCard: { enabled: input.status === "active", cardId },
+    payment,
+    digitalCard: { enabled: membershipStatus === "active" && paymentSettled, cardId },
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
 
   await updateDoc(doc(db, "users", row.uid), {
     membership: {
-      ...membershipSnapshot(snapshotRow, membershipStatus, cardId),
+      ...membershipSnapshot(snapshotRow, membershipStatus, cardId, payment),
       id: created.id,
     },
     updatedAt: serverTimestamp(),
