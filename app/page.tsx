@@ -219,23 +219,18 @@ export default function HomePage() {
   );
 
   useEffect(() => {
-    if (activitiesLoading) {
-      setHomeVisualReady(false);
-      return;
-    }
-
+    // Home itself should never be blocked by Firestore/activity loading.
+    // Only wait for the two fixed hero assets, with a short safety timeout.
     const criticalSources = [
       "/Fermi-PWA/images/home/home-hero-church.png",
       "/Fermi-PWA/images/home/home-member-pass-atom.png",
-      featuredActivity ? resolveHomeFeaturedImage(featuredActivity) : null,
-    ].filter(Boolean) as string[];
-
-    if (criticalSources.length === 0) {
-      setHomeVisualReady(true);
-      return;
-    }
+    ];
 
     let active = true;
+    const timeout = window.setTimeout(() => {
+      if (active) setHomeVisualReady(true);
+    }, 900);
+
     Promise.all(
       criticalSources.map((src) => new Promise<void>((resolve) => {
         const image = new Image();
@@ -246,13 +241,15 @@ export default function HomePage() {
       })),
     ).then(() => {
       if (!active) return;
+      window.clearTimeout(timeout);
       window.requestAnimationFrame(() => setHomeVisualReady(true));
     });
 
     return () => {
       active = false;
+      window.clearTimeout(timeout);
     };
-  }, [activitiesLoading, featuredActivity]);
+  }, []);
 
   useEffect(() => {
     if (!homeUpcomingActivities.length) return;
