@@ -374,6 +374,10 @@ export default function AgendaPage() {
               className={`agenda-hero-image${agendaHeroReady ? " is-ready" : ""}`}
               src="/Fermi-PWA/images/agenda/agenda-hero-illustration.png"
               alt=""
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              onLoad={() => setAgendaHeroReady(true)}
             />
           </div>
           <button
