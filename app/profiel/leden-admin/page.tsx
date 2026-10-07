@@ -410,8 +410,16 @@ export default function LedenAdminPage() {
         </div>
 
         <section className="member-admin-list">
-          {filtered.map((member) => (
-            <button className="member-admin-row member-admin-row-button" type="button" key={member.source + member.id} onClick={() => openMember(member)}>
+          {filtered.map((member) => {
+            const paymentTone =
+              member.paymentStatus === "unpaid"
+                ? " is-unpaid"
+                : member.paymentStatus === "waived"
+                  ? " is-waived"
+                  : " is-paid";
+
+            return (
+            <button className={`member-admin-row member-admin-row-button${paymentTone}`} type="button" key={member.source + member.id} onClick={() => openMember(member)}>
               <div className="member-admin-avatar">{(member.firstName[0] || member.email[0] || "?").toUpperCase()}</div>
               <div className="member-admin-person">
                 <strong>{[member.firstName, member.lastName].filter(Boolean).join(" ") || "Naam ontbreekt"}</strong>
@@ -419,8 +427,10 @@ export default function LedenAdminPage() {
                 <small>
                   {member.memberNumber ? `Lidnr. ${member.memberNumber}` : "Nog geen lidnummer"}
                   {" · "}{member.source === "account" ? "Account gekoppeld" : "Ledenlijst"}
-                  {" · "}{member.paymentStatus === "paid" ? "Betaald" : member.paymentStatus === "waived" ? "Vrijgesteld" : "Niet betaald"}
                 </small>
+              </div>
+              <div className="member-admin-payment-badge" aria-label={member.paymentStatus === "paid" ? "Betaald" : member.paymentStatus === "waived" ? "Vrijgesteld" : "Niet betaald"}>
+                {member.paymentStatus === "paid" ? "Betaald" : member.paymentStatus === "waived" ? "Vrijstelling" : "Niet betaald"}
               </div>
               <div className="member-admin-row-meta">
                 <span>{lifecycleLabels[member.status]}</span>
@@ -428,7 +438,8 @@ export default function LedenAdminPage() {
               </div>
               <ChevronRight className="member-admin-row-chevron" size={19} />
             </button>
-          ))}
+            );
+          })}
 
           {!filtered.length && <div className="member-admin-empty">Geen leden gevonden.</div>}
         </section>
