@@ -11,6 +11,7 @@ import { useAppData } from "../components/AppDataProvider";
 import {
   Bell,
   CalendarDays,
+  CheckCircle2,
   ChevronRight,
   Clock3,
   Home,
@@ -116,7 +117,7 @@ export default function HomePage() {
   const [memberPassClosing, setMemberPassClosing] = useState(false);
   const [memberPassImageReady, setMemberPassImageReady] = useState(false);
   const [memberPassReady, setMemberPassReady] = useState(false);
-  const { fermiUser, membership } = useFermiSession();
+  const { fermiUser, membership, membershipJustApproved } = useFermiSession();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [announcementsOpen, setAnnouncementsOpen] = useState(false);
   const [activeAnnouncement, setActiveAnnouncement] = useState<AnnouncementData | null>(null);
@@ -302,6 +303,15 @@ export default function HomePage() {
       </section>
 
       <section className="content">
+        {membershipJustApproved && (
+          <aside className="membership-approved-banner" role="status" aria-live="polite">
+            <span className="membership-approved-icon"><CheckCircle2 size={19} /></span>
+            <span>
+              <strong>Je lidmaatschap is goedgekeurd</strong>
+              <small>Je hebt nu toegang tot alle ledenfuncties van S.V. Fermi.</small>
+            </span>
+          </aside>
+        )}
         {fermiUser?.role === "admin" && pendingApprovals.length > 0 && (
           <button className="admin-approval-banner" type="button" onClick={() => pendingApprovals.length === 1 ? openPendingMember(pendingApprovals[0].uid) : setNotificationsOpen(true)}>
             <span className="admin-approval-banner-icon"><ShieldCheck size={19} /></span>
