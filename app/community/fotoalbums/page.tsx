@@ -9,17 +9,22 @@ import {
   ChevronRight,
   Home,
   Image as ImageIcon,
+  LockKeyhole,
   Search,
   UserRound,
   UsersRound,
 } from "lucide-react";
 import { photoAlbums } from "@/data/photo-albums";
+import { useFermiSession } from "@/components/SessionProvider";
 
 const albumFilters = ["Alles", "Borrel", "Reis", "Activiteit", "Commissie"];
 
 export default function PhotoAlbumsPage() {
   const [activeFilter, setActiveFilter] = useState("Alles");
   const [query, setQuery] = useState("");
+  const { fermiUser, membership } = useFermiSession();
+  const membershipStatus = fermiUser?.membership?.status ?? membership?.status;
+  const isMembershipPending = membershipStatus === "pending" || fermiUser?.status === "pending";
 
   const visibleAlbums = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -81,7 +86,7 @@ export default function PhotoAlbumsPage() {
           </Link>
         </nav>
 
-        <label className="community-search photoalbums-search">
+        {!isMembershipPending && <label className="community-search photoalbums-search">
           <Search size={22} />
           <input
             value={query}
@@ -89,9 +94,9 @@ export default function PhotoAlbumsPage() {
             placeholder="Zoek een fotoalbum..."
             aria-label="Zoek fotoalbums"
           />
-        </label>
+        </label>}
 
-        <div className="community-filters" aria-label="Filter fotoalbums">
+        {!isMembershipPending && <div className="community-filters" aria-label="Filter fotoalbums">
           {albumFilters.map((filter) => (
             <button
               key={filter}
@@ -101,10 +106,17 @@ export default function PhotoAlbumsPage() {
               {filter}
             </button>
           ))}
-        </div>
+        </div>}
       </section>
 
       <section className="photoalbums-content">
+        {isMembershipPending ? (
+          <div className="community-membership-lock photoalbums-membership-lock" role="status">
+            <span><LockKeyhole size={30} /></span>
+            <strong>Fotoalbums openen na goedkeuring</strong>
+            <p>Foto’s en albums zijn alleen zichtbaar voor actieve Fermi-leden. Na goedkeuring wordt deze pagina automatisch vrijgegeven.</p>
+          </div>
+        ) : (<>
         <div className="photoalbums-heading">
           <div>
             <span className="community-label">FOTOALBUMS</span>
@@ -144,6 +156,7 @@ export default function PhotoAlbumsPage() {
             <span>Probeer een andere zoekterm of filter.</span>
           </div>
         )}
+        </>)}
       </section>
 
       <nav className="bottom-nav" aria-label="Hoofdnavigatie">
