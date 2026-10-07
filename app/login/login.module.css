@@ -3,12 +3,12 @@
 /* Mobile login: keep the complete experience inside one viewport */
 @media (max-width:520px){
   .page{height:100svh;min-height:100svh;overflow:hidden}
-  .content{height:100svh;min-height:0;padding:max(14px,env(safe-area-inset-top)) 20px max(10px,env(safe-area-inset-bottom));justify-content:flex-start}
+  .content{height:100svh;min-height:0;padding:max(20px,env(safe-area-inset-top)) 20px max(10px,env(safe-area-inset-bottom));justify-content:flex-start}
   .brand{gap:13px}
   .brand img{width:68px;height:68px}
   .brand strong{font-size:29px}
   .brand span{margin-top:4px;font-size:8px;letter-spacing:2.5px;line-height:1.25}
-  .hero{margin:24px 0 17px;padding-left:34px}
+  .hero{margin:48px 0 24px;padding-left:34px}
   .hero h1{font-size:48px;line-height:.79;letter-spacing:-2px}
   .hero h1 b{font-size:26px}
   .hero p{margin-top:15px;font-size:15px;line-height:1.22}
@@ -22,7 +22,7 @@
   .loginButton svg{right:38px;width:21px}
   .forgot{margin:12px auto;font-size:13px}
   .hvaButton{font-size:17px;padding:0 18px;gap:12px}
-  .join{margin-top:12px}
+  .join{margin-top:22px}
   .join>div{gap:10px}
   .join>div span{width:82px}
   .join>div svg{width:25px;height:25px}
@@ -31,6 +31,7 @@
   .atomArt{top:270px}
 }
 @media (max-width:520px) and (max-height:760px){
+  .content{padding:max(14px,env(safe-area-inset-top)) 20px max(10px,env(safe-area-inset-bottom))}
   .brand img{width:58px;height:58px}
   .brand strong{font-size:26px}
   .hero{margin:14px 0 12px}
