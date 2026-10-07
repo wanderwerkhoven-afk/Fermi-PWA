@@ -20,7 +20,14 @@ const SessionContext = createContext<SessionState | null>(null);
 
 function membershipFromUser(user: FermiUser | null): Membership | null {
   const item = user?.membership;
-  if (!user || !item || item.status !== "active") return null;
+  if (!user || !item || !["active", "pending"].includes(item.status)) return null;
+
+  const legacyActive = item.status === "active" && !item.payment;
+  const paymentAllowsAccess =
+    legacyActive
+    || item.payment?.status === "paid"
+    || item.payment?.status === "waived";
+
   return {
     id: item.id || `current-${user.uid}`,
     userId: user.uid,
@@ -32,13 +39,14 @@ function membershipFromUser(user: FermiUser | null): Membership | null {
     startYear: item.startYear ?? null,
     endDate: item.endDate || "",
     digitalCard: {
-      enabled: true,
-      cardId: item.digitalCard?.cardId || user.uid,
+      enabled: item.status === "active" && paymentAllowsAccess && item.digitalCard?.enabled !== false,
+      cardId: item.digitalCard?.cardId || "",
     },
+    payment: item.payment,
   };
 }
 
-function activeAccountMembership(user: FermiUser): Membership {
+function privilegedMembership(user: FermiUser): Membership {
   const now = new Date();
   const startYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
   const endYear = startYear + 1;
@@ -56,6 +64,13 @@ function activeAccountMembership(user: FermiUser): Membership {
     digitalCard: {
       enabled: true,
       cardId: user.uid,
+    },
+    payment: {
+      status: "waived",
+      source: "manual",
+      confirmedBy: null,
+      paidAt: null,
+      molliePaymentId: null,
     },
   };
 }
@@ -88,11 +103,14 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      // Fermi rule: an active account always has an immediately usable digital pass.
-      // Older accounts can lack a membership document/snapshot, so fall back to the
-      // Firebase account id as the stable QR card id until admin data is assigned.
-      if (!membership && fermiUser?.status === "active") {
-        membership = activeAccountMembership(fermiUser);
+      // Board/admin accounts are operational accounts and may use a waived pass
+      // until a formal membership record has been assigned.
+      if (
+        !membership
+        && fermiUser?.status === "active"
+        && (fermiUser.role === "admin" || fermiUser.role === "board")
+      ) {
+        membership = privilegedMembership(fermiUser);
       }
 
       setState({ firebaseUser, fermiUser, membership, loading: false, error: null });
