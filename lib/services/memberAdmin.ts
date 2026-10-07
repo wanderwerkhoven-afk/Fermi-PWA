@@ -7,6 +7,7 @@ import {
   serverTimestamp,
   setDoc,
   updateDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import type {
@@ -427,8 +428,13 @@ export async function setAdminMemberPaymentStatus(
   };
 
   if (row.source === "directory") {
+    const nextStatus: AdminMemberLifecycle =
+      settled && row.status === "pending"
+        ? "active"
+        : row.status;
+
     await updateDoc(doc(db, "memberDirectory", row.id), {
-      status: settled ? "active" : "pending",
+      status: nextStatus,
       payment,
       updatedAt: serverTimestamp(),
     });
@@ -438,58 +444,65 @@ export async function setAdminMemberPaymentStatus(
   if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
 
   const cardId = usableDigitalCardId(row.digitalCardId);
-  const membershipStatus = settled ? "active" : "pending";
-  const nextRow = {
+  const membershipStatus: "active" | "pending" | "expired" =
+    settled && row.status === "pending"
+      ? "active"
+      : row.status === "active"
+        ? "active"
+        : row.status === "archived"
+          ? "expired"
+          : "pending";
+
+  const nextRow: AdminMemberRow = {
     ...row,
-    status: membershipStatus as AdminMemberLifecycle,
+    status: membershipStatus === "active" ? "active" : membershipStatus === "expired" ? "archived" : "pending",
     paymentStatus,
-    paymentSource: "manual" as const,
+    paymentSource: "manual",
     paymentPaidAt: payment.paidAt,
     paymentConfirmedBy: payment.confirmedBy ?? null,
   };
 
-  if (row.membershipId && !row.membershipId.startsWith("current-")) {
-    await updateDoc(doc(db, "memberships", row.membershipId), {
+  const batch = writeBatch(db);
+  const userRef = doc(db, "users", row.uid);
+  const hasStoredMembership = Boolean(row.membershipId && !row.membershipId.startsWith("current-"));
+  const membershipRef = hasStoredMembership
+    ? doc(db, "memberships", row.membershipId as string)
+    : doc(collection(db, "memberships"));
+
+  batch.set(
+    membershipRef,
+    {
+      userId: row.uid,
+      academicYear: row.academicYear || "2026/2027",
+      membershipType: "student",
       status: membershipStatus,
+      memberNumber: row.memberNumber || `FERMI-${row.uid.slice(0, 6).toUpperCase()}`,
+      startDate: row.startYear ? `${row.startYear}-09-01` : "2026-09-01",
+      startYear: row.startYear ?? 2026,
+      endDate: row.endDate || "2027-08-31",
       payment,
-      digitalCard: { enabled: settled, cardId },
-      updatedAt: serverTimestamp(),
-    });
-
-    await updateDoc(doc(db, "users", row.uid), {
-      status: "active" satisfies AccountStatus,
-      membership: {
-        ...membershipSnapshot(nextRow, membershipStatus, cardId, payment),
-        id: row.membershipId,
+      digitalCard: {
+        enabled: membershipStatus === "active" && settled,
+        cardId,
       },
+      ...(hasStoredMembership ? {} : { createdAt: serverTimestamp() }),
       updatedAt: serverTimestamp(),
-    });
-    return;
-  }
+    },
+    { merge: true },
+  );
 
-  const created = await addDoc(collection(db, "memberships"), {
-    userId: row.uid,
-    academicYear: row.academicYear || "2026/2027",
-    membershipType: "student",
-    status: membershipStatus,
-    memberNumber: row.memberNumber || `FERMI-${row.uid.slice(0, 6).toUpperCase()}`,
-    startDate: row.startYear ? `${row.startYear}-09-01` : "2026-09-01",
-    startYear: row.startYear ?? 2026,
-    endDate: row.endDate || "2027-08-31",
-    payment,
-    digitalCard: { enabled: settled, cardId },
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
-
-  await updateDoc(doc(db, "users", row.uid), {
-    status: "active" satisfies AccountStatus,
+  batch.update(userRef, {
+    status: row.status === "suspended"
+      ? ("suspended" satisfies AccountStatus)
+      : ("active" satisfies AccountStatus),
     membership: {
       ...membershipSnapshot(nextRow, membershipStatus, cardId, payment),
-      id: created.id,
+      id: membershipRef.id,
     },
     updatedAt: serverTimestamp(),
   });
+
+  await batch.commit();
 }
 
 export async function setAdminMemberRole(row: AdminMemberRow, role: UserRole) {
