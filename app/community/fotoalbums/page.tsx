@@ -23,7 +23,7 @@ export default function PhotoAlbumsPage() {
   const [activeFilter, setActiveFilter] = useState("Alles");
   const [query, setQuery] = useState("");
   const { fermiUser, membership } = useFermiSession();
-  const membershipStatus = fermiUser?.membership?.status ?? membership?.status;
+  const membershipStatus = membership?.status ?? fermiUser?.membership?.status;
   const isMembershipPending = membershipStatus === "pending" || fermiUser?.status === "pending";
 
   const visibleAlbums = useMemo(() => {
