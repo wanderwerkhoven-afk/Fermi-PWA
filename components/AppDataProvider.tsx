@@ -54,7 +54,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     }
 
     let active = true;
-    const membershipStatus = fermiUser?.membership?.status ?? membership?.status;
+    const membershipStatus = membership?.status ?? fermiUser?.membership?.status;
     const canLoadCommunity =
       fermiUser?.status === "active"
       && (fermiUser.role === "admin" || fermiUser.role === "board" || membershipStatus === "active");
