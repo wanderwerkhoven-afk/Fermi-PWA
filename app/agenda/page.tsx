@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, type TouchEvent } from "react";
+import { useEffect, useMemo, useState, type TouchEvent } from "react";
 import {
   Bell,
   CalendarDays,
@@ -184,6 +184,8 @@ export default function AgendaPage() {
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const { activities: events } = useAppData();
   const [activeFilter, setActiveFilter] = useState<AgendaFilter>("Alles");
+  const [loadedCardImages, setLoadedCardImages] = useState<Set<string>>(() => new Set());
+  const [agendaHeroReady, setAgendaHeroReady] = useState(false);
 
 
 
@@ -202,6 +204,43 @@ export default function AgendaPage() {
       )
       .sort((a, b) => getEventStart(a) - getEventStart(b));
   }, [events, selectedMonth, selectedYear, activeFilter, showAllFuture]);
+
+  useEffect(() => {
+    const hero = new Image();
+    const ready = () => setAgendaHeroReady(true);
+    hero.onload = ready;
+    hero.onerror = ready;
+    hero.src = "/Fermi-PWA/images/agenda/agenda-hero-illustration.png";
+    if (hero.complete) ready();
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    selectedEvents.forEach((event) => {
+      const preset = resolveAgendaBackgroundPreset(event);
+      const src = resolveActivityImagePath(event.imagePath)
+        || (preset ? agendaBackgroundPresets[preset] : null);
+      if (!src) return;
+
+      const image = new Image();
+      const markReady = () => {
+        if (!active) return;
+        setLoadedCardImages((current) => {
+          const next = new Set(current);
+          next.add(event.slug);
+          return next;
+        });
+      };
+      image.onload = markReady;
+      image.onerror = markReady;
+      image.src = src;
+      if (image.complete) markReady();
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [selectedEvents]);
 
   function changeMonth(direction: -1 | 1) {
     setShowAllFuture(false);
@@ -332,7 +371,7 @@ export default function AgendaPage() {
 
           <div className="agenda-collage agenda-collage-redesign agenda-hero-image-wrap" aria-hidden="true">
             <img
-              className="agenda-hero-image"
+              className={`agenda-hero-image${agendaHeroReady ? " is-ready" : ""}`}
               src="/Fermi-PWA/images/agenda/agenda-hero-illustration.png"
               alt=""
             />
@@ -420,7 +459,7 @@ export default function AgendaPage() {
             aria-label={`Bekijk ${event.title}`}
           >
             <article
-              className={`${isFeatured ? agendaCardStyle.featured : agendaCardStyle.standard}${backgroundImage ? " agenda-card-with-preset" : ""}`}
+              className={`${isFeatured ? agendaCardStyle.featured : agendaCardStyle.standard}${backgroundImage ? " agenda-card-with-preset" : ""}${backgroundImage && loadedCardImages.has(event.slug) ? " is-image-ready" : ""}`}
               style={backgroundImage ? { backgroundImage: `url("${backgroundImage}")` } : undefined}
             >
               <div className="agenda-date agenda-date-redesign">
