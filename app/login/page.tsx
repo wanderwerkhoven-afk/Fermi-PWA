@@ -49,7 +49,7 @@ export default function LoginPage() {
 
         <div className={styles.hero}>
           <div className={styles.rays} aria-hidden="true"><i /><i /><i /></div>
-          <h1>Welkom<br /><em>terug</em><b>✦</b></h1>
+          <h1>Welkom<br /><em>bij Fermi</em><b>✦</b></h1>
           <p>Log in met je HvA- of persoonlijke e-mailadres om je activiteiten, ledenpas en community te bekijken.</p>
         </div>
 
