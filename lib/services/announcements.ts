@@ -94,7 +94,7 @@ function activePublishedAnnouncements(snapshot: Awaited<ReturnType<typeof getDoc
     String(now.getDate()).padStart(2, "0"),
   ].join("-");
 
-  return snapshot.docs.map((item) => asAnnouncement(item.id, item.data()))
+  return snapshot.docs.map((item) => asAnnouncement(item.id, item.data() as Record<string, unknown>))
     .filter((item) => !item.startsAt || item.startsAt <= today)
     .filter((item) => !item.expiresAt || item.expiresAt >= today)
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
