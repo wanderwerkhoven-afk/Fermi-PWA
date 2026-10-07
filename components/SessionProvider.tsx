@@ -31,7 +31,32 @@ function membershipFromUser(user: FermiUser | null): Membership | null {
     startDate: item.startDate || "",
     startYear: item.startYear ?? null,
     endDate: item.endDate || "",
-    digitalCard: item.digitalCard || { enabled: false, cardId: "" },
+    digitalCard: {
+      enabled: true,
+      cardId: item.digitalCard?.cardId || user.uid,
+    },
+  };
+}
+
+function activeAccountMembership(user: FermiUser): Membership {
+  const now = new Date();
+  const startYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+  const endYear = startYear + 1;
+
+  return {
+    id: `account-${user.uid}`,
+    userId: user.uid,
+    academicYear: `${startYear}/${endYear}`,
+    membershipType: "student",
+    status: "active",
+    memberNumber: `FERMI-${user.uid.slice(0, 6).toUpperCase()}`,
+    startDate: `${startYear}-09-01`,
+    startYear,
+    endDate: `${endYear}-08-31`,
+    digitalCard: {
+      enabled: true,
+      cardId: user.uid,
+    },
   };
 }
 
@@ -54,13 +79,20 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       const fermiUser = await getUserProfile(firebaseUser.uid);
       let membership = membershipFromUser(fermiUser);
 
-      // Legacy fallback: old accounts may not have the denormalized membership snapshot yet.
-      // Board/admin users do not need this read for access.
+      // Legacy fallback: prefer an existing membership document when one exists,
+      // because it may contain an assigned member number and custom validity date.
       if (!membership && fermiUser && fermiUser.role !== "admin" && fermiUser.role !== "board") {
         membership = await getActiveMembership(firebaseUser.uid);
         if (!membership) {
           membership = await getPendingMembership(firebaseUser.uid);
         }
+      }
+
+      // Fermi rule: an active account always has an immediately usable digital pass.
+      // Older accounts can lack a membership document/snapshot, so fall back to the
+      // Firebase account id as the stable QR card id until admin data is assigned.
+      if (!membership && fermiUser?.status === "active") {
+        membership = activeAccountMembership(fermiUser);
       }
 
       setState({ firebaseUser, fermiUser, membership, loading: false, error: null });
