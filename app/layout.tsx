@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./tour.css";
 import AuthGuard from "../components/AuthGuard";
 import { SessionProvider } from "../components/SessionProvider";
 import { AppDataProvider } from "../components/AppDataProvider";
