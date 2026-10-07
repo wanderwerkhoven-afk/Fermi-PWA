@@ -8156,3 +8156,21 @@ body.member-admin-modal-open{overflow:hidden}
     grid-column:1 / -1;
   }
 }
+
+
+/* Pending membership: browse first, unlock private member features after approval */
+.pending-membership-banner{display:flex;align-items:flex-start;gap:12px;margin:0 0 18px;padding:14px 15px;border:1px solid rgba(255,122,26,.28);border-radius:16px;background:linear-gradient(135deg,rgba(255,122,26,.14),rgba(244,234,220,.06));color:var(--fermi-white)}
+.pending-membership-banner-icon{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:50%;background:var(--fermi-orange);color:var(--fermi-navy-deep)}
+.pending-membership-banner strong{display:block;font:700 15px/1.25 Georgia,serif}
+.pending-membership-banner small{display:block;margin-top:4px;color:var(--fermi-muted);font-size:11px;line-height:1.4}
+.member-pass-preview.is-membership-locked{cursor:default;opacity:.7;filter:saturate(.55)}
+.member-pass-preview.is-membership-locked .pass-icon{opacity:.72}
+.event-register-button:disabled,.committee-signup-button:disabled{cursor:not-allowed}
+.event-register-button:disabled{opacity:.62;filter:saturate(.55)}
+.event-action-locked{color:var(--fermi-muted)}
+.committee-signup-button.is-membership-locked{opacity:.62;filter:saturate(.55)}
+.community-membership-lock{min-height:240px;display:grid;place-items:center;align-content:center;gap:9px;padding:28px 22px;border:1px solid rgba(255,122,26,.22);border-radius:22px;background:linear-gradient(180deg,rgba(244,234,220,.08),rgba(3,29,44,.44));text-align:center}
+.community-membership-lock>span{width:56px;height:56px;display:grid;place-items:center;border-radius:50%;background:rgba(255,122,26,.14);color:var(--fermi-orange)}
+.community-membership-lock strong{font:700 24px/1.05 Georgia,serif;color:var(--fermi-white)}
+.community-membership-lock p{max-width:330px;margin:0;color:var(--fermi-muted);font-size:12px;line-height:1.5}
+.photoalbums-membership-lock{margin-top:8px}
