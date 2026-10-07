@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   getDocs,
+  onSnapshot,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -38,6 +39,14 @@ export interface DirectoryMember {
   updatedAt?: unknown;
 }
 
+export interface AdminPendingApproval {
+  uid: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  requestedAt?: unknown;
+}
+
 export interface AdminMemberRow {
   id: string;
   source: "account" | "directory";
@@ -60,6 +69,34 @@ export interface AdminMemberRow {
   paymentSource: "manual" | "mollie";
   paymentPaidAt?: unknown;
   paymentConfirmedBy?: string | null;
+}
+
+export function subscribePendingApprovals(
+  callback: (items: AdminPendingApproval[]) => void,
+  onError?: (error: Error) => void,
+) {
+  return onSnapshot(
+    collection(db, "users"),
+    (snapshot) => {
+      const items = snapshot.docs
+        .map((item) => item.data() as FermiUser)
+        .filter((user) => user.role === "member" && user.membership?.status === "pending")
+        .map((user) => ({
+          uid: user.uid,
+          firstName: user.profile?.firstName ?? "",
+          lastName: user.profile?.lastName ?? "",
+          email: user.profile?.email ?? "",
+          requestedAt: user.createdAt ?? user.updatedAt,
+        }))
+        .sort((a, b) => {
+          const av = (a.requestedAt as { toMillis?: () => number } | undefined)?.toMillis?.() ?? 0;
+          const bv = (b.requestedAt as { toMillis?: () => number } | undefined)?.toMillis?.() ?? 0;
+          return bv - av;
+        });
+      callback(items);
+    },
+    (error) => onError?.(error),
+  );
 }
 
 function normalizeEmail(email: string) {
