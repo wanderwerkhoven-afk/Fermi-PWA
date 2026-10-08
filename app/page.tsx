@@ -307,7 +307,7 @@ export default function HomePage() {
   }, [homeVisualReady]);
 
   const membershipStatus = membership?.status ?? fermiUser?.membership?.status;
-  const isMembershipPending = membershipStatus === "pending" || fermiUser?.status === "pending";
+  const isMembershipPending = membershipStatus === "pending";
   const memberName = [fermiUser?.profile.firstName, fermiUser?.profile.lastName].filter(Boolean).join(" ");
   const memberRole = fermiUser?.role === "admin" ? "Admin" : fermiUser?.role === "board" ? "Bestuur" : fermiUser?.role === "committee" ? "Commissie" : "Lid";
   const memberNumber = membership?.memberNumber?.trim() || (membership?.digitalCard?.cardId ? `FERMI-${membership.digitalCard.cardId.slice(0, 6).toUpperCase()}` : "Nog niet toegewezen");
