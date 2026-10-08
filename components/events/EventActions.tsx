@@ -25,7 +25,7 @@ export default function EventActions({
 }) {
   const { fermiUser, membership: sessionMembership } = useFermiSession();
   const membershipStatus = sessionMembership?.status ?? fermiUser?.membership?.status;
-  const isMembershipPending = membershipStatus === "pending" || fermiUser?.status === "pending";
+  const isMembershipPending = membershipStatus === "pending";
   const [userId, setUserId] = useState<string | null>(auth.currentUser?.uid ?? null);
   const [joined, setJoined] = useState(false);
   const [registeredCount, setRegisteredCount] = useState(initialRegistered);
