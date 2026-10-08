@@ -47,7 +47,7 @@ export default function CommunityPage() {
   const [activeFilter, setActiveFilter] = useState("Alle leden");
   const { fermiUser, membership } = useFermiSession();
   const membershipStatus = membership?.status ?? fermiUser?.membership?.status;
-  const isMembershipPending = membershipStatus === "pending" || fermiUser?.status === "pending";
+  const isMembershipPending = membershipStatus === "pending";
   const {
     communityMembers: members,
     communityLoading: loadingMembers,
