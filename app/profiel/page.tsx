@@ -263,8 +263,8 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <section className="profile-menu-section" data-tour="profile-menu">
-          <h2>Mijn Fermi</h2>
+        <section className="profile-menu-section">
+          <h2 data-tour="profile-menu">Mijn Fermi</h2>
 
           <div className="profile-menu-list">
             {visibleMenuItems.map(({ title, subtitle, icon: Icon, href }) => (
