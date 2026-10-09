@@ -15,7 +15,7 @@ type TourStep = {
 
 const steps: TourStep[] = [
   { route: "/", selector: '[data-tour="nav-home"]', page: "Home", title: "Home", body: "Dit is je startpunt. Vanuit de navigatie onderaan ga je snel naar alle hoofdonderdelen van de Fermi-app." },
-  { route: "/", selector: '[data-tour="home-notifications"]', page: "Home", title: "Meldingen", body: "Hier verschijnen nieuwe mededelingen en, voor admins, aanvragen die aandacht nodig hebben." },
+  { route: "/", selector: '[data-tour="home-notifications"]', page: "Home", title: "Meldingen", body: "Hier verschijnen nieuwe mededelingen en updates van S.V. Fermi." },
   { route: "/", selector: '[data-tour="home-featured"], [data-tour="home-upcoming"]', page: "Home", title: "Uitgelichte activiteit", body: "De belangrijkste eerstvolgende activiteit staat groot op Home. Tik op de activiteit om alle details te bekijken." },
   { route: "/", selector: '[data-tour="home-upcoming"]', page: "Home", title: "Binnenkort", body: "Hier zie je in één oogopslag welke activiteiten er binnenkort aankomen." },
   { route: "/", selector: '[data-tour="home-announcements"]', page: "Home", title: "Mededelingen", body: "Nieuws en belangrijke berichten van S.V. Fermi vind je hier. Via ‘Bekijk alle mededelingen’ open je het volledige overzicht." },
@@ -102,6 +102,10 @@ export default function GuidedAppTour() {
   }, [start]);
 
   const step = steps[stepIndex];
+  const stepBody =
+    step?.selector === '[data-tour="home-notifications"]' && fermiUser?.role === "admin"
+      ? "Hier verschijnen nieuwe mededelingen en updates van S.V. Fermi. Als admin zie je hier ook aanvragen en andere acties die aandacht nodig hebben."
+      : step?.body ?? "";
   const currentRoute = normalizeTourPath(pathname);
   const transitioning = Boolean(open && step && currentRoute !== step.route);
 
@@ -205,7 +209,7 @@ export default function GuidedAppTour() {
         </button>
         <small>{step.page} · {stepIndex + 1} van {steps.length}</small>
         <h2>{step.title}</h2>
-        <p>{step.body}</p>
+        <p>{stepBody}</p>
         {transitioning && <span className="guided-tour-route-status">Pagina openen…</span>}
         <div className="guided-tour-progress-copy" aria-hidden="true">
           <span style={{ width: `${((stepIndex + 1) / steps.length) * 100}%` }} />
