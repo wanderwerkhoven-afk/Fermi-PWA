@@ -247,7 +247,8 @@
     "The admin pending-member approval notice no longer participates in Home layout. It is a persistent fixed notification at the top of the viewport, slides in from above, and overlays Home without pushing featured/upcoming content down.",
     "The guided tour now observes destination-route DOM mounting instead of giving up after a short retry window. Navigation steps use route-aware bottom-nav selectors with nth-child fallback, so Agenda/Fermi/Community/Profile descriptions appear reliably after page transitions.",
     "Guided tour route matching normalizes GitHub Pages basePath and trailing slashes before comparing steps. This prevents Agenda/Fermi/etc. from repeatedly redirecting on exported routes like /agenda/ and leaving the tour card hidden.",
-    "Walkthrough v2 uses explicit data-tour targets on all primary navigation items and Profile edit. The tour card never disappears during route changes; it shows a transition state until the destination target mounts, then adds the spotlight. Each Next/Previous action navigates explicitly to the next step route."
+    "Walkthrough v2 uses explicit data-tour targets on all primary navigation items and Profile edit. The tour card never disappears during route changes; it shows a transition state until the destination target mounts, then adds the spotlight. Each Next/Previous action navigates explicitly to the next step route.",
+    "Walkthrough v3 is a full app manual rather than one step per page. It covers Home notifications/featured/upcoming/announcements/member pass; Agenda month/Alles/filters/calendar/activity list/example registration; Fermi board/committees/documents; Community tabs/search/filters/active card/member list; and Profile summary/edit/member card/stats/menu/settings. The example registration step opens the first currently available Agenda activity dynamically."
   ],
   "open_decisions": [
     "Final custom image asset set."
