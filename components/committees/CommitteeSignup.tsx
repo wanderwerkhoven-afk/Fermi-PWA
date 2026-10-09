@@ -2,6 +2,7 @@
 
 import { Check, LockKeyhole, Send } from "lucide-react";
 import { useFermiSession } from "@/components/SessionProvider";
+import { showMembershipPendingDialog } from "@/components/MembershipPendingDialog";
 import { useState } from "react";
 
 export default function CommitteeSignup({ committeeName }: { committeeName: string }) {
@@ -14,9 +15,15 @@ export default function CommitteeSignup({ committeeName }: { committeeName: stri
     <div className="committee-signup-wrap">
       <button
         className={`committee-signup-button ${signedUp ? "signed-up" : ""}${isMembershipPending ? " is-membership-locked" : ""}`}
-        onClick={() => !isMembershipPending && setSignedUp((value) => !value)}
+        onClick={() => {
+          if (isMembershipPending) {
+            showMembershipPendingDialog("Inschrijven voor een commissie");
+            return;
+          }
+          setSignedUp((value) => !value);
+        }}
         aria-pressed={signedUp}
-        disabled={isMembershipPending}
+        aria-disabled={isMembershipPending}
       >
         {isMembershipPending ? <LockKeyhole size={20} /> : signedUp ? <Check size={21} /> : <Send size={20} />}
         {isMembershipPending ? "Beschikbaar na goedkeuring" : signedUp ? "Interesse doorgegeven" : `Schrijf je in voor ${committeeName}`}
