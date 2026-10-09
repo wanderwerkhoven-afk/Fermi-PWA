@@ -173,17 +173,22 @@ export default function GuidedAppTour() {
 
   const hasSpotlight = Boolean(rect && !transitioning);
   const pad = 7;
-  const left = rect ? Math.max(8, rect.left - pad) : 0;
-  const top = rect ? Math.max(8, rect.top - pad) : 0;
-  const right = rect ? Math.min(window.innerWidth - 8, rect.right + pad) : 0;
-  const bottom = rect ? Math.min(window.innerHeight - 8, rect.bottom + pad) : 0;
+  const left = rect ? Math.max(8, Math.min(window.innerWidth - 8, rect.left - pad)) : 0;
+  const top = rect ? Math.max(8, Math.min(window.innerHeight - 8, rect.top - pad)) : 0;
+  const right = rect ? Math.max(left, Math.min(window.innerWidth - 8, rect.right + pad)) : 0;
+  const bottom = rect ? Math.max(top, Math.min(window.innerHeight - 8, rect.bottom + pad)) : 0;
   const width = rect ? Math.max(0, right - left) : 0;
   const height = rect ? Math.max(0, bottom - top) : 0;
-  const cardBelow = rect ? bottom + 220 < window.innerHeight : false;
+  const cardHeight = 220;
+  const gap = 14;
+  const roomBelow = rect ? window.innerHeight - bottom : 0;
+  const roomAbove = rect ? top : 0;
   const cardStyle = rect
-    ? cardBelow
-      ? { top: Math.min(window.innerHeight - 220, bottom + 14) }
-      : { bottom: Math.max(18, window.innerHeight - top + 14) }
+    ? roomBelow >= cardHeight + gap
+      ? { top: Math.min(window.innerHeight - cardHeight - 12, bottom + gap) }
+      : roomAbove >= cardHeight + gap
+        ? { top: Math.max(12, top - cardHeight - gap) }
+        : { bottom: 96 }
     : { bottom: 104 };
 
   return (
