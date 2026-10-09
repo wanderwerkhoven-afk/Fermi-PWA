@@ -521,23 +521,23 @@ export default function AgendaPage() {
       )}
 
       <nav className="bottom-nav" aria-label="Hoofdnavigatie">
-        <Link className="nav-item" href="/">
+        <Link className="nav-item" href="/" data-tour="nav-home">
           <Home size={23} />
           <span>Home</span>
         </Link>
-        <Link className="nav-item active" href="/agenda">
+        <Link className="nav-item active" href="/agenda" data-tour="nav-agenda">
           <CalendarDays size={23} />
           <span>Agenda</span>
           <i />
         </Link>
-        <Link className="nav-item center-item" href="/fermi">
+        <Link className="nav-item center-item" href="/fermi" data-tour="nav-fermi">
           <span className="nav-fermi">
             <img src="/Fermi-PWA/images/branding/fermi-logo.png" alt="" />
           </span>
           <span>Fermi</span>
         </Link>
-        <Link className="nav-item" href="/community"><UsersRound size={25} /><span>Community</span></Link>
-        <Link className="nav-item" href="/profiel"><UserRound size={24} /><span>Profiel</span></Link>
+        <Link className="nav-item" href="/community" data-tour="nav-community"><UsersRound size={25} /><span>Community</span></Link>
+        <Link className="nav-item" href="/profiel" data-tour="nav-profile"><UserRound size={24} /><span>Profiel</span></Link>
       </nav>
     </main>
   );
