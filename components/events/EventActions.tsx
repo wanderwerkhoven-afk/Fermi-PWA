@@ -5,6 +5,7 @@ import { Check, LockKeyhole, Share2, Ticket } from "lucide-react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useFermiSession } from "@/components/SessionProvider";
+import { showMembershipPendingDialog } from "@/components/MembershipPendingDialog";
 import { getActiveMembership } from "@/lib/services/memberships";
 import {
   cancelEventRegistrationAtomic,
@@ -47,7 +48,11 @@ export default function EventActions({
   }, [eventId, userId, initialRegistered]);
 
   async function toggleRegistration() {
-    if (!userId || busy || isMembershipPending) return;
+    if (isMembershipPending) {
+      showMembershipPendingDialog("Inschrijven voor activiteiten");
+      return;
+    }
+    if (!userId || busy) return;
 
     setBusy(true);
     setFeedback("");
@@ -99,7 +104,8 @@ export default function EventActions({
         className={`event-register-button ${joined ? "joined" : ""}`}
         onClick={toggleRegistration}
         aria-pressed={joined}
-        disabled={!userId || busy || full || isMembershipPending}
+        disabled={!userId || busy || full}
+        aria-disabled={isMembershipPending}
       >
         {isMembershipPending ? <LockKeyhole size={20} /> : joined ? <Check size={20} /> : <Ticket size={20} />}
         {isMembershipPending ? "Beschikbaar na goedkeuring" : busy ? "Bezig…" : joined ? "Ingeschreven" : full ? "Vol" : "Schrijf je in"}
