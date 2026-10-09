@@ -8274,5 +8274,8 @@ body.member-admin-modal-open{overflow:hidden}
 .member-pass-preview.is-membership-locked,
 .committee-signup-button.is-membership-locked,
 .event-register-button[aria-disabled="true"]{cursor:pointer}
+.event-register-button[aria-disabled="true"]{opacity:.58;filter:saturate(.45);box-shadow:none}
+.committee-signup-button.is-membership-locked{opacity:.58;filter:saturate(.45)}
+.member-pass-preview.is-membership-locked{opacity:.62;filter:saturate(.45)}
 @keyframes membershipPendingDialogIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.membership-pending-dialog{animation:none}}
