@@ -99,7 +99,7 @@ export default function EventActions({
   const full = capacity > 0 && registeredCount >= capacity && !joined;
 
   return (
-    <div className="event-actions">
+    <div className="event-actions" data-tour="event-registration">
       <button
         className={`event-register-button ${joined ? "joined" : ""}`}
         onClick={toggleRegistration}
