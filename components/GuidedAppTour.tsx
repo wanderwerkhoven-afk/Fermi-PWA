@@ -116,7 +116,7 @@ export default function GuidedAppTour() {
     }
 
     let cancelled = false;
-    let settleTimer: ReturnType<typeof setTimeout> | null = null;
+    let settleTimer: number | null = null;
 
     const locate = () => {
       if (cancelled) return false;
