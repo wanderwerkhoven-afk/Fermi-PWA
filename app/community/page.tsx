@@ -113,7 +113,7 @@ export default function CommunityPage() {
           </div>
         </div>
 
-        <nav className="community-tabs" aria-label="Community onderdelen">
+        <nav className="community-tabs" data-tour="community-tabs" aria-label="Community onderdelen">
           <Link className="community-tab active" href="/community">
             <UsersRound size={17} />
             Leden
@@ -124,7 +124,7 @@ export default function CommunityPage() {
           </Link>
         </nav>
 
-        {!isMembershipPending && <label className="community-search">
+        {!isMembershipPending && <label className="community-search" data-tour="community-search">
           <Search size={22} />
           <input
             value={query}
@@ -134,7 +134,7 @@ export default function CommunityPage() {
           />
         </label>}
 
-        {!isMembershipPending && <div className="community-filters" aria-label="Filter leden">
+        {!isMembershipPending && <div className="community-filters" data-tour="community-filters" aria-label="Filter leden">
           {filters.map((filter) => (
             <button
               key={filter}
@@ -148,7 +148,7 @@ export default function CommunityPage() {
       </section>
 
       <section className="community-content">
-        <Link className="community-join-card" href="/fermi">
+        <Link className="community-join-card" data-tour="community-active" href="/fermi">
           <div className="community-join-copy">
             <div className="community-cutout-title">
               <span>Word</span>
@@ -173,7 +173,7 @@ export default function CommunityPage() {
           </div>
         </Link>
 
-        <section className="community-members-section">
+        <section className="community-members-section" data-tour="community-members">
           {isMembershipPending ? (
             <div className="community-membership-lock" role="status">
               <span><LockKeyhole size={30} /></span>
