@@ -8,6 +8,7 @@ import { subscribePendingApprovals, type AdminPendingApproval } from "../lib/ser
 import MemberQrCode from "../components/MemberQrCode";
 import { useFermiSession } from "../components/SessionProvider";
 import { useAppData } from "../components/AppDataProvider";
+import { showMembershipPendingDialog } from "../components/MembershipPendingDialog";
 import {
   Bell,
   CalendarDays,
@@ -158,7 +159,11 @@ export default function HomePage() {
   const overlayOpen = memberPassOpen || memberPassClosing || notificationsOpen || announcementsOpen || Boolean(activeAnnouncement);
 
   const openMemberPass = () => {
-    if (isMembershipPending || memberPassOpen || memberPassClosing) return;
+    if (isMembershipPending) {
+      showMembershipPendingDialog("De digitale ledenpas");
+      return;
+    }
+    if (memberPassOpen || memberPassClosing) return;
 
     // Always start a fresh animation cycle, even when the pass image is already cached.
     setMemberPassClosing(false);
