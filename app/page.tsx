@@ -365,6 +365,7 @@ export default function HomePage() {
 
           <button
             className="icon-button notification-button interactive-control"
+            data-tour="home-notifications"
             type="button"
             aria-label="Meldingen"
             aria-haspopup="dialog"
@@ -438,9 +439,9 @@ export default function HomePage() {
           </aside>
         )}
         {activitiesLoading ? (
-          <div className="home-featured-skeleton" aria-label="Activiteit laden" aria-busy="true"><span /><span /><span /></div>
+          <div className="home-featured-skeleton" data-tour="home-featured" aria-label="Activiteit laden" aria-busy="true"><span /><span /><span /></div>
         ) : featuredActivity ? (
-          <article className="featured-event home-featured-event">
+          <article className="featured-event home-featured-event" data-tour="home-featured">
             <div className="featured-copy">
               <span className="eyebrow">Volgende activiteit</span>
               <h2>{featuredActivity.title}</h2>
@@ -476,7 +477,7 @@ export default function HomePage() {
           </article>
 ) : null}
 
-        <section className="section-block">
+        <section className="section-block" data-tour="home-upcoming">
           <div className="section-heading">
             <h2>Binnenkort</h2>
             <Link className="text-link" href="/agenda">Bekijk agenda <ChevronRight size={17} /></Link>
@@ -529,7 +530,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="section-block">
+        <section className="section-block" data-tour="home-announcements">
           <div className="section-heading">
             <h2>Mededelingen</h2>
             <button
@@ -574,6 +575,7 @@ export default function HomePage() {
 
         <button
           className={`member-pass-preview interactive-card${isMembershipPending ? " is-membership-locked" : ""}`}
+          data-tour="home-member-pass"
           type="button"
           onClick={openMemberPass}
           aria-haspopup={isMembershipPending ? undefined : "dialog"}
