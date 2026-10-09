@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-10-07",
+  "last_updated": "2026-10-10",
   "project": {
     "name": "S.V. Fermi PWA",
     "purpose": "Afgeschermde ledenapp voor leden, commissies en bestuur van S.V. Fermi.",
@@ -242,7 +242,8 @@
     "Agenda activity artwork is anchored to the right edge. Preset backgrounds render under the outer card edge with the right border made transparent, while fallback photo columns overlap by 1px and inherit the right-side rounding to prevent a visible seam.",
     "After Home's critical visuals are painted, the Agenda header illustration is immediately preloaded and decoded (not deferred to idle time). Agenda itself requests the same image eager/high-priority and marks it ready from onLoad, so fast Home→Agenda navigation reuses the warm browser/decoded cache.",
     "Regular-member sessions prefer the canonical memberships document over the embedded users.membership snapshot for cardId, member number and membership ID. This keeps the displayed QR, scanner lookup and activity registration tied to the same membership record.",
-    "Home first paint is never blocked by Firestore/activity loading. The full-page visual loader only waits for the two fixed Home hero assets and has a 900 ms safety timeout; featured/activity content continues with its own skeleton/reveal states."
+    "Home first paint is never blocked by Firestore/activity loading. The full-page visual loader only waits for the two fixed Home hero assets and has a 900 ms safety timeout; featured/activity content continues with its own skeleton/reveal states.",
+    "Pending/in-progress membership controls remain visibly locked but are tappable. Tapping a locked member-only action opens a shared Fermi modal explaining that the feature unlocks after approval and that Home, Agenda, Fermi and Profile remain available."
   ],
   "open_decisions": [
     "Final custom image asset set."
