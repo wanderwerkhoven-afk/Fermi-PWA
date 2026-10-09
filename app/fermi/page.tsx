@@ -109,7 +109,7 @@ export default function FermiPage() {
       </section>
 
       <section className="fermi-page-content">
-        <section className="fermi-section">
+        <section className="fermi-section" data-tour="fermi-board">
           <div className="fermi-section-heading">
             <h2>Bestuur</h2>
             <Link href="/fermi/bestuur">Bekijk volledig bestuur <ChevronRight size={18} /></Link>
@@ -134,7 +134,7 @@ export default function FermiPage() {
           </div>
         </section>
 
-        <section className="fermi-section">
+        <section className="fermi-section" data-tour="fermi-committees">
           <div className="fermi-section-heading">
             <h2>Commissies</h2>
             <button>Bekijk alle commissies <ChevronRight size={18} /></button>
@@ -167,7 +167,7 @@ export default function FermiPage() {
           </div>
         </section>
 
-        <section className="fermi-section fermi-docs-section">
+        <section className="fermi-section fermi-docs-section" data-tour="fermi-documents">
           <div className="fermi-section-heading">
             <h2>Documenten</h2>
             <button>Bekijk alle documenten <ChevronRight size={18} /></button>
