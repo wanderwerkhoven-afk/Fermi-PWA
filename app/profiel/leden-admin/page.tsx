@@ -193,7 +193,12 @@ export default function LedenAdminPage() {
     const memberId = new URLSearchParams(window.location.search).get("member");
     if (!memberId) return;
     const match = members.find((member) => member.uid === memberId || member.id === memberId);
-    if (match) openMember(match);
+    if (match) {
+      openMember(match);
+      // The query parameter is only for the initial deep-link from the notification.
+      // Remove it immediately so closing/saving cannot reopen the same member modal.
+      window.history.replaceState({}, "", window.location.pathname);
+    }
   }, [authorized, members, selected]);
 
   useEffect(() => {
@@ -217,6 +222,13 @@ export default function LedenAdminPage() {
     pending: members.filter((member) => member.status === "pending").length,
     archived: members.filter((member) => member.status === "archived").length,
   }), [members]);
+
+  function closeMember() {
+    setSelected(null);
+    if (window.location.search) {
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }
 
   function openMember(member: AdminMemberRow) {
     setSelected(member);
@@ -242,7 +254,7 @@ export default function LedenAdminPage() {
     try {
       await saveAdminMemberDetails(selected, edit);
       await refresh();
-      setSelected(null);
+      closeMember();
       setNotice(`${edit.firstName || edit.email} is bijgewerkt.`);
     } catch (error) {
       console.error(error);
@@ -451,7 +463,7 @@ export default function LedenAdminPage() {
       </section>
 
       {selected && (
-        <div className="member-admin-modal-backdrop" role="presentation" onClick={() => setSelected(null)}>
+        <div className="member-admin-modal-backdrop" role="presentation" onClick={closeMember}>
           <section className="member-admin-modal" role="dialog" aria-modal="true" aria-label="Lidprofiel bewerken" onClick={(event) => event.stopPropagation()}>
             <header className="member-admin-modal-header">
               <div className="member-admin-modal-avatar">{(edit.firstName[0] || edit.email[0] || "?").toUpperCase()}</div>
@@ -460,7 +472,7 @@ export default function LedenAdminPage() {
                 <h2>{[edit.firstName, edit.lastName].filter(Boolean).join(" ") || "Naam ontbreekt"}</h2>
                 <p>{selected.source === "account" ? "Account gekoppeld" : "Nog geen account gekoppeld"}</p>
               </div>
-              <button type="button" aria-label="Sluiten" onClick={() => setSelected(null)}><X size={20} /></button>
+              <button type="button" aria-label="Sluiten" onClick={closeMember}><X size={20} /></button>
             </header>
 
             <div className="member-admin-modal-body">
@@ -549,7 +561,7 @@ export default function LedenAdminPage() {
             </div>
 
             <footer className="member-admin-modal-footer">
-              <button type="button" className="secondary" onClick={() => setSelected(null)}>Annuleren</button>
+              <button type="button" className="secondary" onClick={closeMember}>Annuleren</button>
               <button type="button" className="primary" disabled={busyId === selected.id} onClick={() => void saveMember()}>
                 <Save size={17} /> {busyId === selected.id ? "Opslaan…" : "Wijzigingen opslaan"}
               </button>
