@@ -451,6 +451,29 @@ export default function AgendaPage() {
         </section>
       ) : (
       <section className="agenda-list agenda-list-redesign" data-tour="agenda-list">
+        <Link
+          href="/agenda/activiteit?slug=__tour-bowlen__"
+          className="agenda-card-link tour-demo-only"
+          data-tour="agenda-tour-activity"
+          tabIndex={-1}
+          aria-label="Bekijk Bowlen"
+        >
+          <article
+            className="agenda-card agenda-card-redesign agenda-card-with-preset is-image-ready"
+            style={{ backgroundImage: 'url("/Fermi-PWA/images/agenda/activities/container-images/bowlen.png")' }}
+          >
+            <div className="agenda-date agenda-date-redesign">
+              <strong>29</strong><span>OKT</span>
+            </div>
+            <div className="agenda-card-copy agenda-card-copy-redesign">
+              <span className="agenda-type">ACTIVITEIT</span>
+              <h2>Bowlen</h2>
+              <p><Clock3 size={16} /> 19:00 – 22:00</p>
+              <p><MapPin size={16} /> Aloha Bowling</p>
+            </div>
+            <ChevronRight className="agenda-card-chevron" size={22} />
+          </article>
+        </Link>
         {selectedEvents.map((event) => {
           const isFeatured = event.featured === true;
           const backgroundPreset = resolveAgendaBackgroundPreset(event);
@@ -461,7 +484,6 @@ export default function AgendaPage() {
           <Link
             href={`/agenda/activiteit?slug=${encodeURIComponent(event.slug)}`}
             className="agenda-card-link"
-            data-tour="agenda-example-activity"
             key={event.slug}
             aria-label={`Bekijk ${event.title}`}
           >
