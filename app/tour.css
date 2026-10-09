@@ -5,7 +5,7 @@
 .guided-tour-mask.left{left:0}
 .guided-tour-mask.right{right:0}
 .guided-tour-mask.bottom{left:0;right:0;bottom:0}
-.guided-tour-spotlight{position:fixed;border:2px solid var(--fermi-orange);border-radius:18px;box-shadow:0 0 0 4px rgba(255,122,26,.16),0 10px 34px rgba(0,0,0,.28);pointer-events:none;transition:all .22s ease}
+.guided-tour-spotlight{position:fixed;border:2px solid var(--fermi-orange);border-radius:18px;box-shadow:0 0 0 4px rgba(255,122,26,.16),0 10px 34px rgba(0,0,0,.28);pointer-events:none;transition:all .06s linear}
 .guided-tour-card{position:fixed;z-index:2;left:14px;right:14px;width:min(calc(100% - 28px),470px);margin-inline:auto;padding:18px;border:1px solid rgba(255,122,26,.34);border-radius:20px;background:#f4eadc;color:#06283b;box-shadow:0 24px 70px rgba(0,0,0,.38);pointer-events:auto}
 .guided-tour-card>small{display:block;color:#d96313;font-size:9px;font-weight:950;letter-spacing:.11em;text-transform:uppercase}
 .guided-tour-card h2{margin:5px 34px 6px 0;font:800 28px/1 Georgia,serif}
@@ -26,7 +26,7 @@
 .guided-tour-route-status{display:inline-flex;margin-top:10px;padding:5px 8px;border-radius:999px;background:rgba(6,40,59,.08);color:#5d7280;font-size:10px;font-weight:850}
 
 .guided-tour-progress-copy{height:4px;margin:15px 0 13px;overflow:hidden;border-radius:999px;background:rgba(6,40,59,.14)}
-.guided-tour-progress-copy span{display:block;height:100%;border-radius:inherit;background:var(--fermi-orange);transition:width .22s ease}
+.guided-tour-progress-copy span{display:block;height:100%;border-radius:inherit;background:var(--fermi-orange);transition:width .08s linear}
 
 /* Stable walkthrough-only content. Never shown during normal app use. */
 .tour-demo-only{display:none!important}
