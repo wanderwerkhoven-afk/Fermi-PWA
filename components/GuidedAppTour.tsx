@@ -18,7 +18,7 @@ const steps: TourStep[] = [
   { route: "/", selector: '[data-tour="home-notifications"]', page: "Home", title: "Meldingen", body: "Hier verschijnen nieuwe mededelingen en updates van S.V. Fermi." },
   { route: "/", selector: '[data-tour="home-featured"], [data-tour="home-upcoming"]', page: "Home", title: "Uitgelichte activiteit", body: "De belangrijkste eerstvolgende activiteit staat groot op Home. Tik op de activiteit om alle details te bekijken." },
   { route: "/", selector: '[data-tour="home-upcoming"]', page: "Home", title: "Binnenkort", body: "Hier zie je in één oogopslag welke activiteiten er binnenkort aankomen." },
-  { route: "/", selector: '[data-tour="home-announcements"]', page: "Home", title: "Mededelingen", body: "Nieuws en belangrijke berichten van S.V. Fermi vind je hier. Via ‘Bekijk alle mededelingen’ open je het volledige overzicht." },
+  { route: "/", selector: '[data-tour="home-demo-announcement"]', page: "Home", title: "Mededelingen", body: "Nieuws en belangrijke berichten van S.V. Fermi verschijnen hier. Via ‘Bekijk alle mededelingen’ open je het volledige overzicht." },
   { route: "/", selector: '[data-tour="home-member-pass"]', page: "Home", title: "Digitale ledenpas", body: "Open hier je digitale ledenpas en QR-code. Deze gebruik je bijvoorbeeld bij activiteiten en ledenvoordelen." },
 
   { route: "/agenda", selector: '[data-tour="nav-agenda"]', page: "Agenda", title: "Agenda", body: "In de Agenda vind je alle geplande Fermi-activiteiten." },
@@ -27,7 +27,7 @@ const steps: TourStep[] = [
   { route: "/agenda", selector: '[data-tour="agenda-filters"]', page: "Agenda", title: "Filters", body: "Filter de agenda op het soort activiteit, bijvoorbeeld borrels, lezingen of reizen." },
   { route: "/agenda", selector: '[data-tour="agenda-calendar"]', page: "Agenda", title: "Kalenderweergave", body: "Met deze knop wissel je naar de visuele kalender met twee maanden onder elkaar. Je kunt daarin ook naar volgende maanden swipen." },
   { route: "/agenda", selector: '[data-tour="agenda-list"]', page: "Agenda", title: "Activiteiten", body: "De activiteiten verschijnen hier als kaarten met datum, tijd en locatie. Tik op een kaart om de activiteit te openen." },
-  { route: "/agenda", selector: '[data-tour="agenda-example-activity"]', page: "Agenda", title: "Voorbeeldactiviteit", body: "We openen nu een activiteit als voorbeeld, zodat je ook ziet waar je je kunt inschrijven." },
+  { route: "/agenda", selector: '[data-tour="agenda-tour-activity"]', page: "Agenda", title: "Activiteit openen", body: "Tik op een activiteit om de detailpagina te bekijken. We openen Bowlen zodat je ziet waar alle informatie en de inschrijfknop staan." },
   { route: "/agenda/activiteit", selector: '[data-tour="event-registration"]', page: "Activiteit", title: "Inschrijven", body: "Bij een activiteit kun je hier je plek reserveren. Je ziet ook hoeveel plekken bezet zijn en kunt je inschrijving later weer annuleren." },
 
   { route: "/fermi", selector: '[data-tour="nav-fermi"]', page: "Fermi", title: "Fermi", body: "Op deze pagina vind je alles over de vereniging zelf." },
@@ -52,7 +52,7 @@ const steps: TourStep[] = [
 ];
 
 const TOUR_EVENT = "fermi:start-tour";
-const TOUR_VERSION = "v3";
+const TOUR_VERSION = "v4";
 
 function normalizeTourPath(pathname: string) {
   let value = pathname || "/";
@@ -100,6 +100,11 @@ export default function GuidedAppTour() {
     window.addEventListener(TOUR_EVENT, handler);
     return () => window.removeEventListener(TOUR_EVENT, handler);
   }, [start]);
+
+  useEffect(() => {
+    document.body.classList.toggle("fermi-tour-active", open);
+    return () => document.body.classList.remove("fermi-tour-active");
+  }, [open]);
 
   const step = steps[stepIndex];
   const stepBody =
@@ -159,15 +164,7 @@ export default function GuidedAppTour() {
     setStepIndex(nextIndex);
 
     if (nextStep.route === "/agenda/activiteit") {
-      const example = document.querySelector<HTMLAnchorElement>('[data-tour="agenda-example-activity"]');
-      if (example?.href) {
-        const url = new URL(example.href, window.location.href);
-        router.push(`${normalizeTourPath(url.pathname)}${url.search}`);
-        return;
-      }
-      // No activity available: continue with the next page instead of trapping the user.
-      setStepIndex(nextIndex + 1);
-      router.push(steps[nextIndex + 1]?.route ?? "/fermi");
+      router.push("/agenda/activiteit?slug=__tour-bowlen__");
       return;
     }
 
