@@ -128,11 +128,11 @@ export default function GuidedAppTour() {
       const target = document.querySelector<HTMLElement>(step.selector);
       if (!target) return;
 
-      target.scrollIntoView({ block: "center", behavior: "smooth" });
+      target.scrollIntoView({ block: "center", behavior: "auto" });
       if (settleTimer) window.clearTimeout(settleTimer);
       settleTimer = window.setTimeout(() => {
         if (!cancelled) setRect(target.getBoundingClientRect());
-      }, 180);
+      }, 30);
     };
 
     locate();
