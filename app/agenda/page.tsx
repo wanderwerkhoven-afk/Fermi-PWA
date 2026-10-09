@@ -383,6 +383,7 @@ export default function AgendaPage() {
           <button
             type="button"
             className={`agenda-calendar-hero-button${calendarView ? " active" : ""}`}
+            data-tour="agenda-calendar"
             aria-label={calendarView ? "Terug naar agenda-overzicht" : "Open kalenderweergave"}
             aria-pressed={calendarView}
             onClick={() => calendarView ? setCalendarView(false) : openCalendarView()}
@@ -394,7 +395,7 @@ export default function AgendaPage() {
         {!calendarView && (
           <>
             <div className="agenda-date-selector-row">
-              <div className="month-switcher month-switcher-redesign">
+              <div className="month-switcher month-switcher-redesign" data-tour="agenda-month">
                 <button aria-label="Vorige maand" onClick={() => changeMonth(-1)}>
                   <ChevronLeft size={23} />
                 </button>
@@ -406,6 +407,7 @@ export default function AgendaPage() {
               <button
                 type="button"
                 className={`agenda-all-future-button${showAllFuture ? " active" : ""}`}
+                data-tour="agenda-all"
                 aria-pressed={showAllFuture}
                 onClick={() => setShowAllFuture((value) => !value)}
               >
@@ -413,7 +415,7 @@ export default function AgendaPage() {
               </button>
             </div>
 
-            <div className="agenda-filters agenda-filters-redesign" aria-label="Agenda filters">
+            <div className="agenda-filters agenda-filters-redesign" data-tour="agenda-filters" aria-label="Agenda filters">
               {filters.map((filter) => (
                 <button
                   key={filter}
@@ -448,7 +450,7 @@ export default function AgendaPage() {
           })()}
         </section>
       ) : (
-      <section className="agenda-list agenda-list-redesign">
+      <section className="agenda-list agenda-list-redesign" data-tour="agenda-list">
         {selectedEvents.map((event) => {
           const isFeatured = event.featured === true;
           const backgroundPreset = resolveAgendaBackgroundPreset(event);
@@ -459,6 +461,7 @@ export default function AgendaPage() {
           <Link
             href={`/agenda/activiteit?slug=${encodeURIComponent(event.slug)}`}
             className="agenda-card-link"
+            data-tour="agenda-example-activity"
             key={event.slug}
             aria-label={`Bekijk ${event.title}`}
           >
