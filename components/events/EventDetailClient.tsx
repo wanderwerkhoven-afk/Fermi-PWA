@@ -21,6 +21,29 @@ import EventActions from "@/components/events/EventActions";
 import type { AgendaEvent } from "@/data/agenda-events";
 import { getActivity } from "@/lib/services/activities";
 
+const TOUR_EVENT: AgendaEvent = {
+  slug: "__tour-bowlen__",
+  day: "29",
+  month: "OKT",
+  year: "2026",
+  dateLabel: "donderdag 29 oktober 2026",
+  type: "ACTIVITEIT",
+  title: "Bowlen",
+  time: "19:00 – 22:00",
+  location: "Aloha Bowling",
+  address: "Amsterdam",
+  art: "meeting",
+  imagePath: "/images/agenda/activities/container-images/bowlen.png",
+  detailImagePath: "/images/agenda/activities/detail-images/bowlen.png",
+  organizer: "S.V. Fermi",
+  price: "€ 12,50",
+  capacity: 30,
+  registered: 18,
+  registrationDeadline: "28 oktober 2026",
+  description: "Een gezellige avond bowlen met Fermi. Schrijf je in, verzamel je team en probeer de hoogste score neer te zetten.",
+  practical: ["Aanmelden via de app", "Verzamelen bij Aloha Bowling"],
+};
+
 function resolveEventImagePath(path: string | undefined) {
   if (!path) return null;
   if (path.includes("/container-images/") || path.includes("/detail-images/")) {
@@ -51,6 +74,13 @@ export default function EventDetailClient({ slug }: { slug: string }) {
 
   useEffect(() => {
     let active = true;
+
+    if (slug === TOUR_EVENT.slug) {
+      setEvent(TOUR_EVENT);
+      setLoading(false);
+      return () => { active = false; };
+    }
+
     setLoading(true);
 
     getActivity(slug)
@@ -134,7 +164,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
             <article><span className="travel-icon-bubble"><CalendarDays size={24} /></span><div><h3>Inschrijfdeadline</h3><p>{travel.signupDeadline}</p></div></article>
           </div>
 
-          <EventActions eventId={event.slug} initialRegistered={event.registered} capacity={event.capacity} shareTitle={event.title} />
+          <EventActions eventId={event.slug} initialRegistered={event.registered} capacity={event.capacity} shareTitle={event.title} demo={event.slug === TOUR_EVENT.slug} />
 
           <section className="travel-expectations">
             <h2>Wat kun je verwachten?<span aria-hidden="true">✦</span></h2>
