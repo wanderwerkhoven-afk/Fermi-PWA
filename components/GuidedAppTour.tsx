@@ -23,28 +23,28 @@ const steps: TourStep[] = [
   },
   {
     route: "/agenda",
-    selector: '.bottom-nav a[href$="/agenda"], .bottom-nav .nav-item:nth-child(2)',
+    selector: '.bottom-nav a[href*="/agenda"], .bottom-nav .nav-item:nth-child(2)',
     eyebrow: "2 van 6",
     title: "Agenda",
     body: "Bekijk alle activiteiten, filter op type en open een activiteit voor alle details.",
   },
   {
     route: "/fermi",
-    selector: '.bottom-nav a[href$="/fermi"], .bottom-nav .nav-item:nth-child(3)',
+    selector: '.bottom-nav a[href*="/fermi"], .bottom-nav .nav-item:nth-child(3)',
     eyebrow: "3 van 6",
     title: "Fermi",
     body: "Ontdek het bestuur, de commissies en andere informatie over de vereniging.",
   },
   {
     route: "/community",
-    selector: '.bottom-nav a[href$="/community"], .bottom-nav .nav-item:nth-child(4)',
+    selector: '.bottom-nav a[href*="/community"], .bottom-nav .nav-item:nth-child(4)',
     eyebrow: "4 van 6",
     title: "Community",
     body: "Hier vind je de leden en fotoalbums. Deze onderdelen zijn alleen beschikbaar voor goedgekeurde leden.",
   },
   {
     route: "/profiel",
-    selector: '.bottom-nav a[href$="/profiel"], .bottom-nav .nav-item:nth-child(5)',
+    selector: '.bottom-nav a[href*="/profiel"], .bottom-nav .nav-item:nth-child(5)',
     eyebrow: "5 van 6",
     title: "Profiel",
     body: "Je profiel bevat je ledenpas, lidmaatschapsinformatie en persoonlijke instellingen.",
@@ -60,6 +60,15 @@ const steps: TourStep[] = [
 
 const TOUR_EVENT = "fermi:start-tour";
 const TOUR_VERSION = "v1";
+
+function normalizeTourPath(pathname: string) {
+  let value = pathname || "/";
+  if (value.startsWith("/Fermi-PWA")) {
+    value = value.slice("/Fermi-PWA".length) || "/";
+  }
+  if (value.length > 1) value = value.replace(/\/+$/, "");
+  return value || "/";
+}
 
 export default function GuidedAppTour() {
   const router = useRouter();
@@ -109,7 +118,9 @@ export default function GuidedAppTour() {
   useEffect(() => {
     if (!open || !step) return;
 
-    if (pathname !== step.route) {
+    const currentRoute = normalizeTourPath(pathname);
+
+    if (currentRoute !== step.route) {
       setRect(null);
       router.push(step.route);
       return;
