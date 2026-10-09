@@ -143,6 +143,7 @@ export default function ProfilePage() {
           <div className="profile-settings-wrap">
             <button
               className="icon-button profile-settings-button"
+              data-tour="profile-settings"
               aria-label="Instellingen"
               aria-expanded={settingsOpen}
               onClick={() => setSettingsOpen((open) => !open)}
@@ -192,7 +193,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="profile-member-summary">
+        <div className="profile-member-summary" data-tour="profile-summary">
           <div className="profile-avatar-wrap">
             <img
               src="/Fermi-PWA/images/community/member-lars.svg"
@@ -215,7 +216,7 @@ export default function ProfilePage() {
       </section>
 
       <section className="profile-content">
-        <section className="member-card">
+        <section className="member-card" data-tour="profile-member-card">
           <div className="member-card-paper" />
           <div className="member-card-left">
             <h2>Digitale ledenpas</h2>
@@ -238,7 +239,7 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <section className="profile-stats">
+        <section className="profile-stats" data-tour="profile-stats">
           <div>
             <CalendarDays size={29} />
             <span>
@@ -262,7 +263,7 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <section className="profile-menu-section">
+        <section className="profile-menu-section" data-tour="profile-menu">
           <h2>Mijn Fermi</h2>
 
           <div className="profile-menu-list">
