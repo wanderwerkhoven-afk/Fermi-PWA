@@ -237,26 +237,26 @@ export default function CommunityPage() {
       </section>
 
       <nav className="bottom-nav" aria-label="Hoofdnavigatie">
-        <Link className="nav-item" href="/">
+        <Link className="nav-item" href="/" data-tour="nav-home">
           <Home size={23} />
           <span>Home</span>
         </Link>
-        <Link className="nav-item" href="/agenda">
+        <Link className="nav-item" href="/agenda" data-tour="nav-agenda">
           <CalendarDays size={23} />
           <span>Agenda</span>
         </Link>
-        <Link className="nav-item center-item" href="/fermi">
+        <Link className="nav-item center-item" href="/fermi" data-tour="nav-fermi">
           <span className="nav-fermi">
             <img src="/Fermi-PWA/images/branding/fermi-logo.png" alt="" />
           </span>
           <span>Fermi</span>
         </Link>
-        <Link className="nav-item active" href="/community">
+        <Link className="nav-item active" href="/community" data-tour="nav-community">
           <UsersRound size={25} />
           <span>Community</span>
           <i />
         </Link>
-        <Link className="nav-item" href="/profiel">
+        <Link className="nav-item" href="/profiel" data-tour="nav-profile">
           <UserRound size={24} />
           <span>Profiel</span>
         </Link>
