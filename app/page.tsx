@@ -543,6 +543,19 @@ export default function HomePage() {
           </div>
 
           <div className="announcements">
+            <button
+              className="announcement-card interactive-card tour-demo-only"
+              type="button"
+              data-tour="home-demo-announcement"
+              tabIndex={-1}
+            >
+              <span className="announcement-icon"><Megaphone size={22} /></span>
+              <span className="announcement-copy">
+                <strong>Welkom bij S.V. Fermi</strong>
+                <small>Hier vind je belangrijke updates, nieuws en mededelingen van de vereniging.</small>
+              </span>
+              <ChevronRight className="announcement-chevron" size={21} />
+            </button>
             {announcementsLoading && (
               <>
                 <div className="home-announcement-skeleton" aria-hidden="true"><span /><span /></div>
