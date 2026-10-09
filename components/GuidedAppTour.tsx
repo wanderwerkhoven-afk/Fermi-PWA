@@ -16,35 +16,35 @@ type TourStep = {
 const steps: TourStep[] = [
   {
     route: "/",
-    selector: ".bottom-nav .nav-item:nth-child(1)",
+    selector: '.bottom-nav a[href$="/"], .bottom-nav .nav-item:nth-child(1)',
     eyebrow: "1 van 6",
     title: "Home",
     body: "Hier zie je wat er binnenkort gebeurt, mededelingen en je digitale ledenpas.",
   },
   {
     route: "/agenda",
-    selector: ".bottom-nav .nav-item:nth-child(2)",
+    selector: '.bottom-nav a[href$="/agenda"], .bottom-nav .nav-item:nth-child(2)',
     eyebrow: "2 van 6",
     title: "Agenda",
     body: "Bekijk alle activiteiten, filter op type en open een activiteit voor alle details.",
   },
   {
     route: "/fermi",
-    selector: ".bottom-nav .nav-item:nth-child(3)",
+    selector: '.bottom-nav a[href$="/fermi"], .bottom-nav .nav-item:nth-child(3)',
     eyebrow: "3 van 6",
     title: "Fermi",
     body: "Ontdek het bestuur, de commissies en andere informatie over de vereniging.",
   },
   {
     route: "/community",
-    selector: ".bottom-nav .nav-item:nth-child(4)",
+    selector: '.bottom-nav a[href$="/community"], .bottom-nav .nav-item:nth-child(4)',
     eyebrow: "4 van 6",
     title: "Community",
     body: "Hier vind je de leden en fotoalbums. Deze onderdelen zijn alleen beschikbaar voor goedgekeurde leden.",
   },
   {
     route: "/profiel",
-    selector: ".bottom-nav .nav-item:nth-child(5)",
+    selector: '.bottom-nav a[href$="/profiel"], .bottom-nav .nav-item:nth-child(5)',
     eyebrow: "5 van 6",
     title: "Profiel",
     body: "Je profiel bevat je ledenpas, lidmaatschapsinformatie en persoonlijke instellingen.",
@@ -108,39 +108,51 @@ export default function GuidedAppTour() {
 
   useEffect(() => {
     if (!open || !step) return;
+
     if (pathname !== step.route) {
+      setRect(null);
       router.push(step.route);
       return;
     }
 
     let cancelled = false;
-    let attempts = 0;
+    let settleTimer: ReturnType<typeof setTimeout> | null = null;
 
     const locate = () => {
-      if (cancelled) return;
+      if (cancelled) return false;
       const target = document.querySelector<HTMLElement>(step.selector);
-      if (target) {
-        target.scrollIntoView({ block: "nearest", behavior: "smooth" });
-        window.setTimeout(() => {
-          if (!cancelled) setRect(target.getBoundingClientRect());
-        }, 220);
-        return;
-      }
-      attempts += 1;
-      if (attempts < 12) window.setTimeout(locate, 120);
+      if (!target) return false;
+
+      target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      if (settleTimer) window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(() => {
+        if (!cancelled) setRect(target.getBoundingClientRect());
+      }, 180);
+      return true;
     };
 
+    // Locate immediately when possible, but also keep observing the page while
+    // Next.js mounts the destination route. This prevents the tour from getting
+    // stuck on a blank step when Agenda/Profile takes longer to render.
     locate();
+
+    const observer = new MutationObserver(() => {
+      if (!rect) locate();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
 
     const refresh = () => {
       const target = document.querySelector<HTMLElement>(step.selector);
       if (target) setRect(target.getBoundingClientRect());
     };
+
     window.addEventListener("resize", refresh);
     window.addEventListener("scroll", refresh, true);
 
     return () => {
       cancelled = true;
+      observer.disconnect();
+      if (settleTimer) window.clearTimeout(settleTimer);
       window.removeEventListener("resize", refresh);
       window.removeEventListener("scroll", refresh, true);
     };
