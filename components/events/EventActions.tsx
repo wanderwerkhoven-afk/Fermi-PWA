@@ -18,11 +18,13 @@ export default function EventActions({
   initialRegistered,
   capacity,
   shareTitle = "S.V. Fermi activiteit",
+  demo = false,
 }: {
   eventId: string;
   initialRegistered: number;
   capacity: number;
   shareTitle?: string;
+  demo?: boolean;
 }) {
   const { fermiUser, membership: sessionMembership } = useFermiSession();
   const membershipStatus = sessionMembership?.status ?? fermiUser?.membership?.status;
@@ -36,6 +38,11 @@ export default function EventActions({
   useEffect(() => onAuthStateChanged(auth, (user) => setUserId(user?.uid ?? null)), []);
 
   useEffect(() => {
+    if (demo) {
+      setJoined(false);
+      setRegisteredCount(initialRegistered);
+      return;
+    }
     return subscribeToRegistrationState(
       eventId,
       userId,
@@ -45,9 +52,15 @@ export default function EventActions({
         setRegisteredCount(nextCount);
       },
     );
-  }, [eventId, userId, initialRegistered]);
+  }, [eventId, userId, initialRegistered, demo]);
 
   async function toggleRegistration() {
+    if (demo) {
+      setJoined((value) => !value);
+      setRegisteredCount((count) => joined ? Math.max(0, count - 1) : Math.min(capacity, count + 1));
+      setFeedback(joined ? "Inschrijving geannuleerd." : "Zo werkt inschrijven bij een activiteit.");
+      return;
+    }
     if (isMembershipPending) {
       showMembershipPendingDialog("Inschrijven voor activiteiten");
       return;
