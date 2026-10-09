@@ -27,3 +27,8 @@
 
 .guided-tour-progress-copy{height:4px;margin:15px 0 13px;overflow:hidden;border-radius:999px;background:rgba(6,40,59,.14)}
 .guided-tour-progress-copy span{display:block;height:100%;border-radius:inherit;background:var(--fermi-orange);transition:width .22s ease}
+
+/* Stable walkthrough-only content. Never shown during normal app use. */
+.tour-demo-only{display:none!important}
+body.fermi-tour-active .tour-demo-only{display:grid!important}
+body.fermi-tour-active a.tour-demo-only{display:block!important}
