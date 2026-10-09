@@ -208,7 +208,7 @@ export default function ProfilePage() {
             <p><MapPin size={17} /> Haarlem</p>
           </div>
 
-          <button className="profile-edit-button">
+          <button className="profile-edit-button" data-tour="profile-edit">
             Profiel bewerken <Pencil size={16} />
           </button>
         </div>
@@ -281,25 +281,25 @@ export default function ProfilePage() {
       </section>
 
       <nav className="bottom-nav" aria-label="Hoofdnavigatie">
-        <Link className="nav-item" href="/">
+        <Link className="nav-item" href="/" data-tour="nav-home">
           <Home size={23} />
           <span>Home</span>
         </Link>
-        <Link className="nav-item" href="/agenda">
+        <Link className="nav-item" href="/agenda" data-tour="nav-agenda">
           <CalendarDays size={23} />
           <span>Agenda</span>
         </Link>
-        <Link className="nav-item center-item" href="/fermi">
+        <Link className="nav-item center-item" href="/fermi" data-tour="nav-fermi">
           <span className="nav-fermi">
             <img src="/Fermi-PWA/images/branding/fermi-logo.png" alt="" />
           </span>
           <span>Fermi</span>
         </Link>
-        <Link className="nav-item" href="/community">
+        <Link className="nav-item" href="/community" data-tour="nav-community">
           <UsersRound size={25} />
           <span>Community</span>
         </Link>
-        <Link className="nav-item active" href="/profiel">
+        <Link className="nav-item active" href="/profiel" data-tour="nav-profile">
           <UserRound size={24} fill="currentColor" />
           <span>Profiel</span>
           <i />
