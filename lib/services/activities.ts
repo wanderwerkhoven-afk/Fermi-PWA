@@ -4,6 +4,7 @@ import {
   collection,
   doc,
   getDoc,
+  getDocFromCache,
   getDocs,
   getDocsFromCache,
   serverTimestamp,
@@ -36,8 +37,28 @@ export async function listActivitiesFromCache(): Promise<ActivityData[]> {
 }
 
 export async function getActivity(slug: string): Promise<ActivityData | null> {
-  const snapshot = await getDoc(doc(db, "activities", slug));
-  return snapshot.exists() ? asActivity(snapshot.id, snapshot.data()) : null;
+  const ref = doc(db, "activities", slug);
+  // Read cached documents immediately when offline; do not wait for a network timeout.
+  if (typeof navigator !== "undefined" && !navigator.onLine) {
+    try {
+      const cached = await getDocFromCache(ref);
+      return cached.exists() ? asActivity(cached.id, cached.data()) : null;
+    } catch {
+      return null;
+    }
+  }
+  try {
+    const snapshot = await getDoc(ref);
+    return snapshot.exists() ? asActivity(snapshot.id, snapshot.data()) : null;
+  } catch (error) {
+    // A connection may drop after navigator.onLine was checked.
+    try {
+      const cached = await getDocFromCache(ref);
+      return cached.exists() ? asActivity(cached.id, cached.data()) : null;
+    } catch {
+      throw error;
+    }
+  }
 }
 
 export async function saveActivity(activity: ActivityData): Promise<void> {
