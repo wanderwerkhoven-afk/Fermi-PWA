@@ -6,6 +6,7 @@ import { SessionProvider } from "../components/SessionProvider";
 import { AppDataProvider } from "../components/AppDataProvider";
 import GuidedAppTour from "../components/GuidedAppTour";
 import MembershipPendingDialog from "../components/MembershipPendingDialog";
+import OfflineSupport from "../components/OfflineSupport";
 
 export const metadata: Metadata = {
   title: "S.V. Fermi",
@@ -30,7 +31,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="nl">
-      <body><SessionProvider><AppDataProvider><AuthGuard>{children}</AuthGuard><GuidedAppTour /><MembershipPendingDialog /></AppDataProvider></SessionProvider></body>
+      <body><SessionProvider><AppDataProvider><AuthGuard>{children}</AuthGuard><GuidedAppTour /><MembershipPendingDialog /><OfflineSupport /></AppDataProvider></SessionProvider></body>
     </html>
   );
 }
