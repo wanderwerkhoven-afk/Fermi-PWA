@@ -21,7 +21,7 @@ export default function OfflineSupport() {
       if (!(anchor instanceof HTMLAnchorElement) || anchor.target === "_blank" || anchor.hasAttribute("download")) return;
       const url = new URL(anchor.href);
       if (url.origin !== location.origin || !url.pathname.startsWith("/Fermi-PWA/")) return;
-      if (!(/^\\/Fermi-PWA\\/(?:$|agenda\\/(?:$|activiteit\\/$))/.test(url.pathname))) return;
+      if (url.pathname !== "/Fermi-PWA/" && url.pathname !== "/Fermi-PWA/agenda/" && url.pathname !== "/Fermi-PWA/agenda/activiteit/") return;
       event.preventDefault();
       event.stopPropagation();
       location.assign(url.href);
