@@ -1,5 +1,5 @@
 /* Fermi offline shell: public static assets only; never cache Firebase/API/user data. */
-const VERSION = "fermi-offline-v3";
+const VERSION = "fermi-offline-v4";
 const SHELL = VERSION + "-shell";
 const ASSETS = VERSION + "-assets";
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
@@ -64,6 +64,32 @@ self.addEventListener("message", (event) => {
     }));
   })());
 });
+function offlinePage() {
+  const html = `<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06283B"><title>Even offline · S.V. Fermi</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100dvh;background:#061d30;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;display:flex;align-items:center;justify-content:center;padding:32px 24px}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 80% 5%,#194e70 0%,transparent 55%)}
+main{position:relative;width:100%;max-width:430px;text-align:center}header{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:52px;font-weight:800;letter-spacing:.12em;font-size:16px}header img{width:36px;height:36px;object-fit:contain}
+.symbol{width:92px;height:92px;margin:0 auto 28px;display:grid;place-items:center;border:1px solid #47718a;border-radius:26px;background:#103751}
+.symbol svg{width:43px;height:43px;stroke:#ff8734;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+h1{font-size:clamp(29px,8vw,40px);line-height:1.15;letter-spacing:-.04em;margin:0 0 17px;font-weight:800}
+p{font-size:16px;line-height:1.65;color:#bbd1df;margin:0 auto 34px;max-width:330px}
+button,a{display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:16px;text-decoration:none;font:700 15px system-ui,-apple-system,sans-serif}
+button{background:#ff8734;color:#082438;border:0;width:100%;cursor:pointer}
+a{color:#d6e7f0;margin-top:15px}small{display:block;margin-top:48px;color:#8ea9ba;font-size:12px}
+</style></head><body><main>
+<header><img src="${BASE}/icon.svg" alt=""> S.V. FERMI</header>
+<div class="symbol"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M7 17a26 26 0 0 1 34 0M12 24a18 18 0 0 1 24 0M18 31a9 9 0 0 1 12 0"/><path d="m7 40 34-34"/></svg></div>
+<h1>Even geen verbinding</h1>
+<p>Fermi kan deze pagina momenteel niet offline openen. Maak verbinding met internet om je activiteiten en pagina's weer te laden.</p>
+<button type="button" onclick="location.reload()">Opnieuw proberen</button>
+<a href="${HOME}">Terug naar Home</a>
+<small>S.V. Fermi · Altijd dichtbij, ook als je even offline bent.</small>
+</main></body></html>`;
+  return new Response(html, { status: 503, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
+}
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
@@ -77,7 +103,7 @@ self.addEventListener("fetch", (event) => {
         return response;
       } catch {
         return (await cache.match(request, { ignoreSearch: true })) ||
-          new Response("Fermi is offline. Open de app eerst een keer met internet.", { status: 503, headers: { "Content-Type": "text/plain; charset=utf-8" } });
+          offlinePage();
       }
     })());
     return;
