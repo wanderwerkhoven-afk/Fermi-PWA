@@ -1,0 +1,4 @@
+/* Prevent double-tap zoom while keeping vertical scrolling and taps responsive. */
+html, body, button, a, input, select, textarea, [role="button"] {
+  touch-action: manipulation;
+}
