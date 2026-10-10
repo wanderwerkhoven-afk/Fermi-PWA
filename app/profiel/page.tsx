@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../lib/firebase";
+import { updateOwnUserProfile } from "../../lib/services/users";
 import MemberQrCode from "../../components/MemberQrCode";
 import { useFermiSession } from "../../components/SessionProvider";
 import { restartFermiTour } from "../../components/GuidedAppTour";
@@ -25,6 +26,7 @@ import {
   ScanLine,
   LogOut,
   Compass,
+  Save,
 } from "lucide-react";
 
 const menuItems = [
@@ -77,12 +79,73 @@ export default function ProfilePage() {
   const canScan = Boolean(isActive && fermiUser && ["committee", "board", "admin"].includes(fermiUser.role));
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileNotice, setProfileNotice] = useState("");
+  const [profileForm, setProfileForm] = useState({
+    firstName: "",
+    prefix: "",
+    lastName: "",
+    pronouns: "",
+    phone: "",
+    city: "",
+    study: "",
+    studyYear: "" as string,
+    bio: "",
+  });
 
 
 
   const memberName = [fermiUser?.profile.firstName, fermiUser?.profile.prefix, fermiUser?.profile.lastName].filter(Boolean).join(" ") || "Fermi-lid";
   const roleLabel = fermiUser?.role === "admin" ? "Admin" : fermiUser?.role === "board" ? "Bestuur" : fermiUser?.role === "committee" ? "Commissie" : "Lid";
   const validUntil = membership?.endDate ? new Intl.DateTimeFormat("nl-NL", { day: "numeric", month: "short", year: "numeric" }).format(new Date(`${membership.endDate}T12:00:00`)) : "Niet bekend";
+
+  function openProfileEditor() {
+    if (!fermiUser) return;
+    setProfileForm({
+      firstName: fermiUser.profile.firstName || "",
+      prefix: fermiUser.profile.prefix || "",
+      lastName: fermiUser.profile.lastName || "",
+      pronouns: fermiUser.profile.pronouns || "",
+      phone: fermiUser.profile.phone || "",
+      city: fermiUser.profile.city || "",
+      study: fermiUser.profile.study || "",
+      studyYear: fermiUser.profile.studyYear ? String(fermiUser.profile.studyYear) : "",
+      bio: fermiUser.profile.bio || "",
+    });
+    setProfileNotice("");
+    setEditOpen(true);
+  }
+
+  async function saveProfile() {
+    if (!fermiUser || savingProfile) return;
+    if (!profileForm.firstName.trim() || !profileForm.lastName.trim()) {
+      setProfileNotice("Voornaam en achternaam zijn verplicht.");
+      return;
+    }
+
+    setSavingProfile(true);
+    setProfileNotice("");
+    try {
+      await updateOwnUserProfile(fermiUser.uid, fermiUser.profile, {
+        firstName: profileForm.firstName,
+        prefix: profileForm.prefix,
+        lastName: profileForm.lastName,
+        pronouns: profileForm.pronouns,
+        phone: profileForm.phone,
+        city: profileForm.city,
+        study: profileForm.study,
+        studyYear: profileForm.studyYear ? Number(profileForm.studyYear) : null,
+        bio: profileForm.bio,
+      });
+      setEditOpen(false);
+    } catch (error) {
+      console.error(error);
+      setProfileNotice("Profiel opslaan is niet gelukt.");
+    } finally {
+      setSavingProfile(false);
+    }
+  }
 
   async function handleSignOut() {
     if (signingOut) return;
@@ -206,10 +269,10 @@ export default function ProfilePage() {
             <h2>{memberName}</h2>
             <p>{roleLabel} <span>•</span> {membership?.status === "active" ? "Actief lid" : "Geen actief lidmaatschap"}</p>
             <p><GraduationCap size={17} /> {fermiUser?.profile.study || "Opleiding niet ingevuld"}</p>
-            <p><MapPin size={17} /> Haarlem</p>
+            <p><MapPin size={17} /> {fermiUser?.profile.city || "Woonplaats niet ingevuld"}</p>
           </div>
 
-          <button className="profile-edit-button" data-tour="profile-edit">
+          <button className="profile-edit-button" data-tour="profile-edit" type="button" onClick={openProfileEditor}>
             Profiel bewerken <Pencil size={16} />
           </button>
         </div>
@@ -280,6 +343,52 @@ export default function ProfilePage() {
           </div>
         </section>
       </section>
+
+      {editOpen && fermiUser && (
+        <div className="profile-edit-modal-backdrop" role="presentation" onClick={() => !savingProfile && setEditOpen(false)}>
+          <section className="profile-edit-modal" role="dialog" aria-modal="true" aria-label="Profiel bewerken" onClick={(event) => event.stopPropagation()}>
+            <header className="profile-edit-modal-header">
+              <div>
+                <small>MIJN PROFIEL</small>
+                <h2>Profiel bewerken</h2>
+                <p>Deze gegevens zijn zichtbaar in jouw Fermi-profiel.</p>
+              </div>
+              <button type="button" aria-label="Sluiten" onClick={() => setEditOpen(false)} disabled={savingProfile}>×</button>
+            </header>
+
+            <div className="profile-edit-modal-body">
+              <div className="profile-edit-grid two">
+                <label>Voornaam<input value={profileForm.firstName} onChange={(e) => setProfileForm({ ...profileForm, firstName: e.target.value })} /></label>
+                <label>Tussenvoegsel<input value={profileForm.prefix} onChange={(e) => setProfileForm({ ...profileForm, prefix: e.target.value })} /></label>
+              </div>
+              <label>Achternaam<input value={profileForm.lastName} onChange={(e) => setProfileForm({ ...profileForm, lastName: e.target.value })} /></label>
+              <label>E-mailadres<input value={fermiUser.profile.email} disabled /><small>Je inlog-e-mailadres wijzig je niet vanuit je profiel.</small></label>
+
+              <div className="profile-edit-grid two">
+                <label>Telefoonnummer<input type="tel" value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })} placeholder="06 12345678" /></label>
+                <label>Woonplaats<input value={profileForm.city} onChange={(e) => setProfileForm({ ...profileForm, city: e.target.value })} placeholder="Bijv. Amsterdam" /></label>
+              </div>
+
+              <div className="profile-edit-grid two">
+                <label>Opleiding<input value={profileForm.study} onChange={(e) => setProfileForm({ ...profileForm, study: e.target.value })} placeholder="Technische Natuurkunde" /></label>
+                <label>Studiejaar<input type="number" min="1" max="10" value={profileForm.studyYear} onChange={(e) => setProfileForm({ ...profileForm, studyYear: e.target.value })} placeholder="1" /></label>
+              </div>
+
+              <label>Voornaamwoorden<input value={profileForm.pronouns} onChange={(e) => setProfileForm({ ...profileForm, pronouns: e.target.value })} placeholder="Bijv. hij/hem" /></label>
+              <label>Bio<textarea value={profileForm.bio} onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })} rows={4} placeholder="Vertel iets over jezelf…" /></label>
+
+              {profileNotice && <div className="profile-edit-notice" role="status">{profileNotice}</div>}
+            </div>
+
+            <footer className="profile-edit-modal-footer">
+              <button type="button" className="secondary" onClick={() => setEditOpen(false)} disabled={savingProfile}>Annuleren</button>
+              <button type="button" className="primary" onClick={() => void saveProfile()} disabled={savingProfile}>
+                <Save size={17} /> {savingProfile ? "Opslaan…" : "Opslaan"}
+              </button>
+            </footer>
+          </section>
+        </div>
+      )}
 
       <nav className="bottom-nav" aria-label="Hoofdnavigatie">
         <Link className="nav-item" href="/" data-tour="nav-home">
