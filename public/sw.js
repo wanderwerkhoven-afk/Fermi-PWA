@@ -1,5 +1,5 @@
 /* Fermi offline shell: public static assets only; never cache Firebase/API/user data. */
-const VERSION = "fermi-offline-v2";
+const VERSION = "fermi-offline-v3";
 const SHELL = VERSION + "-shell";
 const ASSETS = VERSION + "-assets";
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
@@ -12,7 +12,24 @@ self.addEventListener("install", (event) => {
     const cache = await caches.open(SHELL);
     await Promise.allSettled(CORE.map(async (url) => {
       const response = await fetch(url, { cache: "reload" });
-      if (response.ok && response.type !== "opaque") await cache.put(url, response);
+      if (response.ok && response.type !== "opaque") {
+        await cache.put(url, response.clone());
+        if (response.headers.get("content-type")?.includes("text/html")) {
+          const html = await response.text();
+          const assets = await caches.open(ASSETS);
+          const urls = new Set();
+          for (const match of html.matchAll(/(?:src|href)=["']([^"']+)["']/g)) {
+            const candidate = new URL(match[1], self.location.origin);
+            if (candidate.origin === self.location.origin &&
+                (candidate.pathname.startsWith(BASE + "/_next/static/") ||
+                 candidate.pathname.startsWith(BASE + "/images/"))) urls.add(candidate.href);
+          }
+          await Promise.allSettled([...urls].map(async (assetUrl) => {
+            const asset = await fetch(assetUrl);
+            if (asset.ok && asset.type !== "opaque") await assets.put(assetUrl, asset);
+          }));
+        }
+      }
     }));
     await self.skipWaiting();
   })());
@@ -59,7 +76,7 @@ self.addEventListener("fetch", (event) => {
         if (response.ok && response.type !== "opaque") await cache.put(request, response.clone());
         return response;
       } catch {
-        return (await cache.match(request, { ignoreSearch: true })) || (await cache.match(HOME)) ||
+        return (await cache.match(request, { ignoreSearch: true })) ||
           new Response("Fermi is offline. Open de app eerst een keer met internet.", { status: 503, headers: { "Content-Type": "text/plain; charset=utf-8" } });
       }
     })());
