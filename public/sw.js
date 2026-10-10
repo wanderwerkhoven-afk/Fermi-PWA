@@ -59,7 +59,7 @@ self.addEventListener("fetch", (event) => {
         if (response.ok && response.type !== "opaque") await cache.put(request, response.clone());
         return response;
       } catch {
-        return (await cache.match(request)) || (await cache.match(HOME)) ||
+        return (await cache.match(request, { ignoreSearch: true })) || (await cache.match(HOME)) ||
           new Response("Fermi is offline. Open de app eerst een keer met internet.", { status: 503, headers: { "Content-Type": "text/plain; charset=utf-8" } });
       }
     })());
