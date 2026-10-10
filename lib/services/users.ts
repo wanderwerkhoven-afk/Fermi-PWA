@@ -131,3 +131,34 @@ export async function createRegisteredUserProfile(user: User, input: Registratio
     lastLoginAt: serverTimestamp(),
   });
 }
+
+
+export interface EditableUserProfileInput {
+  firstName: string;
+  prefix?: string;
+  lastName: string;
+  pronouns?: string;
+  phone?: string;
+  city?: string;
+  study?: string;
+  studyYear?: number | null;
+  bio?: string;
+}
+
+export async function updateOwnUserProfile(uid: string, current: FermiUser["profile"], input: EditableUserProfileInput) {
+  await updateDoc(doc(db, "users", uid), {
+    profile: {
+      ...current,
+      firstName: input.firstName.trim(),
+      prefix: input.prefix?.trim() || null,
+      lastName: input.lastName.trim(),
+      pronouns: input.pronouns?.trim() || null,
+      phone: input.phone?.trim() || null,
+      city: input.city?.trim() || null,
+      study: input.study?.trim() || null,
+      studyYear: input.studyYear ?? null,
+      bio: input.bio?.trim() || null,
+    },
+    updatedAt: serverTimestamp(),
+  });
+}
