@@ -40,7 +40,7 @@ self.addEventListener("message", (event) => {
       if (typeof value !== "string") return;
       const url = new URL(value, self.location.origin);
       if (!eligible(new Request(url), url)) return;
-      if (!/^\\/(?:Fermi-PWA\\/)?images\\//.test(url.pathname)) return;
+      if (!url.pathname.startsWith(BASE + "/images/")) return;
       if (await cache.match(url.href)) return;
       const response = await fetch(url.href);
       if (response.ok && response.type !== "opaque") await cache.put(url.href, response);
