@@ -10,6 +10,23 @@ export default function OfflineSupport() {
     sync();
     window.addEventListener("online", sync);
     window.addEventListener("offline", sync);
+    // Next.js client-side route requests require a network connection.
+    // Offline, use full navigation so the service worker can return cached HTML.
+    const offlineNavigation = (event: MouseEvent) => {
+      if (navigator.onLine || event.defaultPrevented || event.button !== 0 ||
+          event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const anchor = target.closest("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement) || anchor.target === "_blank" || anchor.hasAttribute("download")) return;
+      const url = new URL(anchor.href);
+      if (url.origin !== location.origin || !url.pathname.startsWith("/Fermi-PWA/")) return;
+      if (!(/^\\/Fermi-PWA\\/(?:$|agenda\\/(?:$|activiteit\\/$))/.test(url.pathname))) return;
+      event.preventDefault();
+      event.stopPropagation();
+      location.assign(url.href);
+    };
+    document.addEventListener("click", offlineNavigation, true);
     if ("serviceWorker" in navigator && window.isSecureContext) {
       const base = window.location.pathname.startsWith("/Fermi-PWA/") ? "/Fermi-PWA" : "";
       void navigator.serviceWorker.register(base + "/sw.js", { scope: base + "/" })
@@ -18,6 +35,7 @@ export default function OfflineSupport() {
     return () => {
       window.removeEventListener("online", sync);
       window.removeEventListener("offline", sync);
+      document.removeEventListener("click", offlineNavigation, true);
     };
   }, []);
 
