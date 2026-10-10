@@ -1,10 +1,10 @@
 /* Fermi offline shell: public static assets only; never cache Firebase/API/user data. */
-const VERSION = "fermi-offline-v1";
+const VERSION = "fermi-offline-v2";
 const SHELL = VERSION + "-shell";
 const ASSETS = VERSION + "-assets";
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const HOME = BASE + "/";
-const CORE = [HOME, BASE + "/manifest.webmanifest", BASE + "/icon.svg",
+const CORE = [HOME, BASE + "/agenda/", BASE + "/agenda/activiteit/", BASE + "/manifest.webmanifest", BASE + "/icon.svg",
   BASE + "/images/branding/fermi-logo.png",
   BASE + "/images/branding/atoom-loader.png"];
 self.addEventListener("install", (event) => {
@@ -31,6 +31,22 @@ function eligible(request, url) {
   if (request.headers.has("authorization")) return false;
   return true;
 }
+self.addEventListener("message", (event) => {
+  if (event.data?.type !== "FERMI_CACHE_ACTIVITIES") return;
+  const urls = Array.isArray(event.data.urls) ? event.data.urls.slice(0, 180) : [];
+  event.waitUntil((async () => {
+    const cache = await caches.open(ASSETS);
+    await Promise.allSettled(urls.map(async (value) => {
+      if (typeof value !== "string") return;
+      const url = new URL(value, self.location.origin);
+      if (!eligible(new Request(url), url)) return;
+      if (!/^\\/(?:Fermi-PWA\\/)?images\\//.test(url.pathname)) return;
+      if (await cache.match(url.href)) return;
+      const response = await fetch(url.href);
+      if (response.ok && response.type !== "opaque") await cache.put(url.href, response);
+    }));
+  })());
+});
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
