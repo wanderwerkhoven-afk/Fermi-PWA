@@ -118,6 +118,30 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     };
   }, [firebaseUser, fermiUser, membership, sessionLoading]);
 
+  // Prepare all published activity imagery, including detail images, while online.
+  // The Firebase document cache remains responsible for event text and metadata.
+  useEffect(() => {
+    if (!firebaseUser || activities.length === 0 || typeof navigator === "undefined" || !navigator.onLine) return;
+    if (!("serviceWorker" in navigator)) return;
+    const images = new Set<string>();
+    for (const event of activities) {
+      if (event.showInAgenda === false) continue;
+      for (const path of [event.imagePath, event.detailImagePath, event.featuredImagePath]) {
+        if (!path) continue;
+        if (path.startsWith("/images/")) images.add("/Fermi-PWA" + path);
+        else if (path.startsWith("/Fermi-PWA/images/")) images.add(path);
+      }
+      if (event.backgroundPreset) images.add("/Fermi-PWA/images/agenda/activities/container-images/" + event.backgroundPreset + ".png");
+    }
+    // Cap the batch to keep downloads and browser storage predictable.
+    const send = () => navigator.serviceWorker.ready.then((registration) => {
+      (registration.active || navigator.serviceWorker.controller)?.postMessage({
+        type: "FERMI_CACHE_ACTIVITIES", urls: Array.from(images).slice(0, 180),
+      });
+    }).catch(() => undefined);
+    void send();
+  }, [firebaseUser, activities]);
+
   const value = useMemo(
     () => ({
       activities,
