@@ -1,58 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useAssociationContent } from "@/lib/services/association";
 import {
   ArrowLeft,
   Bell,
   CalendarDays,
   Coins,
-  GraduationCap,
   Home,
   UserRound,
   UsersRound,
+  Mail,
+  RotateCcw,
 } from "lucide-react";
-
-const board = [
-  {
-    name: "Lara Smit",
-    role: "Voorzitter",
-    description: "Leidt het bestuur, bewaakt de koers en vertegenwoordigt S.V. Fermi.",
-    image: "lara",
-    icon: UserRound,
-  },
-  {
-    name: "Sienna Koomen",
-    role: "Secretaris",
-    description: "Verzorgt communicatie, administratie en houdt de vereniging organisatorisch bij.",
-    image: "sienna",
-    icon: UserRound,
-  },
-  {
-    name: "Daan Pronk",
-    role: "Penningmeester",
-    description: "Beheert de financiën van de vereniging en bewaakt inkomsten en uitgaven.",
-    image: "daan",
-    icon: Coins,
-  },
-  {
-    name: "Helena Diks",
-    role: "Commissaris Sociaal",
-    description: "Organiseert borrels, activiteiten en sociale uitjes voor de leden.",
-    image: "helena",
-    icon: UsersRound,
-  },
-  {
-    name: "Demi Avnioğlu",
-    role: "Commissaris Educatief",
-    description: "Organiseert lezingen, bedrijfsbezoeken en studiegerichte activiteiten.",
-    image: "demi",
-    icon: GraduationCap,
-  },
-];
 
 export default function BoardPage() {
   const { content: association } = useAssociationContent();
+  const [flipped, setFlipped] = useState<string[]>([]);
+  const toggleCard = (id: string) => setFlipped((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]);
   return (
     <main className="app-shell board-page-shell">
       <div className="noise" aria-hidden="true" />
@@ -85,22 +51,35 @@ export default function BoardPage() {
       </section>
 
       <section className="board-page-content">
-        <div className="board-full-grid">
-          {association.board.map(({ name, role, description }, index) => {
+        <div className="board-full-grid board-flip-grid">
+          {association.board.map(({ id, name, role, description, email }, index) => {
             const Icon = [UserRound, UserRound, Coins, UsersRound][index] || UserRound;
-            const image = ["lara", "sienna", "daan", "helena"][index] || "lara";
+            const isFlipped = flipped.includes(id);
             return (
-            <article className={`board-full-card ${index === 0 ? "featured" : ""}`} key={name}>
-              <div className={`board-full-photo fermi-board-${image}`}>
-                <span className="board-photo-treatment" />
-              </div>
-              <div className="board-full-copy">
-                <span className="board-role-icon"><Icon size={22} /></span>
-                <span className="board-person-name">{name}</span>
-                <h2>{role}</h2>
-                <p>{description}</p>
-              </div>
-            </article>
+              <article className={`board-flip-card ${isFlipped ? "is-flipped" : ""}`} key={id}>
+                <div className="board-flip-inner">
+                  <button type="button" className="board-flip-face board-flip-front"
+                    aria-label={`Bekijk informatie over ${name}`}
+                    aria-pressed={isFlipped} onClick={() => toggleCard(id)}>
+                    <div className={`board-flip-illustration board-flip-illustration-${index + 1}`} aria-hidden="true" />
+                    <span className="board-flip-front-copy">
+                      <span className="board-flip-role-icon"><Icon size={20}/></span>
+                      <strong>{role}</strong>
+                      <span>{name}</span>
+                    </span>
+                  </button>
+                  <div className="board-flip-face board-flip-back" aria-hidden={!isFlipped}>
+                    <button type="button" className="board-flip-reset"
+                      tabIndex={isFlipped ? 0 : -1} aria-label={`Draai kaart van ${name} terug`}
+                      onClick={() => toggleCard(id)}><RotateCcw size={18}/></button>
+                    <h2>{name}</h2>
+                    <span className="board-flip-back-role">{role}</span>
+                    <p>{description}</p>
+                    {email ? <a href={`mailto:${email}`} tabIndex={isFlipped ? 0 : -1} className="board-flip-email"><Mail size={16}/>{email}</a>
+                      : <span className="board-flip-no-email">E-mailadres nog niet ingevuld</span>}
+                  </div>
+                </div>
+              </article>
             );
           })}
         </div>
