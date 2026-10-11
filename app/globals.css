@@ -8895,3 +8895,20 @@ body.member-admin-modal-open{overflow:hidden}
   visibility: hidden;
   transition: visibility 0s .3s;
 }
+
+
+/* Clear flip affordance on the front, matching the reverse-side control. */
+.board-page-shell .board-flip-front-hint {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #ff841d;
+  color: #092c40;
+  pointer-events: none;
+}
