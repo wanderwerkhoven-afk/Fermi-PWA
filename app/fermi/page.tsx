@@ -99,9 +99,7 @@ export default function FermiPage() {
           <div className="fermi-title-image-wrap">
             <img
               className="fermi-title-image"
-              src="/Fermi-PWA/images/branding/fermi-logo.png"
-              decoding="async"
-              fetchPriority="high"
+              src="https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png"
               alt="Fermi"
             />
           </div>
