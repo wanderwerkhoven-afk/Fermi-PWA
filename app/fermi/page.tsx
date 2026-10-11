@@ -72,7 +72,7 @@ const documents = [
 ];
 
 export default function FermiPage() {
-  const { content: association } = useAssociationContent();
+  const { content: association, loaded: associationLoaded } = useAssociationContent();
   const liveBoard = association.board;
   const [fermiVisualReady, setFermiVisualReady] = useState(false);
   useEffect(() => {
@@ -152,7 +152,13 @@ export default function FermiPage() {
 
           <div className="fermi-board-carousel-wrap">
             <div className="fermi-board-carousel" role="region" aria-label="Bestuursleden, horizontaal scrollbaar" tabIndex={0}>
-            {liveBoard.map(({ id, name, role, description }, index) => {
+            {!associationLoaded ? Array.from({ length: 4 }, (_, index) => (
+              <article className="fermi-board-card fermi-card-skeleton" key={index} aria-hidden="true">
+                <span className="fermi-skeleton-line fermi-skeleton-board-title" />
+                <span className="fermi-skeleton-line fermi-skeleton-board-description" />
+                <span className="fermi-skeleton-line fermi-skeleton-board-name" />
+              </article>
+            )) : liveBoard.map(({ id, name, role, description }, index) => {
               const Icon = [UserRound, BarChartIcon, Coins, UsersRound][index] || UserRound;
               const image = ["lara", "sienna", "daan", "helena"][index] || "lara";
               return (
@@ -182,7 +188,15 @@ export default function FermiPage() {
           </div>
 
           <div className="fermi-committee-grid">
-            {committees.map((defaultCommittee) => {
+            {!associationLoaded ? committees.map((committee) => (
+              <div className="fermi-committee-card fermi-card-skeleton" key={committee.slug} aria-hidden="true">
+                <span className="fermi-skeleton-circle" />
+                <span className="fermi-skeleton-copy">
+                  <span className="fermi-skeleton-line" />
+                  <span className="fermi-skeleton-line" />
+                </span>
+              </div>
+            )) : committees.map((defaultCommittee) => {
               const committee = { ...defaultCommittee, ...association.committees.find((item) => item.slug === defaultCommittee.slug) };
               const Icon =
                 committee.icon === "users" ? UsersRound :
