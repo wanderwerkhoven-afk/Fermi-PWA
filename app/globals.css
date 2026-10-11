@@ -8866,12 +8866,13 @@ body.member-admin-modal-open{overflow:hidden}
 /* After 4.5 seconds of inactivity, gently hint that board cards can flip.
    Cards tilt one by one; their actual tap-to-flip behaviour is unchanged. */
 @keyframes board-flip-discovery {
-  0%, 5%, 17%, 100% { transform: rotateY(0deg); }
-  10% { transform: rotateY(-14deg); }
+  0%, 50%, 100% { transform: rotateY(0deg); }
+  12.5% { transform: rotateY(20deg); }
+  37.5% { transform: rotateY(-20deg); }
 }
 @media (prefers-reduced-motion: no-preference) {
   .board-flip-card.is-hinting .board-flip-inner {
-    animation: board-flip-discovery 10s ease-in-out infinite;
+    animation: board-flip-discovery 8s ease-in-out infinite;
   }
   .board-flip-card.is-hinting:nth-child(2) .board-flip-inner { animation-delay: .45s; }
   .board-flip-card.is-hinting:nth-child(3) .board-flip-inner { animation-delay: .9s; }
