@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
   Atom,
   Bell,
@@ -73,8 +74,31 @@ const documents = [
 export default function FermiPage() {
   const { content: association } = useAssociationContent();
   const liveBoard = association.board;
+  const [fermiVisualReady, setFermiVisualReady] = useState(false);
+  useEffect(() => {
+    const criticalSources = [
+      "/Fermi-PWA/images/branding/fermi-logo.png",
+      "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png",
+    ];
+    let active = true;
+    const timeout = window.setTimeout(() => {
+      if (active) setFermiVisualReady(true);
+    }, 900);
+    Promise.all(criticalSources.map((src) => new Promise<void>((resolve) => {
+      const image = new Image();
+      image.onload = () => resolve();
+      image.onerror = () => resolve();
+      image.src = src;
+      if (image.complete) resolve();
+    }))).then(() => {
+      if (!active) return;
+      window.clearTimeout(timeout);
+      window.requestAnimationFrame(() => setFermiVisualReady(true));
+    });
+    return () => { active = false; window.clearTimeout(timeout); };
+  }, []);
   return (
-    <main className="app-shell fermi-page-shell">
+    <main className={`app-shell fermi-page-shell${fermiVisualReady ? " fermi-visual-ready" : ""}`}>
       <div className="noise" aria-hidden="true" />
 
       <section className="fermi-page-hero">
@@ -102,6 +126,7 @@ export default function FermiPage() {
               src="https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png"
               alt="Fermi"
               decoding="async"
+              loading="eager"
               fetchPriority="high"
             />
           </div>
