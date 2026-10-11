@@ -4,7 +4,7 @@ const SHELL = VERSION + "-shell";
 const ASSETS = VERSION + "-assets";
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const HOME = BASE + "/";
-const CORE = [HOME, BASE + "/agenda/", BASE + "/agenda/activiteit/", BASE + "/fermi/", BASE + "/fermi/bestuur/", BASE + "/manifest.webmanifest", BASE + "/icon.svg",
+const CORE = [HOME, BASE + "/agenda/", BASE + "/agenda/activiteit/", BASE + "/fermi/", BASE + "/fermi/bestuur/", BASE + "/fermi/commissies/", BASE + "/manifest.webmanifest", BASE + "/icon.svg",
   BASE + "/images/branding/fermi-logo.png",
   BASE + "/images/branding/atoom-loader.png",
   BASE + "/images/home/home-hero-church.png",
