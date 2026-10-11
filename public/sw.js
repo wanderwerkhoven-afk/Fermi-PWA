@@ -1,12 +1,14 @@
 /* Fermi offline shell: public static assets only; never cache Firebase/API/user data. */
-const VERSION = "fermi-offline-v4";
+const VERSION = "fermi-offline-v5";
 const SHELL = VERSION + "-shell";
 const ASSETS = VERSION + "-assets";
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const HOME = BASE + "/";
-const CORE = [HOME, BASE + "/agenda/", BASE + "/agenda/activiteit/", BASE + "/manifest.webmanifest", BASE + "/icon.svg",
+const CORE = [HOME, BASE + "/agenda/", BASE + "/agenda/activiteit/", BASE + "/fermi/", BASE + "/fermi/bestuur/", BASE + "/manifest.webmanifest", BASE + "/icon.svg",
   BASE + "/images/branding/fermi-logo.png",
-  BASE + "/images/branding/atoom-loader.png"];
+  BASE + "/images/branding/atoom-loader.png",
+  BASE + "/images/home/home-hero-church.png",
+  BASE + "/images/home/home-member-pass-atom.png"];
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(SHELL);
