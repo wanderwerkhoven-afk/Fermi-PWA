@@ -334,7 +334,7 @@ export default function ActiviteitenAdminPage() {
         <ShieldAlert size={42} />
         <h1>Geen admin-toegang</h1>
         <p>Deze omgeving is alleen beschikbaar voor actieve Fermi-admins.</p>
-        <Link href="/profiel">Terug naar profiel</Link>
+        <Link href="/profiel/admin">Terug naar adminoverzicht</Link>
       </main>
     );
   }
@@ -342,7 +342,7 @@ export default function ActiviteitenAdminPage() {
   return (
     <main className="app-shell activity-admin-shell">
       <header className="activity-admin-header">
-        <Link className="activity-admin-back" href="/profiel" aria-label="Terug naar profiel">
+        <Link className="activity-admin-back" href="/profiel/admin" aria-label="Terug naar adminoverzicht">
           <ArrowLeft size={22} />
         </Link>
         <div>
