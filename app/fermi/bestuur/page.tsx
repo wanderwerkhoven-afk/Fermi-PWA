@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAssociationContent } from "@/lib/services/association";
 import {
   ArrowLeft,
@@ -18,9 +18,24 @@ import {
 export default function BoardPage() {
   const { content: association } = useAssociationContent();
   const [flipped, setFlipped] = useState<string[]>([]);
+  const [idle, setIdle] = useState(false);
+  const [activity, setActivity] = useState(0);
+
+  // Show the discoverability hint only after the visitor has stopped interacting.
+  useEffect(() => {
+    setIdle(false);
+    if (flipped.length > 0) return;
+    const timeout = window.setTimeout(() => setIdle(true), 4500);
+    return () => window.clearTimeout(timeout);
+  }, [activity, flipped]);
+
+  const registerInteraction = () => {
+    setIdle(false);
+    setActivity((value) => value + 1);
+  };
   const toggleCard = (id: string) => setFlipped((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]);
   return (
-    <main className="app-shell board-page-shell">
+    <main className="app-shell board-page-shell" onPointerDown={registerInteraction} onKeyDown={registerInteraction} onTouchMove={registerInteraction}>
       <div className="noise" aria-hidden="true" />
 
       <section className="board-page-hero">
@@ -56,7 +71,7 @@ export default function BoardPage() {
             const Icon = [UserRound, UserRound, Coins, UsersRound][index] || UserRound;
             const isFlipped = flipped.includes(id);
             return (
-              <article className={`board-flip-card ${isFlipped ? "is-flipped" : ""}`} key={id}>
+              <article className={`board-flip-card ${isFlipped ? "is-flipped" : ""} ${idle && !isFlipped ? "is-hinting" : ""}`} key={id}>
                 <div className="board-flip-inner">
                   <button type="button" className="board-flip-face board-flip-front"
                     aria-label={`Bekijk informatie over ${name}`}
