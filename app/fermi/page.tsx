@@ -16,6 +16,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { committees } from "@/data/committees";
+import { useAssociationContent } from "@/lib/services/association";
 
 const board = [
   {
@@ -70,6 +71,8 @@ const documents = [
 ];
 
 export default function FermiPage() {
+  const { content: association } = useAssociationContent();
+  const liveBoard = association.board;
   return (
     <main className="app-shell fermi-page-shell">
       <div className="noise" aria-hidden="true" />
@@ -120,7 +123,10 @@ export default function FermiPage() {
           </div>
 
           <div className="fermi-board-grid">
-            {board.slice(0, 3).map(({ name, role, description, icon: Icon, image }) => (
+            {liveBoard.map(({ id, name, role, description }, index) => {
+              const Icon = [UserRound, BarChartIcon, Coins, UsersRound][index] || UserRound;
+              const image = ["lara", "sienna", "daan", "helena"][index] || "lara";
+              return (
               <article className="fermi-board-card" key={name}>
                 <div className={`fermi-board-photo fermi-board-${image}`}>
                   <span className="fermi-board-art-overlay" />
@@ -134,7 +140,8 @@ export default function FermiPage() {
                   <span className="fermi-board-name">{name}</span>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -145,7 +152,8 @@ export default function FermiPage() {
           </div>
 
           <div className="fermi-committee-grid">
-            {committees.map((committee) => {
+            {committees.map((defaultCommittee) => {
+              const committee = { ...defaultCommittee, ...association.committees.find((item) => item.slug === defaultCommittee.slug) };
               const Icon =
                 committee.icon === "users" ? UsersRound :
                 committee.icon === "education" ? GraduationCap :
