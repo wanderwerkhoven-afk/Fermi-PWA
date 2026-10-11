@@ -23,7 +23,7 @@ export default function VerenigingAdminPage() {
     } catch { setAuthorized(false); }
   }), []);
   useEffect(() => { if (loaded && !draft) setDraft(content); }, [content, loaded, draft]);
-  const editBoard = (index: number, field: "name" | "role" | "description", value: string) => {
+  const editBoard = (index: number, field: "name" | "role" | "description" | "email", value: string) => {
     setDraft((current) => current ? { ...current, board: current.board.map((entry, i) => i === index ? { ...entry, [field]: value } : entry) } : current);
     setNotice("");
   };
@@ -57,6 +57,7 @@ export default function VerenigingAdminPage() {
             <label>Naam<input value={entry.name} onChange={(e) => editBoard(i, "name", e.target.value)}/></label>
             <label>Functie<input value={entry.role} onChange={(e) => editBoard(i, "role", e.target.value)}/></label>
             <label>Korte omschrijving<textarea rows={2} value={entry.description} onChange={(e) => editBoard(i, "description", e.target.value)}/></label>
+            <label>E-mailadres<input type="email" placeholder="naam@svfermi.nl" value={entry.email || ""} onChange={(e) => editBoard(i, "email", e.target.value)}/></label>
           </section>) : draft.committees.map((entry, i) => <section className="association-admin-card" key={entry.slug}>
             <h2>{entry.name}</h2>
             <label>Naam<input value={entry.name} onChange={(e) => editCommittee(i, "name", e.target.value)}/></label>
