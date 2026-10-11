@@ -8878,3 +8878,20 @@ body.member-admin-modal-open{overflow:hidden}
   .board-flip-card.is-hinting:nth-child(3) .board-flip-inner { animation-delay: .9s; }
   .board-flip-card.is-hinting:nth-child(4) .board-flip-inner { animation-delay: 1.35s; }
 }
+
+
+/* iOS Safari: prevent the front-side icon and mirrored text bleeding through
+   the reverse face after a board card is flipped. */
+.board-page-shell .board-flip-front,
+.board-page-shell .board-flip-back {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.board-page-shell .board-flip-card.is-flipped .board-flip-front {
+  visibility: hidden;
+  transition: visibility 0s .3s;
+}
+.board-page-shell .board-flip-card:not(.is-flipped) .board-flip-back {
+  visibility: hidden;
+  transition: visibility 0s .3s;
+}
