@@ -8613,3 +8613,43 @@ body.member-admin-modal-open{overflow:hidden}
   font-size: clamp(8px, 2.15vw, 10px);
   line-height: 1.15;
 }
+
+
+/* Compact board cards: closer to the original three-card Fermi mockup. */
+.fermi-page-shell .fermi-board-card {
+  height: 208px;
+  background-position: center top;
+}
+.fermi-page-shell .fermi-board-photo {
+  height: 46%;
+  flex-basis: 46%;
+}
+.fermi-page-shell .fermi-board-icon {
+  top: calc(46% - 22px);
+  width: 36px;
+  height: 36px;
+}
+.fermi-page-shell .fermi-board-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.fermi-page-shell .fermi-board-copy {
+  padding: 13px 8px 9px;
+  gap: 3px;
+}
+.fermi-page-shell .fermi-board-name {
+  padding-top: 4px;
+}
+@media (max-width: 420px) {
+  .fermi-page-shell .fermi-board-card {
+    height: 197px;
+  }
+  .fermi-page-shell .fermi-board-icon {
+    top: calc(46% - 20px);
+    width: 33px;
+    height: 33px;
+  }
+  .fermi-page-shell .fermi-board-copy {
+    padding: 12px 7px 8px;
+  }
+}
