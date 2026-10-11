@@ -101,6 +101,8 @@ export default function FermiPage() {
               className="fermi-title-image"
               src="https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png"
               alt="Fermi"
+              decoding="async"
+              fetchPriority="high"
             />
           </div>
           <p>Alles over de vereniging</p>
