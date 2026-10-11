@@ -351,7 +351,7 @@ export default function LedenAdminPage() {
         <ShieldAlert size={42} />
         <h1>Geen admin-toegang</h1>
         <p>Deze pagina is alleen beschikbaar voor actieve Fermi-admins.</p>
-        <Link href="/profiel">Terug naar profiel</Link>
+        <Link href="/profiel/admin">Terug naar adminoverzicht</Link>
       </main>
     );
   }
@@ -359,7 +359,7 @@ export default function LedenAdminPage() {
   return (
     <main className="app-shell member-admin-shell">
       <header className="member-admin-header">
-        <Link className="member-admin-back" href="/profiel" aria-label="Terug naar profiel">
+        <Link className="member-admin-back" href="/profiel/admin" aria-label="Terug naar adminoverzicht">
           <ArrowLeft size={22} />
         </Link>
         <div>
