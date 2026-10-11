@@ -8723,3 +8723,14 @@ body.member-admin-modal-open{overflow:hidden}
 .association-admin-save { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; border:0; border-radius:12px; background:#ff841d; color:#052d43; padding:15px; font-weight:800; cursor:pointer; }
 .association-admin-save:disabled { opacity:.6; cursor:wait; }
 .association-admin-notice { padding:12px; border-radius:9px; background:#214d5a; }
+
+
+/* Admin CRM hub */
+.admin-crm-module-grid { display:grid; gap:12px; margin-top:24px; }
+.admin-crm-module { display:flex; align-items:center; gap:14px; min-height:84px; padding:15px; border:1px solid rgba(132,184,212,.25); border-radius:16px; background:#10364a; color:#f6eee3; text-decoration:none; }
+.admin-crm-module-icon { display:grid; place-items:center; flex:0 0 48px; width:48px; height:48px; border-radius:50%; background:#ff841d; color:#052d43; }
+.admin-crm-module-copy { display:grid; gap:5px; flex:1; min-width:0; }
+.admin-crm-module-copy strong { font:700 20px Georgia,serif; }
+.admin-crm-module-copy small { color:#d0dde1; font-size:12px; line-height:1.35; }
+.admin-crm-module > svg { color:#ff841d; flex-shrink:0; }
+@media(min-width:680px) { .admin-crm-module-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
