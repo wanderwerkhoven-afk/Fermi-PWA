@@ -92,8 +92,12 @@ export default function FermiPage() {
         </header>
 
         <div className="fermi-page-title-wrap">
-          <div className="fermi-cutout-title" aria-label="Fermi">
-            <span>F</span><span>e</span><span>r</span><span>m</span><span>i</span>
+          <div className="fermi-title-image-wrap">
+            <img
+              className="fermi-title-image"
+              src="https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png"
+              alt="Fermi"
+            />
           </div>
           <p>Alles over de vereniging</p>
 
