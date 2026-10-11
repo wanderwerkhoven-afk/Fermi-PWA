@@ -2392,6 +2392,19 @@ button {
   margin-top: 17px;
 }
 
+/* Uploaded Fermi wordmark replaces the former letter-by-letter title. */
+.fermi-title-image-wrap {
+  position: relative;
+  z-index: 6;
+  width: min(100%, 360px);
+}
+.fermi-title-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
 .fermi-cutout-title {
   position: relative;
   z-index: 6;
