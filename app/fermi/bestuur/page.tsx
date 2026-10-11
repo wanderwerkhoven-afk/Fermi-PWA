@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useAssociationContent } from "@/lib/services/association";
 import {
   ArrowLeft,
   Bell,
@@ -49,6 +52,7 @@ const board = [
 ];
 
 export default function BoardPage() {
+  const { content: association } = useAssociationContent();
   return (
     <main className="app-shell board-page-shell">
       <div className="noise" aria-hidden="true" />
@@ -82,7 +86,10 @@ export default function BoardPage() {
 
       <section className="board-page-content">
         <div className="board-full-grid">
-          {board.map(({ name, role, description, image, icon: Icon }, index) => (
+          {association.board.map(({ name, role, description }, index) => {
+            const Icon = [UserRound, UserRound, Coins, UsersRound][index] || UserRound;
+            const image = ["lara", "sienna", "daan", "helena"][index] || "lara";
+            return (
             <article className={`board-full-card ${index === 0 ? "featured" : ""}`} key={name}>
               <div className={`board-full-photo fermi-board-${image}`}>
                 <span className="board-photo-treatment" />
@@ -94,7 +101,8 @@ export default function BoardPage() {
                 <p>{description}</p>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
 
         <div className="board-source-note">
