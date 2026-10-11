@@ -2571,6 +2571,28 @@ button {
   gap: 9px;
 }
 
+/* Fermi board: illustrated backgrounds from the three artwork files on main. */
+.fermi-board-card:nth-child(1) {
+  background: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Voorzitter-container.png") center / 100% 100% no-repeat;
+}
+.fermi-board-card:nth-child(2) {
+  background: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Secretaris-container.png") center / 100% 100% no-repeat;
+}
+.fermi-board-card:nth-child(3) {
+  background: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Penningmeester-container.png") center / 100% 100% no-repeat;
+}
+.fermi-board-card .fermi-board-photo {
+  background: none;
+  filter: none;
+}
+.fermi-board-card .fermi-board-art-overlay {
+  display: none;
+}
+.fermi-board-card .fermi-board-copy {
+  position: relative;
+  background: transparent;
+}
+
 .fermi-board-card {
   position: relative;
   min-width: 0;
