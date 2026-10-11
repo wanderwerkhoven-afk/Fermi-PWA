@@ -77,6 +77,7 @@ export default function BoardPage() {
                     aria-label={`Bekijk informatie over ${name}`}
                     aria-pressed={isFlipped} onClick={() => toggleCard(id)}>
                     <div className={`board-flip-illustration board-flip-illustration-${index + 1}`} aria-hidden="true" />
+                    <span className="board-flip-front-hint" aria-hidden="true"><RotateCcw size={18}/></span>
                     <span className="board-flip-front-copy">
                       <span className="board-flip-role-icon"><Icon size={20}/></span>
                       <strong>{role}</strong>
