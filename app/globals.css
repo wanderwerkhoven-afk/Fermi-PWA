@@ -8887,13 +8887,19 @@ body.member-admin-modal-open{overflow:hidden}
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
+/* Switch face visibility immediately at interaction, not halfway through
+   the 3D transition. Safari otherwise briefly shows mirrored icons/text. */
+.board-page-shell .board-flip-front,
+.board-page-shell .board-flip-back {
+  transition: none;
+}
 .board-page-shell .board-flip-card.is-flipped .board-flip-front {
   visibility: hidden;
-  transition: visibility 0s .3s;
+  pointer-events: none;
 }
 .board-page-shell .board-flip-card:not(.is-flipped) .board-flip-back {
   visibility: hidden;
-  transition: visibility 0s .3s;
+  pointer-events: none;
 }
 
 
