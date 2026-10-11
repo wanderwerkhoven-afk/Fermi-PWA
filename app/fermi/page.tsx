@@ -21,21 +21,21 @@ const board = [
   {
     name: "Lara Smit",
     role: "Voorzitter",
-    description: "Leidt het bestuur, bewaakt de koers en vertegenwoordigt S.V. Fermi.",
+    description: "Verbindt de vereniging en bewaakt de koers.",
     icon: UserRound,
     image: "lara",
   },
   {
     name: "Sienna Koomen",
     role: "Secretaris",
-    description: "Verzorgt communicatie, administratie en houdt de vereniging organisatorisch bij.",
+    description: "Beheert communicatie en administratie.",
     icon: BarChartIcon,
     image: "sienna",
   },
   {
     name: "Daan Pronk",
     role: "Penningmeester",
-    description: "Beheert de financiën van de vereniging en bewaakt inkomsten en uitgaven.",
+    description: "Bewaakt de financiën en het budget.",
     icon: Coins,
     image: "daan",
   },
@@ -129,9 +129,9 @@ export default function FermiPage() {
                   <Icon size={23} />
                 </div>
                 <div className="fermi-board-copy">
-                  <span className="fermi-board-name">{name}</span>
                   <h3>{role}</h3>
                   <p>{description}</p>
+                  <span className="fermi-board-name">{name}</span>
                 </div>
               </article>
             ))}
