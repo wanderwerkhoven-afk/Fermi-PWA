@@ -8918,3 +8918,39 @@ body.member-admin-modal-open{overflow:hidden}
   color: #092c40;
   pointer-events: none;
 }
+
+
+/* Fermi board and committee placeholders, matching the Home loading rhythm. */
+.fermi-card-skeleton,
+.fermi-board-card.fermi-card-skeleton,
+.fermi-committee-card.fermi-card-skeleton {
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(132,184,212,.16);
+  position: relative;
+  overflow: hidden;
+}
+.fermi-board-card.fermi-card-skeleton {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px;
+}
+.fermi-skeleton-line,
+.fermi-skeleton-circle {
+  display: block;
+  background: rgba(255,255,255,.12);
+  animation: fermi-skeleton-pulse 1.25s ease-in-out infinite alternate;
+}
+.fermi-skeleton-line { height: 12px; border-radius: 999px; }
+.fermi-skeleton-board-title { width: 66%; height: 19px; }
+.fermi-skeleton-board-description { width: 90%; }
+.fermi-skeleton-board-name { width: 48%; }
+.fermi-committee-card.fermi-card-skeleton { pointer-events: none; }
+.fermi-skeleton-circle { width: 53px; height: 53px; border-radius: 50%; }
+.fermi-skeleton-copy { display: grid; gap: 12px; width: 100%; }
+.fermi-skeleton-copy .fermi-skeleton-line:first-child { width: 82%; height: 15px; }
+.fermi-skeleton-copy .fermi-skeleton-line:last-child { width: 96%; }
+@media (prefers-reduced-motion: reduce) {
+  .fermi-skeleton-line, .fermi-skeleton-circle { animation: none; }
+}
