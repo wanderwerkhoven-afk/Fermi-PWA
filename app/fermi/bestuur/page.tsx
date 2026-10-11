@@ -83,14 +83,14 @@ export default function BoardPage() {
                       <span>{name}</span>
                     </span>
                   </button>
-                  <div className="board-flip-face board-flip-back" aria-hidden={!isFlipped}>
+                  <div className="board-flip-face board-flip-back" aria-hidden={!isFlipped} role="button" tabIndex={isFlipped ? 0 : -1} aria-label={`Draai kaart van ${name} terug`} onClick={() => toggleCard(id)} onKeyDown={(event) => { if (event.target === event.currentTarget && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); toggleCard(id); } }}>
                     <button type="button" className="board-flip-reset"
                       tabIndex={isFlipped ? 0 : -1} aria-label={`Draai kaart van ${name} terug`}
-                      onClick={() => toggleCard(id)}><RotateCcw size={18}/></button>
+                      onClick={(event) => { event.stopPropagation(); toggleCard(id); }}><RotateCcw size={18}/></button>
                     <h2>{name}</h2>
                     <span className="board-flip-back-role">{role}</span>
                     <p>{description}</p>
-                    {email ? <a href={`mailto:${email}`} tabIndex={isFlipped ? 0 : -1} className="board-flip-email"><Mail size={16}/>{email}</a>
+                    {email ? <a href={`mailto:${email}`} tabIndex={isFlipped ? 0 : -1} className="board-flip-email" onClick={(event) => event.stopPropagation()}><Mail size={16}/>{email}</a>
                       : <span className="board-flip-no-email">E-mailadres nog niet ingevuld</span>}
                   </div>
                 </div>
