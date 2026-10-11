@@ -41,7 +41,7 @@ export default function VerenigingAdminPage() {
   };
   return <main className="app-shell association-admin-shell">
     <div className="association-admin-panel">
-      <Link href="/profiel" className="association-admin-back"><ArrowLeft size={19}/> Terug naar profiel</Link>
+      <Link href="/profiel/admin" className="association-admin-back"><ArrowLeft size={19}/> Terug naar adminoverzicht</Link>
       <h1><UsersRound size={26}/> Vereniging beheren</h1>
       <p>Beheer de vier bestuursleden en de teksten van de commissies. Wijzigingen worden centraal opgeslagen.</p>
       {authorized === null || !loaded ? <p>Gegevens laden…</p> :
