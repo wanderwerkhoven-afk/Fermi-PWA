@@ -8586,3 +8586,30 @@ body.member-admin-modal-open{overflow:hidden}
     font-size: 9px;
   }
 }
+
+
+/* Board card footer: role and description above, member name pinned to bottom. */
+.fermi-page-shell .fermi-board-copy {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.fermi-page-shell .fermi-board-copy h3 {
+  margin: 0;
+  font-size: clamp(10px, 2.8vw, 14px);
+  line-height: 1.12;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: auto;
+}
+.fermi-page-shell .fermi-board-copy p {
+  margin: 0;
+}
+.fermi-page-shell .fermi-board-name {
+  margin-top: auto;
+  margin-bottom: 0;
+  padding-top: 8px;
+  font-size: clamp(8px, 2.15vw, 10px);
+  line-height: 1.15;
+}
