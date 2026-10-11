@@ -7,16 +7,16 @@ import { doc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { committees } from "@/data/committees";
 
-export type BoardEntry = { id: string; name: string; role: string; description: string };
+export type BoardEntry = { id: string; name: string; role: string; description: string; email: string };
 export type CommitteeEntry = { slug: string; name: string; fullName: string; description: string; intro: string };
 export type AssociationContent = { board: BoardEntry[]; committees: CommitteeEntry[] };
 
 export const defaultAssociation: AssociationContent = {
   board: [
-    { id: "voorzitter", name: "Lara Smit", role: "Voorzitter", description: "Verbindt de vereniging en bewaakt de koers." },
-    { id: "secretaris", name: "Sienna Koomen", role: "Secretaris", description: "Beheert communicatie en administratie." },
-    { id: "penningmeester", name: "Daan Pronk", role: "Penningmeester", description: "Bewaakt de financiën en het budget." },
-    { id: "commissaris-sociaal", name: "Helena Diks", role: "Commissaris Sociaal", description: "Organiseert sociale activiteiten voor de leden." },
+    { id: "voorzitter", name: "Lara Smit", role: "Voorzitter", description: "Verbindt de vereniging en bewaakt de koers.", email: "" },
+    { id: "secretaris", name: "Sienna Koomen", role: "Secretaris", description: "Beheert communicatie en administratie.", email: "" },
+    { id: "penningmeester", name: "Daan Pronk", role: "Penningmeester", description: "Bewaakt de financiën en het budget.", email: "" },
+    { id: "commissaris-sociaal", name: "Helena Diks", role: "Commissaris Sociaal", description: "Organiseert sociale activiteiten voor de leden.", email: "" },
   ],
   committees: committees.map(({ slug, name, fullName, description, intro }) => ({ slug, name, fullName, description, intro })),
 };
@@ -24,7 +24,7 @@ export const defaultAssociation: AssociationContent = {
 function normalize(value: Partial<AssociationContent> | undefined): AssociationContent {
   return {
     board: Array.isArray(value?.board) ? value.board.map((entry) => ({
-      id: String(entry.id || ""), name: String(entry.name || ""), role: String(entry.role || ""), description: String(entry.description || ""),
+      id: String(entry.id || ""), name: String(entry.name || ""), role: String(entry.role || ""), description: String(entry.description || ""), email: String(entry.email || ""),
     })).filter((entry) => entry.id) : defaultAssociation.board,
     committees: Array.isArray(value?.committees) ? defaultAssociation.committees.map((fallback) => {
       const entry = value.committees?.find((item) => item.slug === fallback.slug);
