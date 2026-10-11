@@ -8687,3 +8687,8 @@ body.member-admin-modal-open{overflow:hidden}
     font-size: 9px;
   }
 }
+
+/* Lower only the board role and description by 5px; keep bottom names anchored. */
+.fermi-page-shell .fermi-board-copy h3 {
+  margin-top: 5px;
+}
