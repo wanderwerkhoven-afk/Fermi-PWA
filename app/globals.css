@@ -8688,7 +8688,7 @@ body.member-admin-modal-open{overflow:hidden}
   }
 }
 
-/* Lower only the board role and description by 5px; keep bottom names anchored. */
+/* Lower only the board role and description by 10px; keep bottom names anchored. */
 .fermi-page-shell .fermi-board-copy h3 {
-  margin-top: 5px;
+  margin-top: 10px;
 }
