@@ -122,12 +122,13 @@ export default function FermiPage() {
             <Link href="/fermi/bestuur">Bekijk volledig bestuur <ChevronRight size={18} /></Link>
           </div>
 
-          <div className="fermi-board-grid">
+          <div className="fermi-board-carousel-wrap">
+            <div className="fermi-board-carousel" role="region" aria-label="Bestuursleden, horizontaal scrollbaar" tabIndex={0}>
             {liveBoard.map(({ id, name, role, description }, index) => {
               const Icon = [UserRound, BarChartIcon, Coins, UsersRound][index] || UserRound;
               const image = ["lara", "sienna", "daan", "helena"][index] || "lara";
               return (
-              <article className="fermi-board-card" key={name}>
+              <article className="fermi-board-card" key={id}>
                 <div className={`fermi-board-photo fermi-board-${image}`}>
                   <span className="fermi-board-art-overlay" />
                 </div>
@@ -142,6 +143,7 @@ export default function FermiPage() {
               </article>
               );
             })}
+            </div>
           </div>
         </section>
 
