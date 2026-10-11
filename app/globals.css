@@ -2586,13 +2586,13 @@ button {
 
 /* Fermi board: illustrated backgrounds from the three artwork files on main. */
 .fermi-board-card:nth-child(1) {
-  background: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Voorzitter-container.png") center / 100% 100% no-repeat;
+  background: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Voorzitter-container.png") center / 100% 100% no-repeat;
 }
 .fermi-board-card:nth-child(2) {
-  background: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Secretaris-container.png") center / 100% 100% no-repeat;
+  background: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Secretaris-container.png") center / 100% 100% no-repeat;
 }
 .fermi-board-card:nth-child(3) {
-  background: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Penningmeester-container.png") center / 100% 100% no-repeat;
+  background: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Penningmeester-container.png") center / 100% 100% no-repeat;
 }
 .fermi-board-card .fermi-board-photo {
   background: none;
