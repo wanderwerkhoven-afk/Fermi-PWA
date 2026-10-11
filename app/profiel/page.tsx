@@ -168,34 +168,12 @@ export default function ProfilePage() {
   const visibleMenuItems = [
     ...menuItems,
     ...(canScan ? [scannerItem] : []),
-    ...(isAdmin
-      ? [
-          {
-            title: "Leden admin",
-            subtitle: "Leden aanmelden, afmelden en beheren",
-            icon: UserCog,
-            href: "/profiel/leden-admin",
-          },
-          {
-            title: "Activiteiten admin",
-            subtitle: "Agenda en activiteitsgegevens beheren",
-            icon: CalendarCog,
-            href: "/profiel/activiteiten-admin",
-          },
-          {
-            title: "Vereniging beheren",
-            subtitle: "Bestuursleden en commissies aanpassen",
-            icon: UsersRound,
-            href: "/profiel/vereniging-admin",
-          },
-          {
-            title: "Mededelingen admin",
-            subtitle: "Berichten op Home publiceren en beheren",
-            icon: Megaphone,
-            href: "/profiel/mededelingen-admin",
-          },
-        ]
-      : []),
+    ...(isAdmin ? [{
+      title: "Admin CRM",
+      subtitle: "Beheer leden, activiteiten en de vereniging",
+      icon: ShieldCheck,
+      href: "/profiel/admin",
+    }] : []),
   ];
 
   return (
