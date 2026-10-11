@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { doc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { committees } from "@/data/committees";
@@ -35,14 +37,28 @@ export function useAssociationContent() {
   const [content, setContent] = useState<AssociationContent>(defaultAssociation);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
-  useEffect(() => onSnapshot(doc(db, "appConfig", "association"), (snap) => {
-    setContent(normalize(snap.exists() ? snap.data() as Partial<AssociationContent> : undefined));
-    setLoaded(true);
-    setError("");
-  }, (cause) => {
-    setError(cause.message);
-    setLoaded(true);
-  }), []);
+  useEffect(() => {
+    let unsubscribeDocument: (() => void) | undefined;
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      unsubscribeDocument?.();
+      unsubscribeDocument = undefined;
+      if (!user) {
+        setContent(defaultAssociation);
+        setLoaded(true);
+        setError("");
+        return;
+      }
+      unsubscribeDocument = onSnapshot(doc(db, "appConfig", "association"), (snap) => {
+        setContent(normalize(snap.exists() ? snap.data() as Partial<AssociationContent> : undefined));
+        setLoaded(true);
+        setError("");
+      }, (cause) => {
+        setError(cause.message);
+        setLoaded(true);
+      });
+    });
+    return () => { unsubscribeAuth(); unsubscribeDocument?.(); };
+  }, []);
   return { content, loaded, error };
 }
 
