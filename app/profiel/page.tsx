@@ -183,6 +183,12 @@ export default function ProfilePage() {
             href: "/profiel/activiteiten-admin",
           },
           {
+            title: "Vereniging beheren",
+            subtitle: "Bestuursleden en commissies aanpassen",
+            icon: UsersRound,
+            href: "/profiel/vereniging-admin",
+          },
+          {
             title: "Mededelingen admin",
             subtitle: "Berichten op Home publiceren en beheren",
             icon: Megaphone,
