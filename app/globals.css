@@ -8519,8 +8519,8 @@ body.member-admin-modal-open{overflow:hidden}
   height: 248px;
   display: flex;
   flex-direction: column;
-  background-size: 100% 100%;
-  background-position: center;
+  background-size: cover;
+  background-position: center top;
   background-repeat: no-repeat;
 }
 .fermi-page-shell .fermi-board-photo {
