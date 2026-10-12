@@ -39,13 +39,7 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    // Keep the previous asset cache during upgrades: Home images remain available
-    // while the new cache warms up, even on a slow or offline connection.
-    await Promise.all(keys.filter((key) =>
-      key.startsWith("fermi-offline-") &&
-      key !== SHELL && key !== ASSETS &&
-      !key.endsWith("-assets")
-    ).map((key) => caches.delete(key)));
+    await Promise.all(keys.filter((key) => key.startsWith("fermi-offline-") && key !== SHELL && key !== ASSETS).map((key) => caches.delete(key)));
     await self.clients.claim();
   })());
 });
@@ -123,17 +117,6 @@ self.addEventListener("fetch", (event) => {
     const cache = await caches.open(ASSETS);
     const cached = await cache.match(request);
     if (cached) return cached;
-    // Reuse already downloaded images from older serviceworker versions.
-    const previousAssetCaches = (await caches.keys()).filter((key) =>
-      key.startsWith("fermi-offline-") && key.endsWith("-assets") && key !== ASSETS
-    );
-    for (const name of previousAssetCaches.reverse()) {
-      const previous = await (await caches.open(name)).match(request);
-      if (previous) {
-        try { await cache.put(request, previous.clone()); } catch { /* Quota exceeded. */ }
-        return previous;
-      }
-    }
     const response = await fetch(request);
     if (response.ok && response.type !== "opaque") {
       try { await cache.put(request, response.clone()); } catch { /* Storage quota: fall back to network. */ }
