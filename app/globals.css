@@ -8956,24 +8956,20 @@ body.member-admin-modal-open{overflow:hidden}
 }
 
 
-/* Fermi card legibility: artwork backgrounds must not make copy unreadable. */
+/* Original cream card artwork already provides a readable text area.
+   Keep the layout absolute icon positioning and avoid dark masks. */
 .fermi-page-shell .fermi-board-carousel .fermi-board-card:not(.fermi-card-skeleton) {
-  background-color: #073048;
+  background-color: var(--fermi-paper);
 }
-.fermi-page-shell .fermi-board-carousel .fermi-board-card:not(.fermi-card-skeleton)::before {
-  content: "";
-  position: absolute;
-  inset: 47% 0 0;
-  background: linear-gradient(180deg, rgba(4,30,48,.84), #05283d 35%);
-  pointer-events: none;
-  z-index: 0;
-}
-.fermi-page-shell .fermi-board-carousel .fermi-board-copy,
 .fermi-page-shell .fermi-board-carousel .fermi-board-icon {
+  position: absolute;
+  z-index: 2;
+}
+.fermi-page-shell .fermi-board-carousel .fermi-board-copy {
   position: relative;
   z-index: 1;
 }
 .fermi-page-shell .fermi-board-carousel .fermi-board-copy h3,
 .fermi-page-shell .fermi-board-carousel .fermi-board-copy p {
-  color: #fff;
+  color: var(--fermi-navy-deep);
 }
