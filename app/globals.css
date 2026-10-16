@@ -8973,3 +8973,111 @@ body.member-admin-modal-open{overflow:hidden}
 .fermi-page-shell .fermi-board-carousel .fermi-board-copy p {
   color: var(--fermi-navy-deep);
 }
+
+/* Profile photos */
+.profile-avatar-fallback{
+  display:grid;
+  place-items:center;
+  background:rgba(244,234,220,.12);
+  color:var(--fermi-paper);
+  border:1px solid rgba(244,234,220,.2);
+}
+.profile-avatar{
+  object-fit:cover;
+}
+.profile-photo-editor{
+  display:grid;
+  grid-template-columns:78px minmax(0,1fr);
+  gap:13px;
+  align-items:center;
+  padding:12px;
+  border:1px solid rgba(132,184,212,.18);
+  border-radius:15px;
+  background:rgba(3,29,44,.48);
+}
+.profile-photo-editor-preview{
+  width:78px;
+  height:78px;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  border:2px solid rgba(244,234,220,.18);
+  border-radius:50%;
+  background:#031d2c;
+  color:var(--fermi-muted);
+}
+.profile-photo-editor-preview img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+.profile-photo-editor-copy{
+  min-width:0;
+  display:grid;
+  gap:4px;
+}
+.profile-photo-editor-copy>strong{
+  color:var(--fermi-paper);
+  font-size:13px;
+}
+.profile-photo-editor-copy>span{
+  color:var(--fermi-muted);
+  font-size:9.5px;
+  line-height:1.35;
+}
+.profile-photo-editor-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:5px;
+}
+.profile-photo-editor-actions label,
+.profile-photo-editor-actions button{
+  min-height:36px;
+  padding:0 10px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  border-radius:10px;
+  font-size:9.5px;
+  font-weight:900;
+  cursor:pointer;
+}
+.profile-photo-editor-actions label{
+  position:relative;
+  overflow:hidden;
+  border:0;
+  background:var(--fermi-orange);
+  color:var(--fermi-navy-deep);
+}
+.profile-photo-editor-actions label input{
+  position:absolute;
+  width:1px;
+  height:1px;
+  opacity:0;
+  pointer-events:none;
+}
+.profile-photo-editor-actions label.is-busy{
+  opacity:.55;
+  cursor:wait;
+}
+.profile-photo-editor-actions button{
+  border:1px solid rgba(244,234,220,.16);
+  background:transparent;
+  color:#ffb7a2;
+}
+.profile-photo-editor-actions button:disabled{
+  opacity:.5;
+  cursor:wait;
+}
+@media(max-width:420px){
+  .profile-photo-editor{
+    grid-template-columns:70px minmax(0,1fr);
+  }
+  .profile-photo-editor-preview{
+    width:70px;
+    height:70px;
+  }
+}
