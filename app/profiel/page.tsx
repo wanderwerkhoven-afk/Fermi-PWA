@@ -5,6 +5,7 @@ import { useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import { updateOwnUserProfile } from "../../lib/services/users";
+import { removeOwnProfilePhoto, uploadOwnProfilePhoto } from "../../lib/services/profilePhoto";
 import MemberQrCode from "../../components/MemberQrCode";
 import { useFermiSession } from "../../components/SessionProvider";
 import { restartFermiTour } from "../../components/GuidedAppTour";
@@ -27,6 +28,8 @@ import {
   LogOut,
   Compass,
   Save,
+  Camera,
+  Trash2,
 } from "lucide-react";
 
 const menuItems = [
@@ -82,6 +85,8 @@ export default function ProfilePage() {
   const [editOpen, setEditOpen] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileNotice, setProfileNotice] = useState("");
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [profileForm, setProfileForm] = useState({
     firstName: "",
     prefix: "",
@@ -115,6 +120,39 @@ export default function ProfilePage() {
     });
     setProfileNotice("");
     setEditOpen(true);
+  }
+
+  async function handleProfilePhoto(file: File | null) {
+    if (!fermiUser || !file || photoBusy) return;
+    setPhotoBusy(true);
+    setProfileNotice("");
+    try {
+      setPhotoPreview(URL.createObjectURL(file));
+      await uploadOwnProfilePhoto(fermiUser.uid, file);
+      setProfileNotice("Profielfoto bijgewerkt.");
+    } catch (error) {
+      console.error(error);
+      setProfileNotice(error instanceof Error ? error.message : "Profielfoto uploaden is niet gelukt.");
+      setPhotoPreview(null);
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
+
+  async function removeProfilePhoto() {
+    if (!fermiUser || photoBusy) return;
+    setPhotoBusy(true);
+    setProfileNotice("");
+    try {
+      await removeOwnProfilePhoto(fermiUser.uid);
+      setPhotoPreview(null);
+      setProfileNotice("Profielfoto verwijderd.");
+    } catch (error) {
+      console.error(error);
+      setProfileNotice("Profielfoto verwijderen is niet gelukt.");
+    } finally {
+      setPhotoBusy(false);
+    }
   }
 
   async function saveProfile() {
@@ -242,11 +280,17 @@ export default function ProfilePage() {
 
         <div className="profile-member-summary" data-tour="profile-summary">
           <div className="profile-avatar-wrap">
-            <img
-              src="/Fermi-PWA/images/community/member-lars.svg"
-              alt="Profielfoto"
-              className="profile-avatar"
-            />
+            {fermiUser?.profile.photoUrl ? (
+              <img
+                src={fermiUser.profile.photoUrl}
+                alt={`Profielfoto van ${memberName}`}
+                className="profile-avatar"
+              />
+            ) : (
+              <div className="profile-avatar profile-avatar-fallback" aria-label="Geen profielfoto">
+                <UserRound size={34} />
+              </div>
+            )}
           </div>
 
           <div className="profile-member-copy">
@@ -341,6 +385,41 @@ export default function ProfilePage() {
             </header>
 
             <div className="profile-edit-modal-body">
+              <section className="profile-photo-editor">
+                <div className="profile-photo-editor-preview">
+                  {photoPreview || fermiUser.profile.photoUrl ? (
+                    <img src={photoPreview || fermiUser.profile.photoUrl || ""} alt="Voorbeeld profielfoto" />
+                  ) : (
+                    <UserRound size={36} />
+                  )}
+                </div>
+                <div className="profile-photo-editor-copy">
+                  <strong>Profielfoto</strong>
+                  <span>Vierkante uitsnede, automatisch geoptimaliseerd voor de app.</span>
+                  <div className="profile-photo-editor-actions">
+                    <label className={photoBusy ? "is-busy" : ""}>
+                      <Camera size={16} />
+                      {photoBusy ? "Bezig…" : fermiUser.profile.photoUrl ? "Foto wijzigen" : "Foto toevoegen"}
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+                        capture="user"
+                        disabled={photoBusy}
+                        onChange={(event) => {
+                          const file = event.target.files?.[0] || null;
+                          event.target.value = "";
+                          void handleProfilePhoto(file);
+                        }}
+                      />
+                    </label>
+                    {(fermiUser.profile.photoUrl || photoPreview) && (
+                      <button type="button" onClick={() => void removeProfilePhoto()} disabled={photoBusy}>
+                        <Trash2 size={15} /> Verwijderen
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </section>
               <div className="profile-edit-grid two">
                 <label>Voornaam<input value={profileForm.firstName} onChange={(e) => setProfileForm({ ...profileForm, firstName: e.target.value })} /></label>
                 <label>Tussenvoegsel<input value={profileForm.prefix} onChange={(e) => setProfileForm({ ...profileForm, prefix: e.target.value })} /></label>
