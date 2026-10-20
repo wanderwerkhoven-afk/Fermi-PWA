@@ -28,7 +28,6 @@ import {
   LogOut,
   Compass,
   Save,
-  Camera,
   Trash2,
 } from "lucide-react";
 
@@ -399,25 +398,10 @@ export default function ProfilePage() {
                   <div className="profile-photo-editor-actions">
                     <label className={photoBusy ? "is-busy" : ""}>
                       <UserRound size={16} />
-                      {photoBusy ? "Bezig…" : "Kies uit fotoalbum"}
+                      {photoBusy ? "Bezig…" : "Kies foto"}
                       <input
                         type="file"
                         accept="image/*"
-                        disabled={photoBusy}
-                        onChange={(event) => {
-                          const file = event.target.files?.[0] || null;
-                          event.target.value = "";
-                          void handleProfilePhoto(file);
-                        }}
-                      />
-                    </label>
-                    <label className={photoBusy ? "is-busy" : ""}>
-                      <Camera size={16} />
-                      Maak foto
-                      <input
-                        type="file"
-                        accept="image/*"
-                        capture="user"
                         disabled={photoBusy}
                         onChange={(event) => {
                           const file = event.target.files?.[0] || null;
