@@ -126,8 +126,8 @@ export default function ProfilePage() {
     setPhotoBusy(true);
     setProfileNotice("");
     try {
-      setPhotoPreview(URL.createObjectURL(file));
-      await uploadOwnProfilePhoto(fermiUser.uid, file);
+      const photoDataUrl = await uploadOwnProfilePhoto(fermiUser.uid, file);
+      setPhotoPreview(photoDataUrl);
       setProfileNotice("Profielfoto bijgewerkt.");
     } catch (error) {
       console.error(error);
@@ -279,7 +279,7 @@ export default function ProfilePage() {
 
         <div className="profile-member-summary" data-tour="profile-summary">
           <div className="profile-avatar-wrap">
-            {fermiUser?.profile.photoUrl ? (
+            {(photoPreview || fermiUser?.profile.photoUrl) ? (
               <img
                 src={fermiUser.profile.photoUrl}
                 alt={`Profielfoto van ${memberName}`}
