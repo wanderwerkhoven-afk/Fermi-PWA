@@ -398,11 +398,25 @@ export default function ProfilePage() {
                   <span>Vierkante uitsnede, automatisch geoptimaliseerd voor de app.</span>
                   <div className="profile-photo-editor-actions">
                     <label className={photoBusy ? "is-busy" : ""}>
-                      <Camera size={16} />
-                      {photoBusy ? "Bezig…" : fermiUser.profile.photoUrl ? "Foto wijzigen" : "Foto toevoegen"}
+                      <UserRound size={16} />
+                      {photoBusy ? "Bezig…" : "Kies uit fotoalbum"}
                       <input
                         type="file"
-                        accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+                        accept="image/*"
+                        disabled={photoBusy}
+                        onChange={(event) => {
+                          const file = event.target.files?.[0] || null;
+                          event.target.value = "";
+                          void handleProfilePhoto(file);
+                        }}
+                      />
+                    </label>
+                    <label className={photoBusy ? "is-busy" : ""}>
+                      <Camera size={16} />
+                      Maak foto
+                      <input
+                        type="file"
+                        accept="image/*"
                         capture="user"
                         disabled={photoBusy}
                         onChange={(event) => {
