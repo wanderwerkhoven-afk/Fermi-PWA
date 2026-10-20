@@ -145,20 +145,19 @@ export interface EditableUserProfileInput {
   bio?: string;
 }
 
-export async function updateOwnUserProfile(uid: string, current: FermiUser["profile"], input: EditableUserProfileInput) {
+export async function updateOwnUserProfile(uid: string, _current: FermiUser["profile"], input: EditableUserProfileInput) {
+  // Update only edited fields. Replacing the entire profile object could undo a
+  // newly uploaded Base64 avatar when the local profile snapshot is stale.
   await updateDoc(doc(db, "users", uid), {
-    profile: {
-      ...current,
-      firstName: input.firstName.trim(),
-      prefix: input.prefix?.trim() || null,
-      lastName: input.lastName.trim(),
-      pronouns: input.pronouns?.trim() || null,
-      phone: input.phone?.trim() || null,
-      city: input.city?.trim() || null,
-      study: input.study?.trim() || null,
-      studyYear: input.studyYear ?? null,
-      bio: input.bio?.trim() || null,
-    },
+    "profile.firstName": input.firstName.trim(),
+    "profile.prefix": input.prefix?.trim() || null,
+    "profile.lastName": input.lastName.trim(),
+    "profile.pronouns": input.pronouns?.trim() || null,
+    "profile.phone": input.phone?.trim() || null,
+    "profile.city": input.city?.trim() || null,
+    "profile.study": input.study?.trim() || null,
+    "profile.studyYear": input.studyYear ?? null,
+    "profile.bio": input.bio?.trim() || null,
     updatedAt: serverTimestamp(),
   });
 }
