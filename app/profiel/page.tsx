@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import { updateOwnUserProfile } from "../../lib/services/users";
@@ -84,6 +84,11 @@ export default function ProfilePage() {
   const [editOpen, setEditOpen] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileNotice, setProfileNotice] = useState("");
+  useEffect(() => {
+    if (!profileNotice) return;
+    const timer = window.setTimeout(() => setProfileNotice(""), 4500);
+    return () => window.clearTimeout(timer);
+  }, [profileNotice]);
   const [photoBusy, setPhotoBusy] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [profileForm, setProfileForm] = useState({
@@ -438,7 +443,10 @@ export default function ProfilePage() {
               <label>Voornaamwoorden<input value={profileForm.pronouns} onChange={(e) => setProfileForm({ ...profileForm, pronouns: e.target.value })} placeholder="Bijv. hij/hem" /></label>
               <label>Bio<textarea value={profileForm.bio} onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })} rows={4} placeholder="Vertel iets over jezelf…" /></label>
 
-              {profileNotice && <div className="profile-edit-notice" role="status">{profileNotice}</div>}
+              {profileNotice && <div className="profile-photo-toast" role="status" aria-live="polite">
+                <span>{profileNotice}</span>
+                <button type="button" aria-label="Melding sluiten" onClick={() => setProfileNotice("")}>×</button>
+              </div>}
             </div>
 
             <footer className="profile-edit-modal-footer">
