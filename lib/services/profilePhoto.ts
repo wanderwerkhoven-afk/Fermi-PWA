@@ -80,16 +80,14 @@ export async function uploadOwnProfilePhoto(uid: string, file: File) {
 }
 
 export async function removeOwnProfilePhoto(uid: string) {
-  const objectRef = ref(storage, `profile-photos/${uid}/avatar.webp`);
-  try {
-    await deleteObject(objectRef);
-  } catch (error) {
-    const code = (error as { code?: string })?.code;
-    if (code !== "storage/object-not-found") throw error;
-  }
-
+  // Clear the active Base64 value first. Legacy Storage cleanup is best effort.
   await updateDoc(doc(db, "users", uid), {
     "profile.photoUrl": null,
     updatedAt: serverTimestamp(),
   });
+  try {
+    await deleteObject(ref(storage, `profile-photos/${uid}/avatar.webp`));
+  } catch {
+    // Older uploaded photos may already be missing or lack Storage delete permission.
+  }
 }
