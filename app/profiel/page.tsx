@@ -286,7 +286,7 @@ export default function ProfilePage() {
           <div className="profile-avatar-wrap">
             {(photoPreview || fermiUser?.profile.photoUrl) ? (
               <img
-                src={fermiUser.profile.photoUrl}
+                src={photoPreview || fermiUser?.profile.photoUrl || ""}
                 alt={`Profielfoto van ${memberName}`}
                 className="profile-avatar"
               />
