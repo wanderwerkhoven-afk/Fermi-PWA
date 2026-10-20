@@ -1,11 +1,12 @@
 "use client";
 
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { ref, deleteObject } from "firebase/storage";
 import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db, storage } from "../firebase";
 
 const MAX_SOURCE_BYTES = 10 * 1024 * 1024;
-const OUTPUT_SIZE = 512;
+const OUTPUT_SIZE = 256;
+const MAX_DATA_URL_CHARS = 160_000; // Cap inline images to keep Firestore user docs small.
 
 async function imageBitmapFromFile(file: File) {
   return createImageBitmap(file, { imageOrientation: "from-image" });
@@ -53,22 +54,28 @@ async function cropToAvatarBlob(file: File): Promise<Blob> {
   return blob;
 }
 
+async function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("De profielfoto kon niet worden gelezen."));
+    reader.onload = () => resolve(String(reader.result));
+    reader.readAsDataURL(blob);
+  });
+}
+
 export async function uploadOwnProfilePhoto(uid: string, file: File) {
   const avatar = await cropToAvatarBlob(file);
-  const objectRef = ref(storage, `profile-photos/${uid}/avatar.webp`);
+  const photoUrl = await blobToDataUrl(avatar);
+  if (photoUrl.length > MAX_DATA_URL_CHARS) {
+    throw new Error("De geoptimaliseerde foto is nog te groot. Kies een andere foto.");
+  }
 
-  await uploadBytes(objectRef, avatar, {
-    contentType: "image/webp",
-    cacheControl: "public,max-age=3600",
-    customMetadata: { ownerUid: uid },
-  });
-
-  const photoUrl = await getDownloadURL(objectRef);
+  // Keep the existing profile.photoUrl interface for all components while storing
+  // the optimized Base64 data URL directly in the owner's Firestore user document.
   await updateDoc(doc(db, "users", uid), {
     "profile.photoUrl": photoUrl,
     updatedAt: serverTimestamp(),
   });
-
   return photoUrl;
 }
 
