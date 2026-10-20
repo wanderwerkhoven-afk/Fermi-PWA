@@ -35,11 +35,22 @@ async function photoDataUrl(file: File): Promise<string> {
 
   // Same canvas-to-Data-URL approach used for saved Cocktail Maestro recipes.
   // JPEG is reliably decoded by iOS Safari, including installed Home Screen PWAs.
-  const dataUrl = canvas.toDataURL("image/jpeg", 0.72);
-  if (!dataUrl.startsWith("data:image/jpeg;base64,") || dataUrl.length > MAX_DATA_URL_CHARS) {
-    throw new Error("De foto is te groot om op te slaan. Kies een andere foto.");
+  // Automatically reduce JPEG quality, then resolution, instead of rejecting
+  // normal detailed photos that exceed the Firestore inline-image budget.
+  for (const dimension of [256, 224, 192, 160, 128]) {
+    if (canvas.width !== dimension) {
+      canvas.width = dimension;
+      canvas.height = dimension;
+      context.drawImage(img, (img.naturalWidth - size) / 2, (img.naturalHeight - size) / 2, size, size, 0, 0, dimension, dimension);
+    }
+    for (const quality of [0.78, 0.65, 0.52, 0.4, 0.3]) {
+      const result = canvas.toDataURL("image/jpeg", quality);
+      if (result.startsWith("data:image/jpeg;base64,") && result.length <= MAX_DATA_URL_CHARS) {
+        return result;
+      }
+    }
   }
-  return dataUrl;
+  throw new Error("Deze foto kon niet voldoende worden verkleind.");
 }
 
 export async function uploadOwnProfilePhoto(uid: string, file: File) {
