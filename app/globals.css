@@ -9081,3 +9081,34 @@ body.member-admin-modal-open{overflow:hidden}
     height:70px;
   }
 }
+
+
+/* Profile edit notifications: visible toast instead of a form-bottom notice. */
+.profile-photo-toast {
+  position: fixed;
+  z-index: 10000;
+  top: calc(env(safe-area-inset-top, 0px) + 18px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(90vw, 430px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 15px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 13px;
+  background: #0c3348;
+  color: #fff7eb;
+  font-size: 13px;
+  line-height: 1.4;
+  box-shadow: 0 12px 32px rgba(0,0,0,.35);
+}
+.profile-photo-toast button {
+  border: 0;
+  padding: 0 2px;
+  background: transparent;
+  color: inherit;
+  font-size: 24px;
+  cursor: pointer;
+}
