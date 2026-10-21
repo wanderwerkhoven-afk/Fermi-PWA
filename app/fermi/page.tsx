@@ -133,22 +133,12 @@ export default function FermiPage() {
       }
     };
 
-    const idleWindow = window as Window & typeof globalThis & {
-      requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
-      cancelIdleCallback?: (handle: number) => void;
-    };
-    const idleId = typeof idleWindow.requestIdleCallback === "function"
-      ? idleWindow.requestIdleCallback(warmAllImages, { timeout: 1200 })
-      : globalThis.setTimeout(warmAllImages, 250);
+    const preloadTimer = window.setTimeout(warmAllImages, 250);
 
     return () => {
       active = false;
       window.clearTimeout(timeout);
-      if (typeof idleWindow.cancelIdleCallback === "function") {
-        idleWindow.cancelIdleCallback(idleId);
-      } else {
-        globalThis.clearTimeout(idleId);
-      }
+      window.clearTimeout(preloadTimer);
     };
   }, []);
   return (
