@@ -65,6 +65,23 @@ function BarChartIcon({ size = 24 }: { size?: number }) {
   );
 }
 
+const FERMI_VISUAL_ASSETS = [
+  "/Fermi-PWA/images/branding/fermi-logo.png",
+  "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png",
+  "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Voorzitter-container.png",
+  "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Secretaris-container.png",
+  "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Penningmeester-container.png",
+  "https://svfermi.nl/wp-content/uploads/2026/03/WhatsApp-Image-2026-03-19-at-12.24.21.jpeg",
+  "https://svfermi.nl/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-19-at-10.55.43.jpeg",
+  "https://svfermi.nl/wp-content/uploads/2026/03/WhatsApp-Image-2026-03-25-at-21.51.41.jpeg",
+  "https://svfermi.nl/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-19-at-10.55.43-1.jpeg",
+  "https://svfermi.nl/wp-content/uploads/2026/03/WhatsApp-Image-2026-03-02-at-20.31.48.jpeg",
+  "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=500&q=80",
+  "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=500&q=80",
+  "https://images.unsplash.com/photo-1512470876302-972faa2aa9a4?auto=format&fit=crop&w=500&q=80",
+  "https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?auto=format&fit=crop&w=500&q=80",
+] as const;
+
 const documents = [
   { title: "Statuten", subtitle: "De statuten van S.V. Fermi" },
   { title: "Huishoudelijk reglement", subtitle: "Het huishoudelijk reglement van S.V. Fermi" },
@@ -76,14 +93,12 @@ export default function FermiPage() {
   const liveBoard = association.board;
   const [fermiVisualReady, setFermiVisualReady] = useState(false);
   useEffect(() => {
-    const criticalSources = [
-      "/Fermi-PWA/images/branding/fermi-logo.png",
-      "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png",
-    ];
+    const criticalSources = FERMI_VISUAL_ASSETS.slice(0, 2);
     let active = true;
     const timeout = window.setTimeout(() => {
       if (active) setFermiVisualReady(true);
     }, 900);
+
     Promise.all(criticalSources.map((src) => new Promise<void>((resolve) => {
       const image = new Image();
       image.onload = () => resolve();
@@ -95,7 +110,42 @@ export default function FermiPage() {
       window.clearTimeout(timeout);
       window.requestAnimationFrame(() => setFermiVisualReady(true));
     });
-    return () => { active = false; window.clearTimeout(timeout); };
+
+    const warmAllImages = () => {
+      FERMI_VISUAL_ASSETS.forEach((src) => {
+        const image = new Image();
+        image.decoding = "async";
+        image.src = src;
+      });
+
+      const sendCacheRequest = (worker: ServiceWorker | null | undefined) => {
+        worker?.postMessage({
+          type: "FERMI_CACHE_FERMI_ASSETS",
+          urls: [...FERMI_VISUAL_ASSETS],
+        });
+      };
+
+      if ("serviceWorker" in navigator) {
+        sendCacheRequest(navigator.serviceWorker.controller);
+        void navigator.serviceWorker.ready.then((registration) => {
+          sendCacheRequest(registration.active);
+        });
+      }
+    };
+
+    const idleId = "requestIdleCallback" in window
+      ? window.requestIdleCallback(warmAllImages, { timeout: 1200 })
+      : window.setTimeout(warmAllImages, 250);
+
+    return () => {
+      active = false;
+      window.clearTimeout(timeout);
+      if ("cancelIdleCallback" in window && typeof idleId === "number") {
+        window.cancelIdleCallback(idleId);
+      } else {
+        window.clearTimeout(idleId);
+      }
+    };
   }, []);
   return (
     <main className={`app-shell fermi-page-shell${fermiVisualReady ? " fermi-visual-ready" : ""}`}>
