@@ -8525,7 +8525,7 @@ body.member-admin-modal-open{overflow:hidden}
   font-size: clamp(14px, 3.8vw, 18px);
 }
 .fermi-page-shell .fermi-hero-collage {
-  top: -4px;
+  top: -24px;
   left: auto;
   right: -34px;
   bottom: auto;
@@ -8580,10 +8580,10 @@ body.member-admin-modal-open{overflow:hidden}
 }
 @media (max-width: 420px) {
   .fermi-page-shell .fermi-page-hero {
-    min-height: 252px;
+    min-height: 232px;
   }
   .fermi-page-shell .fermi-page-title-wrap {
-    min-height: 168px;
+    min-height: 148px;
     margin-top: 6px;
   }
   .fermi-page-shell .fermi-title-image-wrap {
@@ -8594,7 +8594,7 @@ body.member-admin-modal-open{overflow:hidden}
     font-size: 16px;
   }
   .fermi-page-shell .fermi-hero-collage {
-    top: -2px;
+    top: -22px;
     left: auto;
     right: -38px;
     width: 59%;
