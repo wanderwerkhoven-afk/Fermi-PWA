@@ -8524,7 +8524,7 @@ body.member-admin-modal-open{overflow:hidden}
   font-size: clamp(14px, 3.8vw, 18px);
 }
 .fermi-page-shell .fermi-hero-collage {
-  top: -44px;
+  top: -64px;
   left: auto;
   right: -34px;
   bottom: auto;
@@ -8593,7 +8593,7 @@ body.member-admin-modal-open{overflow:hidden}
     font-size: 16px;
   }
   .fermi-page-shell .fermi-hero-collage {
-    top: -42px;
+    top: -62px;
     left: auto;
     right: -38px;
     width: 59%;
