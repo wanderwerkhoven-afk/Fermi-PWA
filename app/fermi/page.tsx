@@ -68,6 +68,7 @@ function BarChartIcon({ size = 24 }: { size?: number }) {
 const FERMI_VISUAL_ASSETS = [
   "/Fermi-PWA/images/branding/fermi-logo.png",
   "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png",
+  "/Fermi-PWA/images/fermi/fermi-hero-collage.png",
   "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Voorzitter-container.png",
   "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Secretaris-container.png",
   "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Penningmeester-container.png",
@@ -177,12 +178,14 @@ export default function FermiPage() {
           <p>Alles over de vereniging</p>
 
           <div className="fermi-hero-collage" aria-hidden="true">
-            <span className="fermi-hero-orange-disc" />
-            <span className="fermi-hero-building" />
-            <span className="fermi-hero-crowd" />
-            <span className="fermi-hero-plane">➤</span>
-            <span className="fermi-hero-route" />
-            <span className="fermi-hero-dots" />
+            <img
+              className="fermi-hero-collage-image"
+              src="/Fermi-PWA/images/fermi/fermi-hero-collage.png"
+              alt=""
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+            />
           </div>
         </div>
       </section>
