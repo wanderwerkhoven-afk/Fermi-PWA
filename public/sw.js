@@ -1,5 +1,5 @@
 /* Fermi offline shell: public static assets only; never cache Firebase/API/user data. */
-const VERSION = "fermi-offline-v5";
+const VERSION = "fermi-offline-v6";
 const SHELL = VERSION + "-shell";
 const ASSETS = VERSION + "-assets";
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
@@ -51,18 +51,39 @@ function eligible(request, url) {
   return true;
 }
 self.addEventListener("message", (event) => {
-  if (event.data?.type !== "FERMI_CACHE_ACTIVITIES") return;
-  const urls = Array.isArray(event.data.urls) ? event.data.urls.slice(0, 180) : [];
+  const type = event.data?.type;
+  const urls = Array.isArray(event.data?.urls) ? event.data.urls.slice(0, 180) : [];
+  if (type !== "FERMI_CACHE_ACTIVITIES" && type !== "FERMI_CACHE_FERMI_ASSETS") return;
+
   event.waitUntil((async () => {
     const cache = await caches.open(ASSETS);
     await Promise.allSettled(urls.map(async (value) => {
       if (typeof value !== "string") return;
       const url = new URL(value, self.location.origin);
-      if (!eligible(new Request(url), url)) return;
-      if (!url.pathname.startsWith(BASE + "/images/")) return;
+
+      if (type === "FERMI_CACHE_ACTIVITIES") {
+        if (!eligible(new Request(url), url)) return;
+        if (!url.pathname.startsWith(BASE + "/images/")) return;
+      } else {
+        const allowedRemoteHosts = new Set([
+          "raw.githubusercontent.com",
+          "svfermi.nl",
+          "images.unsplash.com",
+        ]);
+        const isLocalImage =
+          url.origin === self.location.origin
+          && url.pathname.startsWith(BASE + "/images/");
+        const isAllowedRemoteImage =
+          allowedRemoteHosts.has(url.hostname)
+          && /\.(?:png|jpe?g|webp|svg)(?:$|\?)/i.test(url.pathname + url.search);
+        if (!isLocalImage && !isAllowedRemoteImage) return;
+      }
+
       if (await cache.match(url.href)) return;
-      const response = await fetch(url.href);
-      if (response.ok && response.type !== "opaque") await cache.put(url.href, response);
+      const response = await fetch(url.href, { mode: url.origin === self.location.origin ? "same-origin" : "no-cors" });
+      if (response.ok || response.type === "opaque") {
+        await cache.put(url.href, response.clone());
+      }
     }));
   })());
 });
@@ -95,6 +116,31 @@ a{color:#d6e7f0;margin-top:15px}small{display:block;margin-top:48px;color:#8ea9b
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
+
+  const allowedRemoteAssetHosts = new Set([
+    "raw.githubusercontent.com",
+    "svfermi.nl",
+    "images.unsplash.com",
+  ]);
+  const isRemoteFermiAsset =
+    request.method === "GET"
+    && allowedRemoteAssetHosts.has(url.hostname)
+    && request.destination === "image";
+
+  if (isRemoteFermiAsset) {
+    event.respondWith((async () => {
+      const cache = await caches.open(ASSETS);
+      const cached = await cache.match(request, { ignoreVary: true });
+      if (cached) return cached;
+      const response = await fetch(request);
+      if (response.ok || response.type === "opaque") {
+        try { await cache.put(request, response.clone()); } catch { /* Quota: use network response. */ }
+      }
+      return response;
+    })());
+    return;
+  }
+
   if (!eligible(request, url)) return;
   if (request.mode === "navigate") {
     event.respondWith((async () => {
