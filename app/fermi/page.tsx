@@ -133,17 +133,21 @@ export default function FermiPage() {
       }
     };
 
-    const idleId = "requestIdleCallback" in window
-      ? window.requestIdleCallback(warmAllImages, { timeout: 1200 })
-      : window.setTimeout(warmAllImages, 250);
+    const idleWindow = window as Window & typeof globalThis & {
+      requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    const idleId = typeof idleWindow.requestIdleCallback === "function"
+      ? idleWindow.requestIdleCallback(warmAllImages, { timeout: 1200 })
+      : globalThis.setTimeout(warmAllImages, 250);
 
     return () => {
       active = false;
       window.clearTimeout(timeout);
-      if ("cancelIdleCallback" in window && typeof idleId === "number") {
-        window.cancelIdleCallback(idleId);
+      if (typeof idleWindow.cancelIdleCallback === "function") {
+        idleWindow.cancelIdleCallback(idleId);
       } else {
-        window.clearTimeout(idleId);
+        globalThis.clearTimeout(idleId);
       }
     };
   }, []);
