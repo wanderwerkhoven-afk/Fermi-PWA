@@ -4309,7 +4309,7 @@ button {
   z-index: 3;
   display: grid;
   gap: 14px;
-  padding: 0 18px 30px;
+  padding: 0 14px 30px;
 }
 
 .committee-intro-card,
@@ -4325,6 +4325,15 @@ button {
   grid-template-columns: 54px 1fr;
   gap: 12px;
   padding: 17px;
+}
+
+.committee-intro-card > div {
+  min-width: 0;
+}
+
+.committee-detail-shell-accom .committee-intro-card h2 {
+  font-size: 23px;
+  overflow-wrap: anywhere;
 }
 
 .committee-intro-icon {
