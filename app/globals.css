@@ -2460,10 +2460,19 @@ button {
 .fermi-hero-collage {
   position: absolute;
   z-index: 2;
-  top: 10px;
-  right: -18px;
-  bottom: 0;
-  left: 38%;
+  top: -6px;
+  right: -34px;
+  width: 72%;
+  max-width: 390px;
+  pointer-events: none;
+}
+
+.fermi-hero-collage-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: top right;
 }
 
 .fermi-hero-orange-disc {
