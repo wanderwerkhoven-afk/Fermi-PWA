@@ -9139,3 +9139,24 @@ body.member-admin-modal-open{overflow:hidden}
   font-size: 24px;
   cursor: pointer;
 }
+
+
+/* Profile settings dropdown — always above the Profile hero/title artwork */
+.profile-page-shell .profile-hero {
+  overflow: visible;
+}
+
+.profile-page-shell .profile-hero > .topbar {
+  position: relative;
+  z-index: 120;
+}
+
+.profile-page-shell .profile-settings-wrap {
+  position: relative;
+  z-index: 121;
+}
+
+.profile-page-shell .profile-settings-menu {
+  z-index: 122;
+  isolation: isolate;
+}
