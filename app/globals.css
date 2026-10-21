@@ -8580,19 +8580,24 @@ body.member-admin-modal-open{overflow:hidden}
 }
 @media (max-width: 420px) {
   .fermi-page-shell .fermi-page-hero {
-    min-height: 325px;
+    min-height: 286px;
   }
   .fermi-page-shell .fermi-page-title-wrap {
-    min-height: 232px;
+    min-height: 194px;
+    margin-top: 9px;
   }
   .fermi-page-shell .fermi-title-image-wrap {
-    width: min(79%, 275px);
+    width: min(69%, 242px);
+  }
+  .fermi-page-shell .fermi-page-title-wrap > p {
+    margin-top: 4px;
+    font-size: 16px;
   }
   .fermi-page-shell .fermi-hero-collage {
     top: 22px;
     left: auto;
     right: -38px;
-    width: 70%;
+    width: 59%;
     transform: none;
   }
   .fermi-page-shell .fermi-board-card {
