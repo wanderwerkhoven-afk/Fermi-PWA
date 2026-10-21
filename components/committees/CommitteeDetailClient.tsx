@@ -32,7 +32,7 @@ export default function CommitteeDetailClient({ baseCommittee }: { baseCommittee
   const Icon = iconMap[committee.icon];
 
   return (
-    <main className="app-shell committee-detail-shell">
+    <main className={`app-shell committee-detail-shell committee-detail-shell-${committee.slug}`}>
       <div className="noise" aria-hidden="true" />
 
       <section className="committee-detail-hero">
