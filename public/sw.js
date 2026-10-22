@@ -1,14 +1,18 @@
 /* Fermi offline shell: public static assets only; never cache Firebase/API/user data. */
-const VERSION = "fermi-offline-v6";
+const VERSION = "fermi-offline-v7";
 const SHELL = VERSION + "-shell";
 const ASSETS = VERSION + "-assets";
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const HOME = BASE + "/";
+const FERMI_HEADER_REMOTE = [
+  "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png",
+];
 const CORE = [HOME, BASE + "/agenda/", BASE + "/agenda/activiteit/", BASE + "/fermi/", BASE + "/fermi/bestuur/", BASE + "/fermi/commissies/", BASE + "/manifest.webmanifest", BASE + "/icon.svg",
   BASE + "/images/branding/fermi-logo.png",
   BASE + "/images/branding/atoom-loader.png",
   BASE + "/images/home/home-hero-church.png",
-  BASE + "/images/home/home-member-pass-atom.png"];
+  BASE + "/images/home/home-member-pass-atom.png",
+  BASE + "/images/fermi/fermi-hero-collage.png"];
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(SHELL);
@@ -31,6 +35,14 @@ self.addEventListener("install", (event) => {
             if (asset.ok && asset.type !== "opaque") await assets.put(assetUrl, asset);
           }));
         }
+      }
+    }));
+    const assets = await caches.open(ASSETS);
+    await Promise.allSettled(FERMI_HEADER_REMOTE.map(async (url) => {
+      const request = new Request(url, { mode: "no-cors", cache: "reload" });
+      const response = await fetch(request);
+      if (response.ok || response.type === "opaque") {
+        await assets.put(url, response.clone());
       }
     }));
     await self.skipWaiting();
