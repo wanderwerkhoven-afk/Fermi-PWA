@@ -2595,13 +2595,13 @@ button {
 
 /* Fermi board: illustrated backgrounds from the three artwork files on main. */
 .fermi-board-card:nth-child(1) {
-  background: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Voorzitter-container.png") center / 100% 100% no-repeat;
+  background: url("/Fermi-PWA/images/fermi/voorzitter-container.png") center / 100% 100% no-repeat;
 }
 .fermi-board-card:nth-child(2) {
-  background: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Secretaris-container.png") center / 100% 100% no-repeat;
+  background: url("/Fermi-PWA/images/fermi/secretaris-container.png") center / 100% 100% no-repeat;
 }
 .fermi-board-card:nth-child(3) {
-  background: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Penningmeester-container.png") center / 100% 100% no-repeat;
+  background: url("/Fermi-PWA/images/fermi/penningmeester-container.png") center / 100% 100% no-repeat;
 }
 .fermi-board-card .fermi-board-photo {
   background: none;
@@ -8725,7 +8725,7 @@ body.member-admin-modal-open{overflow:hidden}
 .fermi-page-shell .fermi-board-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .fermi-page-shell .fermi-board-card { height: 232px; }
 .fermi-page-shell .fermi-board-card:nth-child(4) {
-  background-image: url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Voorzitter-container.png");
+  background-image: url("/Fermi-PWA/images/fermi/voorzitter-container.png");
 }
 .fermi-page-shell .fermi-board-copy h3 { font-size: clamp(13px, 3.6vw, 17px); }
 .fermi-page-shell .fermi-board-copy p { font-size: 11px; }
@@ -8865,9 +8865,9 @@ body.member-admin-modal-open{overflow:hidden}
 .board-flip-face { position:absolute; inset:0; display:flex; flex-direction:column; overflow:hidden; border:0; border-radius:18px; backface-visibility:hidden; -webkit-backface-visibility:hidden; box-shadow:0 9px 24px rgba(0,0,0,.18); }
 .board-flip-front { padding:0; width:100%; cursor:pointer; background:#f5ead9; color:#092c40; text-align:left; }
 .board-flip-illustration { position:absolute; inset:0; background-size:cover; background-position:center top; }
-.board-flip-illustration-1,.board-flip-illustration-4 { background-image:url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Voorzitter-container.png"); }
-.board-flip-illustration-2 { background-image:url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Secretaris-container.png"); }
-.board-flip-illustration-3 { background-image:url("https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Penningmeester-container.png"); }
+.board-flip-illustration-1,.board-flip-illustration-4 { background-image:url("/Fermi-PWA/images/fermi/voorzitter-container.png"); }
+.board-flip-illustration-2 { background-image:url("/Fermi-PWA/images/fermi/secretaris-container.png"); }
+.board-flip-illustration-3 { background-image:url("/Fermi-PWA/images/fermi/penningmeester-container.png"); }
 .board-flip-front-copy { position:relative; z-index:1; display:flex; flex-direction:column; gap:7px; margin-top:auto; padding:0 12px 16px; width:100%; }
 .board-flip-role-icon { display:grid; place-items:center; width:42px; height:42px; border-radius:50%; background:#ff841d; color:#052d43; margin-bottom:7px; }
 .board-flip-front-copy strong { font:800 clamp(14px,3.6vw,21px)/1.13 Georgia,serif; overflow-wrap:anywhere; }
