@@ -5,6 +5,7 @@
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import sharp from "sharp";
 
 const root = path.join(process.cwd(), "public", "images", "fermi");
 const raw = "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA";
@@ -31,5 +32,28 @@ for (const [filename, url] of assets) {
     console.log(`Fermi artwork: ${filename} (${Math.round(bytes.length/1024)} KiB)`);
   } catch (error) {
     console.warn(`Fermi artwork: ${filename} unavailable; using remote fallback (${error.message})`);
+  }
+}
+
+const presets = [
+  ["fermi-name-page.png", 900],
+  ["voorzitter-container.png", 700],
+  ["secretaris-container.png", 700],
+  ["penningmeester-container.png", 700],
+];
+for (const [filename, width] of presets) {
+  const source = path.join(root, filename);
+  const destination = path.join(root, filename.replace(/\.png$/i, ".webp"));
+  try {
+    const input = await readFile(source);
+    const output = await sharp(input)
+      .rotate()
+      .resize({ width, withoutEnlargement: true })
+      .webp({ quality: 82, effort: 5, alphaQuality: 90 })
+      .toBuffer();
+    await writeFile(destination, output);
+    console.log(`WebP: ${path.basename(destination)} ${Math.round(input.length / 1024)} KiB -> ${Math.round(output.length / 1024)} KiB`);
+  } catch (error) {
+    throw new Error(`Unable to generate required WebP ${filename}: ${error.message}`);
   }
 }
