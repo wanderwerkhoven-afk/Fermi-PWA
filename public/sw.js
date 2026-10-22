@@ -1,5 +1,5 @@
 /* Fermi offline shell: public static assets only; never cache Firebase/API/user data. */
-const VERSION = "fermi-offline-v7";
+const VERSION = "fermi-offline-v8";
 const SHELL = VERSION + "-shell";
 const ASSETS = VERSION + "-assets";
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
@@ -51,7 +51,11 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter((key) => key.startsWith("fermi-offline-") && key !== SHELL && key !== ASSETS).map((key) => caches.delete(key)));
+    // Preserve prior image caches: Home must not lose its images during upgrades.
+    await Promise.all(keys.filter((key) =>
+      key.startsWith("fermi-offline-") && key !== SHELL && key !== ASSETS &&
+      !key.endsWith("-assets")
+    ).map((key) => caches.delete(key)));
     await self.clients.claim();
   })());
 });
@@ -144,6 +148,16 @@ self.addEventListener("fetch", (event) => {
       const cache = await caches.open(ASSETS);
       const cached = await cache.match(request, { ignoreVary: true });
       if (cached) return cached;
+      const previous = (await caches.keys()).filter((key) =>
+        key.startsWith("fermi-offline-") && key.endsWith("-assets") && key !== ASSETS
+      ).reverse();
+      for (const name of previous) {
+        const hit = await (await caches.open(name)).match(request, { ignoreVary: true });
+        if (hit) {
+          try { await cache.put(request, hit.clone()); } catch {}
+          return hit;
+        }
+      }
       const response = await fetch(request);
       if (response.ok || response.type === "opaque") {
         try { await cache.put(request, response.clone()); } catch { /* Quota: use network response. */ }
@@ -175,6 +189,16 @@ self.addEventListener("fetch", (event) => {
     const cache = await caches.open(ASSETS);
     const cached = await cache.match(request);
     if (cached) return cached;
+    const previous = (await caches.keys()).filter((key) =>
+      key.startsWith("fermi-offline-") && key.endsWith("-assets") && key !== ASSETS
+    ).reverse();
+    for (const name of previous) {
+      const hit = await (await caches.open(name)).match(request);
+      if (hit) {
+        try { await cache.put(request, hit.clone()); } catch {}
+        return hit;
+      }
+    }
     const response = await fetch(request);
     if (response.ok && response.type !== "opaque") {
       try { await cache.put(request, response.clone()); } catch { /* Storage quota: fall back to network. */ }
