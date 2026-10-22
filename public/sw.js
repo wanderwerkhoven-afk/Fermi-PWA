@@ -1,18 +1,22 @@
 /* Fermi offline shell: public static assets only; never cache Firebase/API/user data. */
-const VERSION = "fermi-offline-v8";
+const VERSION = "fermi-offline-v9";
 const SHELL = VERSION + "-shell";
 const ASSETS = VERSION + "-assets";
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const HOME = BASE + "/";
 const FERMI_HEADER_REMOTE = [
-  "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png",
+  BASE + "/images/fermi/fermi-name-page.png",
 ];
 const CORE = [HOME, BASE + "/agenda/", BASE + "/agenda/activiteit/", BASE + "/fermi/", BASE + "/fermi/bestuur/", BASE + "/fermi/commissies/", BASE + "/manifest.webmanifest", BASE + "/icon.svg",
   BASE + "/images/branding/fermi-logo.png",
   BASE + "/images/branding/atoom-loader.png",
   BASE + "/images/home/home-hero-church.png",
   BASE + "/images/home/home-member-pass-atom.png",
-  BASE + "/images/fermi/fermi-hero-collage.png"];
+  BASE + "/images/fermi/fermi-hero-collage.png",
+  BASE + "/images/fermi/fermi-name-page.png",
+  BASE + "/images/fermi/voorzitter-container.png",
+  BASE + "/images/fermi/secretaris-container.png",
+  BASE + "/images/fermi/penningmeester-container.png"];
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(SHELL);
