@@ -228,6 +228,7 @@ export default function HomePage() {
     // Only wait for the two fixed hero assets, with a short safety timeout.
     const criticalSources = [
       "/Fermi-PWA/images/home/home-hero-church.png",
+      "/Fermi-PWA/images/home/member-pass-popup.png",
       "/Fermi-PWA/images/home/home-member-pass-atom.png",
     ];
 
@@ -765,6 +766,8 @@ export default function HomePage() {
               <img
                 className="member-pass-modal-image"
                 src="/Fermi-PWA/images/home/member-pass-popup.png"
+                loading="eager"
+                fetchPriority="high"
                 alt="Digitale ledenpas van SV Fermi"
                 decoding="async"
                 onLoad={() => setMemberPassImageReady(true)}
