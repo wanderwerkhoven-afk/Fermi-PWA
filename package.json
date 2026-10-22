@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "predev": "node scripts/generate-agenda-image-manifest.mjs",
-    "prebuild": "node scripts/generate-agenda-image-manifest.mjs"
+    "predev": "node scripts/prepare-fermi-images.mjs && node scripts/generate-agenda-image-manifest.mjs",
+    "prebuild": "node scripts/prepare-fermi-images.mjs && node scripts/generate-agenda-image-manifest.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
