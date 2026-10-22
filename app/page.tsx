@@ -392,6 +392,7 @@ export default function HomePage() {
               decoding="async"
               loading="eager"
               fetchPriority="high"
+              onError={(event) => { event.currentTarget.style.display = "none"; }}
             />
             <img
               className="home-hero-atom"
@@ -400,6 +401,7 @@ export default function HomePage() {
               decoding="async"
               loading="eager"
               fetchPriority="high"
+              onError={(event) => { event.currentTarget.style.display = "none"; }}
             />
           </div>
         </div>
@@ -471,7 +473,13 @@ export default function HomePage() {
             >
               {(() => {
                 const featuredImage = resolveHomeFeaturedImage(featuredActivity);
-                return featuredImage ? <img className="home-featured-image is-ready" src={featuredImage} alt="" decoding="async" /> : null;
+                return featuredImage ? <img
+                  className="home-featured-image is-ready"
+                  src={featuredImage}
+                  alt=""
+                  decoding="async"
+                  onError={(event) => { event.currentTarget.style.display = "none"; }}
+                /> : null;
               })()}
             </div>
           </article>
