@@ -67,7 +67,7 @@ function BarChartIcon({ size = 24 }: { size?: number }) {
 
 const FERMI_VISUAL_ASSETS = [
   "/Fermi-PWA/images/branding/fermi-logo.png",
-  "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png",
+  "/Fermi-PWA/images/fermi/fermi-name-page.png",
   "/Fermi-PWA/images/fermi/fermi-hero-collage.png",
   "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Voorzitter-container.png",
   "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Secretaris-container.png",
@@ -164,7 +164,7 @@ export default function FermiPage() {
           <div className="fermi-title-image-wrap">
             <img
               className="fermi-title-image"
-              src="https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png"
+              src="/Fermi-PWA/images/fermi/fermi-name-page.png"
               alt="Fermi"
               decoding="async"
               loading="eager"
