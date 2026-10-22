@@ -1,0 +1,50 @@
+name: Build and deploy Fermi PWA
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fermi-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_ACTIONS: "true"
+      GITHUB_PAGES: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package.json
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Generate optimized WebP images and build
+        run: npm run build
+      - name: Verify exported Fermi artwork
+        run: |
+          test -s out/images/fermi/fermi-name-page.webp
+          test -s out/images/fermi/voorzitter-container.webp
+          test -s out/images/fermi/secretaris-container.webp
+          test -s out/images/fermi/penningmeester-container.webp
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
