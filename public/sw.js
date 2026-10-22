@@ -12,6 +12,7 @@ const CORE = [HOME, BASE + "/agenda/", BASE + "/agenda/activiteit/", BASE + "/fe
   BASE + "/images/branding/atoom-loader.png",
   BASE + "/images/home/home-hero-church.png",
   BASE + "/images/home/home-member-pass-atom.png",
+  BASE + "/images/home/member-pass-popup.png",
   BASE + "/images/fermi/fermi-hero-collage.png",
   BASE + "/images/fermi/fermi-name-page.png",
   BASE + "/images/fermi/voorzitter-container.png",
