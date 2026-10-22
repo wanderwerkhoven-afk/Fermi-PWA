@@ -173,6 +173,7 @@ export default function FermiPage() {
               decoding="async"
               loading="eager"
               fetchPriority="high"
+              onError={(event) => { event.currentTarget.style.display = "none"; }}
             />
           </div>
           <p>Alles over de vereniging</p>
@@ -185,6 +186,7 @@ export default function FermiPage() {
               loading="eager"
               decoding="async"
               fetchPriority="high"
+              onError={(event) => { event.currentTarget.style.display = "none"; }}
             />
           </div>
         </div>
