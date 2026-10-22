@@ -113,12 +113,8 @@ export default function FermiPage() {
     });
 
     const warmAllImages = () => {
-      FERMI_VISUAL_ASSETS.forEach((src) => {
-        const image = new Image();
-        image.decoding = "async";
-        image.src = src;
-      });
-
+      // Do not start every image download on the main thread.
+      // The service worker warms the remaining artwork in the background.
       const sendCacheRequest = (worker: ServiceWorker | null | undefined) => {
         worker?.postMessage({
           type: "FERMI_CACHE_FERMI_ASSETS",
