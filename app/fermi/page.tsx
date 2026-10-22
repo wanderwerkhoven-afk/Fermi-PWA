@@ -68,7 +68,7 @@ function BarChartIcon({ size = 24 }: { size?: number }) {
 const FERMI_VISUAL_ASSETS = [
   "/Fermi-PWA/images/branding/fermi-logo.png",
   "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/Fermi-name-page.png",
-  "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/public/images/fermi/fermi-hero-collage.png",
+  "/Fermi-PWA/images/fermi/fermi-hero-collage.png",
   "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Voorzitter-container.png",
   "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Secretaris-container.png",
   "https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/b119114b57460146413d68fee5b32ccae0350249/Penningmeester-container.png",
@@ -94,7 +94,7 @@ export default function FermiPage() {
   const liveBoard = association.board;
   const [fermiVisualReady, setFermiVisualReady] = useState(false);
   useEffect(() => {
-    const criticalSources = FERMI_VISUAL_ASSETS.slice(0, 2);
+    const criticalSources = FERMI_VISUAL_ASSETS.slice(0, 3);
     let active = true;
     const timeout = window.setTimeout(() => {
       if (active) setFermiVisualReady(true);
@@ -180,7 +180,7 @@ export default function FermiPage() {
           <div className="fermi-hero-collage" aria-hidden="true">
             <img
               className="fermi-hero-collage-image"
-              src="https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/public/images/fermi/fermi-hero-collage.png"
+              src="/Fermi-PWA/images/fermi/fermi-hero-collage.png"
               alt=""
               loading="eager"
               decoding="async"
