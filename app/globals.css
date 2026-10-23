@@ -9915,7 +9915,7 @@ body.member-admin-modal-open{overflow:hidden}
 }
 .profile-crop-circle{
   position:absolute;
-  inset:8%;
+  inset:0;
   border:3px solid rgba(255,255,255,.96);
   border-radius:50%;
   box-shadow:0 0 0 999px rgba(1,16,25,.56),0 0 0 1px rgba(0,0,0,.28);
