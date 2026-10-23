@@ -1,5 +1,5 @@
 /* Fermi offline shell: public static assets only; never cache Firebase/API/user data. */
-const VERSION = "fermi-offline-v9";
+const VERSION = "fermi-offline-v10";
 const SHELL = VERSION + "-shell";
 const ASSETS = VERSION + "-assets";
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
@@ -7,7 +7,7 @@ const HOME = BASE + "/";
 const FERMI_HEADER_REMOTE = [
   BASE + "/images/fermi/fermi-name-page.png",
 ];
-const CORE = [HOME, BASE + "/agenda/", BASE + "/agenda/activiteit/", BASE + "/fermi/", BASE + "/fermi/bestuur/", BASE + "/fermi/commissies/", BASE + "/manifest.webmanifest", BASE + "/icon.svg",
+const CORE = [HOME, BASE + "/agenda/", BASE + "/agenda/activiteit/", BASE + "/fermi/", BASE + "/fermi/bestuur/", BASE + "/fermi/commissies/", BASE + "/fermi/documenten/beleidsplan/", BASE + "/documents/beleidsplan-fermi-2026-2027.pdf", BASE + "/vendor/pdfjs/pdf.worker.min.mjs", BASE + "/manifest.webmanifest", BASE + "/icon.svg",
   BASE + "/images/branding/fermi-logo.png",
   BASE + "/images/branding/atoom-loader.png",
   BASE + "/images/home/home-hero-church.png",
@@ -188,6 +188,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   const isAsset = url.pathname.startsWith(BASE + "/_next/static/") ||
+    url.pathname === BASE + "/documents/beleidsplan-fermi-2026-2027.pdf" ||
+    url.pathname === BASE + "/vendor/pdfjs/pdf.worker.min.mjs" ||
     /\.(?:png|jpe?g|webp|svg|gif|ico|css|js|woff2?|webmanifest)$/i.test(url.pathname);
   if (!isAsset) return;
   event.respondWith((async () => {
