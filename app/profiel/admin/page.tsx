@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { ArrowLeft, CalendarCog, ChevronRight, Megaphone, ShieldCheck, UserCog, UsersRound } from "lucide-react";
+import { ArrowLeft, CalendarCog, ChevronRight, Megaphone, Mail, ShieldCheck, UserCog, UsersRound } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { getUserProfile } from "@/lib/services/users";
 
@@ -12,6 +12,7 @@ const modules = [
   { title: "Activiteiten", description: "Activiteiten, inschrijvingen en agenda beheren", href: "/profiel/activiteiten-admin", icon: CalendarCog },
   { title: "Mededelingen", description: "Mededelingen publiceren en aanpassen", href: "/profiel/mededelingen-admin", icon: Megaphone },
   { title: "Vereniging", description: "Vier bestuursleden en commissies beheren", href: "/profiel/vereniging-admin", icon: UsersRound },
+  { title: "E-mailcampagnes", description: "E-mails, uitnodigingen en mailcampagnes beheren", href: "/profiel/email-admin", icon: Mail },
 ];
 
 export default function AdminOverviewPage() {
