@@ -2824,6 +2824,7 @@ button {
 
 .fermi-doc-row {
   width: 100%;
+  text-decoration: none;
   min-height: 75px;
   display: grid;
   grid-template-columns: 49px minmax(0,1fr) 24px;
