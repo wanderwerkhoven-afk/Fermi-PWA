@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -25,14 +26,18 @@ type PdfDocument = {
   numPages: number;
   getPage: (pageNumber: number) => Promise<PdfPage>;
 };
-type PdfJsModule = {
-  GlobalWorkerOptions: { workerSrc: string };
-  getDocument: (source: string) => { promise: Promise<PdfDocument> };
-};
+function resolveBasePath() {
+  if (typeof window === "undefined") return "";
+  return window.location.pathname.startsWith("/Fermi-PWA") ? "/Fermi-PWA" : "";
+}
 
-const PDF_URL = "/Fermi-PWA/documents/beleidsplan-fermi-2026-2027.pdf";
-const PDF_JS_URL = "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.4.299/build/pdf.min.mjs";
-const PDF_WORKER_URL = "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.4.299/build/pdf.worker.min.mjs";
+function resolvePdfUrl() {
+  return `${resolveBasePath()}/documents/beleidsplan-fermi-2026-2027.pdf`;
+}
+
+function resolveWorkerUrl() {
+  return `${resolveBasePath()}/vendor/pdfjs/pdf.worker.min.mjs`;
+}
 
 export default function FermiPdfViewer() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -93,12 +98,8 @@ export default function FermiPdfViewer() {
       setError("");
 
       try {
-        const importModule = new Function("url", "return import(url)") as (url: string) => Promise<PdfJsModule>;
-        const pdfjs = await importModule(PDF_JS_URL);
-        if (!active) return;
-
-        pdfjs.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
-        const pdf = await pdfjs.getDocument(PDF_URL).promise;
+        GlobalWorkerOptions.workerSrc = resolveWorkerUrl();
+        const pdf = await getDocument(resolvePdfUrl()).promise;
         if (!active) return;
 
         documentRef.current = pdf;
@@ -217,7 +218,7 @@ export default function FermiPdfViewer() {
             <FileText size={34} />
             <strong>Preview niet beschikbaar</strong>
             <small>{error}</small>
-            <a href={PDF_URL} target="_blank" rel="noopener noreferrer">Open de PDF rechtstreeks</a>
+            <a href={resolvePdfUrl()} target="_blank" rel="noopener noreferrer">Open de PDF rechtstreeks</a>
           </div>
         )}
 
@@ -228,11 +229,11 @@ export default function FermiPdfViewer() {
       </section>
 
       <footer className="fermi-pdf-actions">
-        <a className="fermi-pdf-action secondary" href={PDF_URL} target="_blank" rel="noopener noreferrer">
+        <a className="fermi-pdf-action secondary" href={resolvePdfUrl()} target="_blank" rel="noopener noreferrer">
           <ExternalLink size={18} />
           Open origineel
         </a>
-        <a className="fermi-pdf-action primary" href={PDF_URL} download="beleidsplan-fermi-2026-2027.pdf">
+        <a className="fermi-pdf-action primary" href={resolvePdfUrl()} download="beleidsplan-fermi-2026-2027.pdf">
           <Download size={18} />
           Download PDF
         </a>
