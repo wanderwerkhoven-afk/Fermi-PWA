@@ -87,7 +87,7 @@ const documents = [
   {
     title: "Beleidsplan",
     subtitle: "Het beleidsplan van S.V. Fermi",
-    href: "/Fermi-PWA/documents/beleidsplan-fermi-2026-2027.pdf",
+    href: "/fermi/documenten/beleidsplan",
   },
   { title: "Huishoudelijk reglement", subtitle: "Het huishoudelijk reglement van S.V. Fermi" },
   { title: "ALV-documenten", subtitle: "Notulen, jaarverslagen en andere ALV-stukken" },
