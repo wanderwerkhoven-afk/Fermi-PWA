@@ -18,7 +18,14 @@ function loadImage(file: File): Promise<HTMLImageElement> {
   });
 }
 
-async function photoDataUrl(file: File): Promise<string> {
+export type ProfilePhotoCrop = {
+  zoom: number;
+  offsetX: number;
+  offsetY: number;
+  viewportSize: number;
+};
+
+async function photoDataUrl(file: File, crop?: ProfilePhotoCrop): Promise<string> {
   if (!file.type.startsWith("image/") && !/\.(heic|heif)$/i.test(file.name)) {
     throw new Error("Kies een foto uit je album.");
   }
@@ -30,8 +37,38 @@ async function photoDataUrl(file: File): Promise<string> {
   canvas.height = OUTPUT_SIZE;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Je browser kan deze foto niet verwerken.");
-  const size = Math.min(img.naturalWidth, img.naturalHeight);
-  context.drawImage(img, (img.naturalWidth - size) / 2, (img.naturalHeight - size) / 2, size, size, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+  const renderCrop = (dimension: number) => {
+    canvas.width = dimension;
+    canvas.height = dimension;
+    context.clearRect(0, 0, dimension, dimension);
+
+    if (!crop) {
+      const size = Math.min(img.naturalWidth, img.naturalHeight);
+      context.drawImage(img, (img.naturalWidth - size) / 2, (img.naturalHeight - size) / 2, size, size, 0, 0, dimension, dimension);
+      return;
+    }
+
+    const zoom = Math.max(1, Math.min(3, crop.zoom));
+    const baseScale = Math.max(dimension / img.naturalWidth, dimension / img.naturalHeight);
+    const scale = baseScale * zoom;
+    const drawWidth = img.naturalWidth * scale;
+    const drawHeight = img.naturalHeight * scale;
+    const viewportScale = dimension / Math.max(1, crop.viewportSize);
+    const maxX = Math.max(0, (drawWidth - dimension) / 2);
+    const maxY = Math.max(0, (drawHeight - dimension) / 2);
+    const offsetX = Math.max(-maxX, Math.min(maxX, crop.offsetX * viewportScale));
+    const offsetY = Math.max(-maxY, Math.min(maxY, crop.offsetY * viewportScale));
+
+    context.drawImage(
+      img,
+      (dimension - drawWidth) / 2 + offsetX,
+      (dimension - drawHeight) / 2 + offsetY,
+      drawWidth,
+      drawHeight,
+    );
+  };
+
+  renderCrop(OUTPUT_SIZE);
 
   // Same canvas-to-Data-URL approach used for saved Cocktail Maestro recipes.
   // JPEG is reliably decoded by iOS Safari, including installed Home Screen PWAs.
@@ -39,9 +76,7 @@ async function photoDataUrl(file: File): Promise<string> {
   // normal detailed photos that exceed the Firestore inline-image budget.
   for (const dimension of [256, 224, 192, 160, 128]) {
     if (canvas.width !== dimension) {
-      canvas.width = dimension;
-      canvas.height = dimension;
-      context.drawImage(img, (img.naturalWidth - size) / 2, (img.naturalHeight - size) / 2, size, size, 0, 0, dimension, dimension);
+      renderCrop(dimension);
     }
     for (const quality of [0.78, 0.65, 0.52, 0.4, 0.3]) {
       const result = canvas.toDataURL("image/jpeg", quality);
@@ -53,8 +88,8 @@ async function photoDataUrl(file: File): Promise<string> {
   throw new Error("Deze foto kon niet voldoende worden verkleind.");
 }
 
-export async function uploadOwnProfilePhoto(uid: string, file: File) {
-  const photoUrl = await photoDataUrl(file);
+export async function uploadOwnProfilePhoto(uid: string, file: File, crop?: ProfilePhotoCrop) {
+  const photoUrl = await photoDataUrl(file, crop);
   await updateDoc(doc(db, "users", uid), {
     "profile.photoUrl": photoUrl,
     updatedAt: serverTimestamp(),
