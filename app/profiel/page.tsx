@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import { updateOwnUserProfile } from "../../lib/services/users";
@@ -89,8 +89,21 @@ export default function ProfilePage() {
     const timer = window.setTimeout(() => setProfileNotice(""), 4500);
     return () => window.clearTimeout(timer);
   }, [profileNotice]);
+
+  useEffect(() => {
+    return () => {
+      if (cropUrl) URL.revokeObjectURL(cropUrl);
+    };
+  }, [cropUrl]);
   const [photoBusy, setPhotoBusy] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [cropUrl, setCropUrl] = useState("");
+  const [cropZoom, setCropZoom] = useState(1);
+  const [cropOffset, setCropOffset] = useState({ x: 0, y: 0 });
+  const [cropImageSize, setCropImageSize] = useState({ width: 1, height: 1 });
+  const cropViewportRef = useRef<HTMLDivElement | null>(null);
+  const cropDragRef = useRef<{ pointerId: number; x: number; y: number; startX: number; startY: number } | null>(null);
   const [profileForm, setProfileForm] = useState({
     firstName: "",
     prefix: "",
@@ -126,18 +139,95 @@ export default function ProfilePage() {
     setEditOpen(true);
   }
 
-  async function handleProfilePhoto(file: File | null) {
-    if (!fermiUser || !file || photoBusy) return;
+  function closePhotoCropper() {
+    if (cropUrl) URL.revokeObjectURL(cropUrl);
+    setCropFile(null);
+    setCropUrl("");
+    setCropZoom(1);
+    setCropOffset({ x: 0, y: 0 });
+    setCropImageSize({ width: 1, height: 1 });
+    cropDragRef.current = null;
+  }
+
+  function handleProfilePhoto(file: File | null) {
+    if (!file || photoBusy) return;
+    if (cropUrl) URL.revokeObjectURL(cropUrl);
+    const url = URL.createObjectURL(file);
+    setCropFile(file);
+    setCropUrl(url);
+    setCropZoom(1);
+    setCropOffset({ x: 0, y: 0 });
+    setProfileNotice("");
+  }
+
+  function cropBounds(zoom = cropZoom) {
+    const viewport = cropViewportRef.current?.clientWidth || 280;
+    const baseScale = Math.max(viewport / cropImageSize.width, viewport / cropImageSize.height);
+    const drawWidth = cropImageSize.width * baseScale * zoom;
+    const drawHeight = cropImageSize.height * baseScale * zoom;
+    return {
+      maxX: Math.max(0, (drawWidth - viewport) / 2),
+      maxY: Math.max(0, (drawHeight - viewport) / 2),
+    };
+  }
+
+  function clampCropOffset(x: number, y: number, zoom = cropZoom) {
+    const { maxX, maxY } = cropBounds(zoom);
+    return {
+      x: Math.max(-maxX, Math.min(maxX, x)),
+      y: Math.max(-maxY, Math.min(maxY, y)),
+    };
+  }
+
+  function handleCropZoom(nextZoom: number) {
+    const zoom = Math.max(1, Math.min(3, nextZoom));
+    setCropZoom(zoom);
+    setCropOffset((offset) => clampCropOffset(offset.x, offset.y, zoom));
+  }
+
+  function handleCropPointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    cropDragRef.current = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      startX: cropOffset.x,
+      startY: cropOffset.y,
+    };
+  }
+
+  function handleCropPointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    const drag = cropDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    setCropOffset(clampCropOffset(
+      drag.startX + event.clientX - drag.x,
+      drag.startY + event.clientY - drag.y,
+    ));
+  }
+
+  function handleCropPointerUp(event: React.PointerEvent<HTMLDivElement>) {
+    if (cropDragRef.current?.pointerId === event.pointerId) {
+      cropDragRef.current = null;
+    }
+  }
+
+  async function saveProfilePhotoCrop() {
+    if (!fermiUser || !cropFile || photoBusy) return;
     setPhotoBusy(true);
     setProfileNotice("");
     try {
-      const photoDataUrl = await uploadOwnProfilePhoto(fermiUser.uid, file);
+      const photoDataUrl = await uploadOwnProfilePhoto(fermiUser.uid, cropFile, {
+        zoom: cropZoom,
+        offsetX: cropOffset.x,
+        offsetY: cropOffset.y,
+        viewportSize: cropViewportRef.current?.clientWidth || 280,
+      });
       setPhotoPreview(photoDataUrl);
       setProfileNotice("Profielfoto bijgewerkt.");
+      closePhotoCropper();
     } catch (error) {
       console.error(error);
       setProfileNotice(error instanceof Error ? error.message : "Profielfoto uploaden is niet gelukt.");
-      setPhotoPreview(null);
     } finally {
       setPhotoBusy(false);
     }
@@ -376,6 +466,68 @@ export default function ProfilePage() {
         </section>
       </section>
 
+      {cropFile && cropUrl && (
+        <div className="profile-crop-backdrop" role="presentation" onClick={() => !photoBusy && closePhotoCropper()}>
+          <section className="profile-crop-modal" role="dialog" aria-modal="true" aria-label="Profielfoto bijsnijden" onClick={(event) => event.stopPropagation()}>
+            <header>
+              <div>
+                <small>PROFIELFOTO</small>
+                <h2>Kies je uitsnede</h2>
+                <p>Sleep de foto en zoom totdat je profielfoto precies goed staat.</p>
+              </div>
+              <button type="button" aria-label="Sluiten" onClick={closePhotoCropper} disabled={photoBusy}>×</button>
+            </header>
+
+            <div
+              className="profile-crop-stage"
+              ref={cropViewportRef}
+              onPointerDown={handleCropPointerDown}
+              onPointerMove={handleCropPointerMove}
+              onPointerUp={handleCropPointerUp}
+              onPointerCancel={handleCropPointerUp}
+            >
+              <img
+                src={cropUrl}
+                alt=""
+                draggable={false}
+                onLoad={(event) => {
+                  setCropImageSize({
+                    width: event.currentTarget.naturalWidth,
+                    height: event.currentTarget.naturalHeight,
+                  });
+                  setCropOffset({ x: 0, y: 0 });
+                }}
+                style={{
+                  transform: `translate3d(calc(-50% + ${cropOffset.x}px), calc(-50% + ${cropOffset.y}px), 0) scale(${cropZoom})`,
+                }}
+              />
+              <span className="profile-crop-circle" aria-hidden="true" />
+            </div>
+
+            <div className="profile-crop-zoom">
+              <span>−</span>
+              <input
+                type="range"
+                min="1"
+                max="3"
+                step="0.01"
+                value={cropZoom}
+                onChange={(event) => handleCropZoom(Number(event.target.value))}
+                aria-label="Zoom profielfoto"
+              />
+              <span>+</span>
+            </div>
+
+            <footer>
+              <button type="button" className="secondary" onClick={closePhotoCropper} disabled={photoBusy}>Annuleren</button>
+              <button type="button" className="primary" onClick={() => void saveProfilePhotoCrop()} disabled={photoBusy}>
+                <Save size={17} /> {photoBusy ? "Opslaan…" : "Gebruik foto"}
+              </button>
+            </footer>
+          </section>
+        </div>
+      )}
+
       {editOpen && fermiUser && (
         <div className="profile-edit-modal-backdrop" role="presentation" onClick={() => !savingProfile && setEditOpen(false)}>
           <section className="profile-edit-modal" role="dialog" aria-modal="true" aria-label="Profiel bewerken" onClick={(event) => event.stopPropagation()}>
@@ -399,7 +551,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="profile-photo-editor-copy">
                   <strong>Profielfoto</strong>
-                  <span>Vierkante uitsnede, automatisch geoptimaliseerd voor de app.</span>
+                  <span>Kies een foto en bepaal daarna zelf wat er binnen de ronde profielfoto zichtbaar is.</span>
                   <div className="profile-photo-editor-actions">
                     <label className={photoBusy ? "is-busy" : ""}>
                       <UserRound size={16} />
