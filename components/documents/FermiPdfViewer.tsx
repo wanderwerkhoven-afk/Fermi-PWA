@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { GlobalWorkerOptions, getDocument, type PDFDocumentProxy } from "pdfjs-dist";
+import { GlobalWorkerOptions, getDocument, type PDFDocumentProxy, type RenderTask } from "pdfjs-dist";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -152,8 +152,10 @@ async function flattenOutline(pdf: PDFDocumentProxy, items: PdfOutlineItem[], de
 
 export default function FermiPdfViewer() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasWrapRef = useRef<HTMLDivElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const documentRef = useRef<PDFDocumentProxy | null>(null);
+  const renderTaskRef = useRef<RenderTask | null>(null);
   const renderIdRef = useRef(0);
   const pinchRef = useRef<{
     active: boolean;
@@ -187,6 +189,16 @@ export default function FermiPdfViewer() {
     setRendering(true);
 
     try {
+      if (renderTaskRef.current) {
+        renderTaskRef.current.cancel();
+        try {
+          await renderTaskRef.current.promise;
+        } catch {
+          // Expected when a previous render is cancelled for a newer render.
+        }
+        renderTaskRef.current = null;
+      }
+
       const page = await pdf.getPage(nextPage);
       if (renderId !== renderIdRef.current) return;
 
@@ -206,10 +218,23 @@ export default function FermiPdfViewer() {
       canvas.style.height = `${Math.floor(baseViewport.height * cssScale)}px`;
 
       context.clearRect(0, 0, canvas.width, canvas.height);
-      await page.render({ canvasContext: context, viewport: renderViewport }).promise;
+      const renderTask = page.render({ canvasContext: context, viewport: renderViewport });
+      renderTaskRef.current = renderTask;
+      await renderTask.promise;
+
+      if (renderTaskRef.current === renderTask) {
+        renderTaskRef.current = null;
+      }
     } catch (cause) {
-      console.error(cause);
-      setError("Deze pagina kon niet worden weergegeven.");
+      const cancelled = cause instanceof Error && (
+        cause.name === "RenderingCancelledException"
+        || cause.message.includes("Rendering cancelled")
+      );
+
+      if (!cancelled && renderId === renderIdRef.current) {
+        console.error(cause);
+        setError("Deze pagina kon niet worden weergegeven.");
+      }
     } finally {
       if (renderId === renderIdRef.current) setRendering(false);
     }
@@ -255,6 +280,8 @@ export default function FermiPdfViewer() {
     return () => {
       active = false;
       renderIdRef.current += 1;
+      renderTaskRef.current?.cancel();
+      renderTaskRef.current = null;
     };
   }, []);
 
@@ -341,12 +368,33 @@ export default function FermiPdfViewer() {
       Math.max(0.7, Number((pinchRef.current.startZoom * ratio).toFixed(2))),
     );
 
-    setZoom(nextZoom);
+    const visualScale = nextZoom / pinchRef.current.startZoom;
+    if (canvasWrapRef.current) {
+      canvasWrapRef.current.style.transform = `scale(${visualScale})`;
+    }
   }
 
   function handleTouchEnd(event: React.TouchEvent<HTMLElement>) {
-    if (event.touches.length < 2) {
+    if (pinchRef.current.active && event.touches.length < 2) {
+      const remainingTouch = event.touches[0] ?? event.changedTouches[0];
+      void remainingTouch;
+
+      const wrap = canvasWrapRef.current;
+      const transform = wrap?.style.transform || "";
+      const match = transform.match(/scale\(([^)]+)\)/);
+      const visualScale = match ? Number(match[1]) : 1;
+      const nextZoom = Math.min(
+        2.2,
+        Math.max(0.7, Number((pinchRef.current.startZoom * visualScale).toFixed(2))),
+      );
+
       pinchRef.current.active = false;
+
+      if (wrap) {
+        wrap.style.transform = "";
+      }
+
+      setZoom(nextZoom);
     }
 
     if (!swipeRef.current.active || event.changedTouches.length !== 1) return;
@@ -460,7 +508,10 @@ export default function FermiPdfViewer() {
           </div>
         )}
 
-        <div className={`fermi-pdf-canvas-wrap${loading || error ? " hidden" : ""}`}>
+        <div
+          ref={canvasWrapRef}
+          className={`fermi-pdf-canvas-wrap${loading || error ? " hidden" : ""}`}
+        >
           <canvas ref={canvasRef} aria-label={`Pagina ${pageNumber} van het beleidsplan`} />
           {rendering && <span className="fermi-pdf-rendering">Pagina laden…</span>}
         </div>
