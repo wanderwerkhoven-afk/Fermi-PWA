@@ -10,8 +10,10 @@ import {
   Download,
   ExternalLink,
   FileText,
+  ListTree,
   Minus,
   Plus,
+  X,
 } from "lucide-react";
 
 function resolveBasePath() {
@@ -27,6 +29,51 @@ function resolveWorkerUrl() {
   return `${resolveBasePath()}/vendor/pdfjs/pdf.worker.min.mjs`;
 }
 
+type TocItem = {
+  title: string;
+  page: number | null;
+  depth: number;
+};
+
+type PdfOutlineItem = NonNullable<Awaited<ReturnType<PDFDocumentProxy["getOutline"]>>>[number];
+
+async function outlineItemPage(pdf: PDFDocumentProxy, item: PdfOutlineItem): Promise<number | null> {
+  if (!item.dest) return null;
+
+  const destination = typeof item.dest === "string"
+    ? await pdf.getDestination(item.dest)
+    : item.dest;
+
+  if (!destination?.length) return null;
+
+  const first = destination[0];
+  if (typeof first === "number") return first + 1;
+
+  if (first && typeof first === "object" && "num" in first) {
+    return (await pdf.getPageIndex(first)) + 1;
+  }
+
+  return null;
+}
+
+async function flattenOutline(pdf: PDFDocumentProxy, items: PdfOutlineItem[], depth = 0): Promise<TocItem[]> {
+  const result: TocItem[] = [];
+
+  for (const item of items) {
+    result.push({
+      title: item.title || "Onderdeel",
+      page: await outlineItemPage(pdf, item),
+      depth,
+    });
+
+    if (item.items?.length) {
+      result.push(...await flattenOutline(pdf, item.items, depth + 1));
+    }
+  }
+
+  return result;
+}
+
 export default function FermiPdfViewer() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
@@ -39,6 +86,8 @@ export default function FermiPdfViewer() {
   const [loading, setLoading] = useState(true);
   const [rendering, setRendering] = useState(false);
   const [error, setError] = useState("");
+  const [toc, setToc] = useState<TocItem[]>([]);
+  const [tocOpen, setTocOpen] = useState(false);
 
   const renderPage = useCallback(async (nextPage = pageNumber, nextZoom = zoom) => {
     const pdf = documentRef.current;
@@ -93,6 +142,12 @@ export default function FermiPdfViewer() {
         documentRef.current = pdf;
         setPageCount(pdf.numPages);
         setPageNumber(1);
+
+        const outline = await pdf.getOutline();
+        if (active && outline?.length) {
+          setToc(await flattenOutline(pdf, outline));
+        }
+
         setLoading(false);
       } catch (cause) {
         console.error(cause);
@@ -151,6 +206,13 @@ export default function FermiPdfViewer() {
     setZoom((current) => Math.min(2.2, Number((current + 0.15).toFixed(2))));
   }
 
+  function goToTocPage(page: number | null) {
+    if (!page) return;
+    setPageNumber(Math.min(pageCount, Math.max(1, page)));
+    setTocOpen(false);
+    stageRef.current?.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }
+
   return (
     <main className="fermi-pdf-page">
       <header className="fermi-pdf-header">
@@ -168,6 +230,17 @@ export default function FermiPdfViewer() {
       </header>
 
       <section className="fermi-pdf-toolbar" aria-label="PDF bediening">
+        <button
+          type="button"
+          className="fermi-pdf-toc-button"
+          onClick={() => setTocOpen(true)}
+          disabled={loading}
+          aria-label="Open inhoudsopgave"
+        >
+          <ListTree size={18} />
+          Inhoud
+        </button>
+
         <div className="fermi-pdf-toolbar-group">
           <button type="button" onClick={previousPage} disabled={pageNumber <= 1 || loading} aria-label="Vorige pagina">
             <ChevronLeft size={19} />
@@ -215,6 +288,52 @@ export default function FermiPdfViewer() {
           {rendering && <span className="fermi-pdf-rendering">Pagina laden…</span>}
         </div>
       </section>
+
+      {tocOpen && (
+        <div className="fermi-pdf-toc-backdrop" onClick={() => setTocOpen(false)}>
+          <section
+            className="fermi-pdf-toc-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Inhoudsopgave"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <header>
+              <div>
+                <small>BELEIDSPLAN</small>
+                <h2>Inhoudsopgave</h2>
+              </div>
+              <button type="button" onClick={() => setTocOpen(false)} aria-label="Sluit inhoudsopgave">
+                <X size={20} />
+              </button>
+            </header>
+
+            {toc.length > 0 ? (
+              <div className="fermi-pdf-toc-list">
+                {toc.map((item, index) => (
+                  <button
+                    type="button"
+                    key={`${item.title}-${index}`}
+                    className={pageNumber === item.page ? "active" : ""}
+                    style={{ paddingLeft: `${14 + Math.min(item.depth, 3) * 18}px` }}
+                    onClick={() => goToTocPage(item.page)}
+                    disabled={!item.page}
+                  >
+                    <span>{item.title}</span>
+                    <small>{item.page ? `p. ${item.page}` : "—"}</small>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="fermi-pdf-toc-empty">
+                <ListTree size={30} />
+                <strong>Geen PDF-bookmarks gevonden</strong>
+                <small>Voor dit document kunnen we ook een vaste Fermi-inhoudsopgave met hoofdstukken en paginanummers instellen.</small>
+              </div>
+            )}
+          </section>
+        </div>
+      )}
 
       <footer className="fermi-pdf-actions">
         <a className="fermi-pdf-action secondary" href={resolvePdfUrl()} target="_blank" rel="noopener noreferrer">
