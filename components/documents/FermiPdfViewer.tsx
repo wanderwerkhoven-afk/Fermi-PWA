@@ -317,8 +317,12 @@ export default function FermiPdfViewer() {
           disabled={loading}
           aria-label="Open inhoudsopgave"
         >
-          <ListTree size={18} />
-          Inhoud
+          <span className="fermi-pdf-toc-button-icon"><ListTree size={18} /></span>
+          <span className="fermi-pdf-toc-button-copy">
+            <strong>Inhoudsopgave</strong>
+            <small>Spring naar hoofdstuk</small>
+          </span>
+          <ChevronRight size={18} className="fermi-pdf-toc-button-chevron" />
         </button>
 
         <div className="fermi-pdf-toolbar-group">
@@ -378,6 +382,7 @@ export default function FermiPdfViewer() {
             aria-label="Inhoudsopgave"
             onClick={(event) => event.stopPropagation()}
           >
+            <span className="fermi-pdf-toc-grabber" aria-hidden="true" />
             <header>
               <div>
                 <small>BELEIDSPLAN</small>
@@ -394,7 +399,7 @@ export default function FermiPdfViewer() {
                   <button
                     type="button"
                     key={`${item.title}-${index}`}
-                    className={pageNumber === item.page ? "active" : ""}
+                    className={`depth-${item.depth}${pageNumber === item.page ? " active" : ""}`}
                     style={{ paddingLeft: `${14 + Math.min(item.depth, 3) * 18}px` }}
                     onClick={() => goToTocPage(item.page)}
                     disabled={!item.page}
