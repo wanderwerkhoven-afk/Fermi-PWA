@@ -161,6 +161,13 @@ export default function FermiPdfViewer() {
     startZoom: number;
   }>({ active: false, startDistance: 0, startZoom: 1 });
 
+  const swipeRef = useRef<{
+    active: boolean;
+    startX: number;
+    startY: number;
+    startedAt: number;
+  }>({ active: false, startX: 0, startY: 0, startedAt: 0 });
+
   const [pageNumber, setPageNumber] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [zoom, setZoom] = useState(1);
@@ -299,13 +306,25 @@ export default function FermiPdfViewer() {
   }
 
   function handleTouchStart(event: React.TouchEvent<HTMLElement>) {
-    if (event.touches.length !== 2) return;
+    if (event.touches.length === 2) {
+      swipeRef.current.active = false;
+      pinchRef.current = {
+        active: true,
+        startDistance: touchDistance(event.touches),
+        startZoom: zoom,
+      };
+      return;
+    }
 
-    pinchRef.current = {
-      active: true,
-      startDistance: touchDistance(event.touches),
-      startZoom: zoom,
-    };
+    if (event.touches.length === 1) {
+      const touch = event.touches[0];
+      swipeRef.current = {
+        active: true,
+        startX: touch.clientX,
+        startY: touch.clientY,
+        startedAt: Date.now(),
+      };
+    }
   }
 
   function handleTouchMove(event: React.TouchEvent<HTMLElement>) {
@@ -328,6 +347,28 @@ export default function FermiPdfViewer() {
   function handleTouchEnd(event: React.TouchEvent<HTMLElement>) {
     if (event.touches.length < 2) {
       pinchRef.current.active = false;
+    }
+
+    if (!swipeRef.current.active || event.changedTouches.length !== 1) return;
+
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - swipeRef.current.startX;
+    const dy = touch.clientY - swipeRef.current.startY;
+    const elapsed = Date.now() - swipeRef.current.startedAt;
+
+    swipeRef.current.active = false;
+
+    const horizontalEnough = Math.abs(dx) >= 55 && Math.abs(dx) > Math.abs(dy) * 1.35;
+    const quickEnough = elapsed <= 700;
+
+    if (!horizontalEnough || !quickEnough || rendering) return;
+
+    if (dx < 0 && pageNumber < pageCount) {
+      setPageNumber((current) => Math.min(pageCount, current + 1));
+      stageRef.current?.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    } else if (dx > 0 && pageNumber > 1) {
+      setPageNumber((current) => Math.max(1, current - 1));
+      stageRef.current?.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     }
   }
 
