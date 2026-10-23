@@ -37,14 +37,15 @@ async function photoDataUrl(file: File, crop?: ProfilePhotoCrop): Promise<string
   canvas.height = OUTPUT_SIZE;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Je browser kan deze foto niet verwerken.");
+  const ctx = context;
   const renderCrop = (dimension: number) => {
     canvas.width = dimension;
     canvas.height = dimension;
-    context.clearRect(0, 0, dimension, dimension);
+    ctx.clearRect(0, 0, dimension, dimension);
 
     if (!crop) {
       const size = Math.min(img.naturalWidth, img.naturalHeight);
-      context.drawImage(img, (img.naturalWidth - size) / 2, (img.naturalHeight - size) / 2, size, size, 0, 0, dimension, dimension);
+      ctx.drawImage(img, (img.naturalWidth - size) / 2, (img.naturalHeight - size) / 2, size, size, 0, 0, dimension, dimension);
       return;
     }
 
@@ -59,7 +60,7 @@ async function photoDataUrl(file: File, crop?: ProfilePhotoCrop): Promise<string
     const offsetX = Math.max(-maxX, Math.min(maxX, crop.offsetX * viewportScale));
     const offsetY = Math.max(-maxY, Math.min(maxY, crop.offsetY * viewportScale));
 
-    context.drawImage(
+    ctx.drawImage(
       img,
       (dimension - drawWidth) / 2 + offsetX,
       (dimension - drawHeight) / 2 + offsetY,
