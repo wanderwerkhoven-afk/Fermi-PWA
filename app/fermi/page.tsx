@@ -84,7 +84,7 @@ const FERMI_VISUAL_ASSETS = [
 ] as const;
 
 const documents = [
-  { title: "Statuten", subtitle: "De statuten van S.V. Fermi" },
+  { title: "Beleidsplan", subtitle: "Het beleidsplan van S.V. Fermi" },
   { title: "Huishoudelijk reglement", subtitle: "Het huishoudelijk reglement van S.V. Fermi" },
   { title: "ALV-documenten", subtitle: "Notulen, jaarverslagen en andere ALV-stukken" },
 ];
