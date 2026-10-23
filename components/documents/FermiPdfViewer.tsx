@@ -318,7 +318,7 @@ export default function FermiPdfViewer() {
   }
 
   function zoomOut() {
-    setZoom((current) => Math.max(0.7, Number((current - 0.15).toFixed(2))));
+    setZoom((current) => Math.max(1, Number((current - 0.15).toFixed(2))));
   }
 
   function zoomIn() {
@@ -365,7 +365,7 @@ export default function FermiPdfViewer() {
     const ratio = distance / pinchRef.current.startDistance;
     const nextZoom = Math.min(
       2.2,
-      Math.max(0.7, Number((pinchRef.current.startZoom * ratio).toFixed(2))),
+      Math.max(1, Number((pinchRef.current.startZoom * ratio).toFixed(2))),
     );
 
     const visualScale = nextZoom / pinchRef.current.startZoom;
@@ -385,7 +385,7 @@ export default function FermiPdfViewer() {
       const visualScale = match ? Number(match[1]) : 1;
       const nextZoom = Math.min(
         2.2,
-        Math.max(0.7, Number((pinchRef.current.startZoom * visualScale).toFixed(2))),
+        Math.max(1, Number((pinchRef.current.startZoom * visualScale).toFixed(2))),
       );
 
       pinchRef.current.active = false;
@@ -474,7 +474,7 @@ export default function FermiPdfViewer() {
         </div>
 
         <div className="fermi-pdf-toolbar-group">
-          <button type="button" onClick={zoomOut} disabled={zoom <= 0.7 || loading} aria-label="Uitzoomen">
+          <button type="button" onClick={zoomOut} disabled={zoom <= 1 || loading} aria-label="Uitzoomen">
             <Minus size={18} />
           </button>
           <span className="fermi-pdf-zoom">{Math.round(zoom * 100)}%</span>
