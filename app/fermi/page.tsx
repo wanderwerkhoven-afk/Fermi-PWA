@@ -293,16 +293,14 @@ export default function FermiPage() {
                 );
 
                 return doc.href ? (
-                  <a
+                  <Link
                     className="fermi-doc-row"
                     href={doc.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     key={doc.title}
                     aria-label={`Open ${doc.title}`}
                   >
                     {content}
-                  </a>
+                  </Link>
                 ) : (
                   <button className="fermi-doc-row" type="button" key={doc.title}>
                     {content}
