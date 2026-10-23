@@ -35,7 +35,7 @@ export default function EmailAdminPage() {
     setPreviewHtml("");
     const selected = templates.find((template) => template.id === preview);
     if (!selected) { setLoading(false); return; }
-    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/email/templates/${selected.file}`)
+    fetch(`${window.location.pathname.split("/profiel/")[0]}/email/templates/${selected.file}`)
       .then(async (response) => {
         if (!response.ok) throw new Error("De HTML-preview kon niet worden geladen.");
         return response.text();
