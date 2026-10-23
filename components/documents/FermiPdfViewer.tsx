@@ -35,6 +35,82 @@ type TocItem = {
   depth: number;
 };
 
+
+const FERMI_BELEIDSPLAN_TOC: TocItem[] = [
+  { title: "Voorwoord", page: 3, depth: 0 },
+  { title: "Inhoudsopgave", page: 4, depth: 0 },
+  { title: "1. Inleiding", page: 6, depth: 0 },
+
+  { title: "2. Missie, Visie & Waarden", page: 7, depth: 0 },
+  { title: "2.1 Missie", page: 7, depth: 1 },
+  { title: "2.2 Visie", page: 7, depth: 1 },
+  { title: "2.3 Waarden", page: 7, depth: 1 },
+
+  { title: "3. Doelen & Strategieën", page: 9, depth: 0 },
+  { title: "3.1 Doelen", page: 9, depth: 1 },
+  { title: "3.2 Strategieën", page: 10, depth: 1 },
+
+  { title: "4. Organisatiestructuur", page: 12, depth: 0 },
+  { title: "4.1 Het Bestuur", page: 12, depth: 1 },
+  { title: "4.2 Commissies", page: 13, depth: 1 },
+  { title: "4.3 Algemene Ledenvergadering", page: 14, depth: 1 },
+
+  { title: "5. Activiteiten", page: 15, depth: 0 },
+  { title: "5.1 Hoofddoelen van Activiteiten", page: 15, depth: 1 },
+  { title: "5.2 Activiteitenoverzicht", page: 15, depth: 1 },
+  { title: "5.3 Evaluatie en Feedback", page: 16, depth: 1 },
+
+  { title: "6. Lidmaatschap", page: 17, depth: 0 },
+  { title: "6.1 Lidmaatschapsvoordelen", page: 17, depth: 1 },
+  { title: "6.2 Lidmaatschap Vereisten", page: 17, depth: 1 },
+  { title: "6.3 Lidmaatschapskosten", page: 17, depth: 1 },
+  { title: "6.4 Aanmeldingsprocedure", page: 17, depth: 1 },
+  { title: "6.5 Lidmaatschap ‘Vrienden van Fermi’", page: 18, depth: 1 },
+  { title: "6.6 Alumni Lidmaatschap", page: 18, depth: 1 },
+  { title: "6.7 Docenten Lidmaatschap", page: 18, depth: 1 },
+  { title: "6.8 Beëindiging van Lidmaatschap", page: 18, depth: 1 },
+  { title: "6.9 Lidmaatschap Verplichtingen", page: 18, depth: 1 },
+
+  { title: "7. Communicatie & Marketing", page: 19, depth: 0 },
+  { title: "7.1 Communicatiestrategieën", page: 19, depth: 1 },
+  { title: "7.2 Marketingactiviteiten", page: 19, depth: 1 },
+  { title: "7.3 Gebruik van Sociale Media", page: 19, depth: 1 },
+  { title: "Evaluatie en Feedback", page: 19, depth: 1 },
+
+  { title: "8. Financiën", page: 21, depth: 0 },
+  { title: "8.1 Inkomstenbronnen", page: 21, depth: 1 },
+  { title: "8.2 Uitgaven", page: 21, depth: 1 },
+  { title: "8.3 Financieel Beheer", page: 21, depth: 1 },
+  { title: "8.4 Evaluatie van Financiën", page: 22, depth: 1 },
+
+  { title: "9. Samenwerkingen", page: 23, depth: 0 },
+  { title: "9.1 Samenwerkingen binnen de Opleiding", page: 23, depth: 1 },
+  { title: "9.2 Samenwerkingen met Bedrijven", page: 23, depth: 1 },
+  { title: "9.3 Samenwerkingen met Andere Studieverenigingen", page: 23, depth: 1 },
+  { title: "9.4 Samenwerkingen met Alumni", page: 24, depth: 1 },
+  { title: "9.5 Toekomstige Samenwerkingen", page: 24, depth: 1 },
+
+  { title: "10. Sponsoring", page: 25, depth: 0 },
+  { title: "10.1 Sponsoring als Toekomstige Bron van Financiering", page: 25, depth: 1 },
+  { title: "10.2 Potentiële Sponsormogelijkheden", page: 25, depth: 1 },
+  { title: "10.3 Sponsoring strategie", page: 25, depth: 1 },
+  { title: "10.4 Waarborgen van de Verenigingswaarden", page: 25, depth: 1 },
+
+  { title: "11. Toekomstvisie", page: 26, depth: 0 },
+  { title: "11.1 Groei en Uitbreiding van de Vereniging", page: 26, depth: 1 },
+  { title: "11.2 Professionalisering van Bestuur en Commissies", page: 26, depth: 1 },
+  { title: "11.3 Samenwerkingen en Netwerken", page: 26, depth: 1 },
+  { title: "11.4 Financiële Duurzaamheid", page: 27, depth: 1 },
+  { title: "11.5 Innovatie en Flexibiliteit", page: 27, depth: 1 },
+
+  { title: "12. Bijlagen", page: 28, depth: 0 },
+  { title: "12.1 Financiële Begroting", page: 28, depth: 1 },
+  { title: "12.2 Privacy Statement", page: 29, depth: 1 },
+  { title: "12.3 Alcoholbeleid", page: 29, depth: 1 },
+  { title: "12.4 Drugsbeleid", page: 31, depth: 1 },
+  { title: "12.5 Gedragscode", page: 32, depth: 1 },
+];
+
 type PdfOutlineItem = NonNullable<Awaited<ReturnType<PDFDocumentProxy["getOutline"]>>>[number];
 
 async function outlineItemPage(pdf: PDFDocumentProxy, item: PdfOutlineItem): Promise<number | null> {
@@ -144,8 +220,12 @@ export default function FermiPdfViewer() {
         setPageNumber(1);
 
         const outline = await pdf.getOutline();
-        if (active && outline?.length) {
-          setToc(await flattenOutline(pdf, outline));
+        if (active) {
+          if (outline?.length) {
+            setToc(await flattenOutline(pdf, outline));
+          } else {
+            setToc(FERMI_BELEIDSPLAN_TOC);
+          }
         }
 
         setLoading(false);
@@ -327,8 +407,8 @@ export default function FermiPdfViewer() {
             ) : (
               <div className="fermi-pdf-toc-empty">
                 <ListTree size={30} />
-                <strong>Geen PDF-bookmarks gevonden</strong>
-                <small>Voor dit document kunnen we ook een vaste Fermi-inhoudsopgave met hoofdstukken en paginanummers instellen.</small>
+                <strong>Inhoudsopgave niet beschikbaar</strong>
+                <small>De navigatie kon niet worden geladen.</small>
               </div>
             )}
           </section>
