@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
+import { GlobalWorkerOptions, getDocument, type PDFDocumentProxy } from "pdfjs-dist";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -14,18 +14,6 @@ import {
   Plus,
 } from "lucide-react";
 
-type PdfViewport = { width: number; height: number };
-type PdfPage = {
-  getViewport: (options: { scale: number }) => PdfViewport;
-  render: (options: {
-    canvasContext: CanvasRenderingContext2D;
-    viewport: PdfViewport;
-  }) => { promise: Promise<void> };
-};
-type PdfDocument = {
-  numPages: number;
-  getPage: (pageNumber: number) => Promise<PdfPage>;
-};
 function resolveBasePath() {
   if (typeof window === "undefined") return "";
   return window.location.pathname.startsWith("/Fermi-PWA") ? "/Fermi-PWA" : "";
@@ -42,7 +30,7 @@ function resolveWorkerUrl() {
 export default function FermiPdfViewer() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
-  const documentRef = useRef<PdfDocument | null>(null);
+  const documentRef = useRef<PDFDocumentProxy | null>(null);
   const renderIdRef = useRef(0);
 
   const [pageNumber, setPageNumber] = useState(1);
