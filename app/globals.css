@@ -9783,3 +9783,19 @@ body.member-admin-modal-open{overflow:hidden}
     padding-bottom: calc(20px + env(safe-area-inset-bottom));
   }
 }
+
+
+/* Fermi PDF — pinch zoom */
+.fermi-pdf-stage {
+  touch-action: pan-x pan-y;
+}
+
+.fermi-pdf-canvas-wrap {
+  transform-origin: center top;
+}
+
+@media (pointer: coarse) {
+  .fermi-pdf-stage {
+    overscroll-behavior: contain;
+  }
+}
