@@ -9607,3 +9607,179 @@ body.member-admin-modal-open{overflow:hidden}
     justify-content: center;
   }
 }
+
+
+/* Fermi PDF — verfijnde inhoud-selector */
+.fermi-pdf-toc-button {
+  width: auto;
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: 36px minmax(0,1fr) 18px;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 13px 5px 7px;
+  border: 1px solid rgba(255,122,26,.42);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg,rgba(255,122,26,.08),rgba(255,122,26,.025)),
+    rgba(4,34,52,.94);
+  color: var(--fermi-paper);
+  text-align: left;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.015);
+}
+
+.fermi-pdf-toolbar .fermi-pdf-toc-button {
+  width: auto;
+  height: auto;
+  border-radius: 999px;
+}
+
+.fermi-pdf-toc-button-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--fermi-orange);
+  color: var(--fermi-navy-deep);
+}
+
+.fermi-pdf-toc-button-copy {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.fermi-pdf-toc-button-copy strong {
+  font-size: 12px;
+  line-height: 1.05;
+  font-weight: 900;
+}
+
+.fermi-pdf-toc-button-copy small {
+  color: #9fb0ba;
+  font-size: 9px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.fermi-pdf-toc-button-chevron {
+  color: #aebfc7;
+}
+
+.fermi-pdf-toc-grabber {
+  display: none;
+}
+
+.fermi-pdf-toc-list button.depth-0 {
+  min-height: 58px;
+  padding-top: 11px;
+  padding-bottom: 11px;
+  background: rgba(255,255,255,.025);
+}
+
+.fermi-pdf-toc-list button.depth-0 span {
+  font: 700 15px/1.15 Georgia,"Times New Roman",serif;
+  color: var(--fermi-paper);
+}
+
+.fermi-pdf-toc-list button.depth-0 small {
+  min-width: 38px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(255,122,26,.11);
+  color: #ff9b48;
+  text-align: center;
+}
+
+.fermi-pdf-toc-list button.depth-1 {
+  min-height: 47px;
+  background: rgba(0,0,0,.035);
+}
+
+.fermi-pdf-toc-list button.depth-1 span {
+  color: #c6d3da;
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.fermi-pdf-toc-list button.active {
+  position: relative;
+  background: rgba(255,122,26,.14);
+}
+
+.fermi-pdf-toc-list button.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  bottom: 9px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--fermi-orange);
+}
+
+.fermi-pdf-toc-list button.active span {
+  color: #ff9b48;
+}
+
+@media (max-width: 520px) {
+  .fermi-pdf-toolbar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  .fermi-pdf-toolbar .fermi-pdf-toc-button {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 58px;
+    border-radius: 16px;
+    padding: 6px 12px 6px 7px;
+  }
+
+  .fermi-pdf-toc-button-copy strong {
+    font-size: 13px;
+  }
+
+  .fermi-pdf-toc-button-copy small {
+    font-size: 10px;
+  }
+
+  .fermi-pdf-toolbar-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .fermi-pdf-toc-backdrop {
+    padding-top: max(64px, env(safe-area-inset-top));
+  }
+
+  .fermi-pdf-toc-sheet {
+    position: relative;
+    max-height: 82vh;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .fermi-pdf-toc-grabber {
+    width: 42px;
+    height: 4px;
+    display: block;
+    margin: 9px auto 0;
+    border-radius: 999px;
+    background: rgba(244,234,220,.28);
+  }
+
+  .fermi-pdf-toc-sheet > header {
+    min-height: 72px;
+    padding-top: 8px;
+  }
+
+  .fermi-pdf-toc-sheet > header h2 {
+    font-size: 25px;
+  }
+
+  .fermi-pdf-toc-list {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+}
