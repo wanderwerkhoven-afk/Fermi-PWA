@@ -9799,3 +9799,32 @@ body.member-admin-modal-open{overflow:hidden}
     overscroll-behavior: contain;
   }
 }
+
+
+/* Fermi PDF — fix inhoudsopgave sheet layering */
+.fermi-pdf-toc-sheet {
+  grid-template-rows: auto auto minmax(0,1fr);
+}
+
+.fermi-pdf-toc-sheet > header {
+  position: relative;
+  z-index: 2;
+  background: #05263a;
+}
+
+.fermi-pdf-toc-list {
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+  background: #05263a;
+}
+
+@media (min-width: 521px) {
+  .fermi-pdf-toc-grabber {
+    display: none;
+  }
+
+  .fermi-pdf-toc-sheet {
+    grid-template-rows: 0 auto minmax(0,1fr);
+  }
+}
