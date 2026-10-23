@@ -84,7 +84,11 @@ const FERMI_VISUAL_ASSETS = [
 ] as const;
 
 const documents = [
-  { title: "Beleidsplan", subtitle: "Het beleidsplan van S.V. Fermi" },
+  {
+    title: "Beleidsplan",
+    subtitle: "Het beleidsplan van S.V. Fermi",
+    href: "/Fermi-PWA/documents/beleidsplan-fermi-2026-2027.pdf",
+  },
   { title: "Huishoudelijk reglement", subtitle: "Het huishoudelijk reglement van S.V. Fermi" },
   { title: "ALV-documenten", subtitle: "Notulen, jaarverslagen en andere ALV-stukken" },
 ];
@@ -276,16 +280,35 @@ export default function FermiPage() {
 
           <div className="fermi-docs-wrap">
             <div className="fermi-doc-list">
-              {documents.map((doc) => (
-                <button className="fermi-doc-row" key={doc.title}>
-                  <span className="fermi-doc-icon"><FileText size={23} /></span>
-                  <span className="fermi-doc-copy">
-                    <strong>{doc.title}</strong>
-                    <small>{doc.subtitle}</small>
-                  </span>
-                  <ChevronRight size={21} />
-                </button>
-              ))}
+              {documents.map((doc) => {
+                const content = (
+                  <>
+                    <span className="fermi-doc-icon"><FileText size={23} /></span>
+                    <span className="fermi-doc-copy">
+                      <strong>{doc.title}</strong>
+                      <small>{doc.subtitle}</small>
+                    </span>
+                    <ChevronRight size={21} />
+                  </>
+                );
+
+                return doc.href ? (
+                  <a
+                    className="fermi-doc-row"
+                    href={doc.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    key={doc.title}
+                    aria-label={`Open ${doc.title}`}
+                  >
+                    {content}
+                  </a>
+                ) : (
+                  <button className="fermi-doc-row" type="button" key={doc.title}>
+                    {content}
+                  </button>
+                );
+              })}
             </div>
 
             <div className="fermi-doc-art" aria-hidden="true">
