@@ -346,7 +346,7 @@ export default function FermiPdfViewer() {
     if (event.touches.length === 1) {
       const touch = event.touches[0];
       swipeRef.current = {
-        active: true,
+        active: zoom <= 1.02,
         startX: touch.clientX,
         startY: touch.clientY,
         startedAt: Date.now(),
@@ -408,8 +408,9 @@ export default function FermiPdfViewer() {
 
     const horizontalEnough = Math.abs(dx) >= 55 && Math.abs(dx) > Math.abs(dy) * 1.35;
     const quickEnough = elapsed <= 700;
+    const pageSwipeAllowed = zoom <= 1.02 && !pinchRef.current.active;
 
-    if (!horizontalEnough || !quickEnough || rendering) return;
+    if (!pageSwipeAllowed || !horizontalEnough || !quickEnough || rendering) return;
 
     if (dx < 0 && pageNumber < pageCount) {
       setPageNumber((current) => Math.min(pageCount, current + 1));
