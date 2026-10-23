@@ -155,6 +155,11 @@ export default function FermiPdfViewer() {
   const stageRef = useRef<HTMLDivElement | null>(null);
   const documentRef = useRef<PDFDocumentProxy | null>(null);
   const renderIdRef = useRef(0);
+  const pinchRef = useRef<{
+    active: boolean;
+    startDistance: number;
+    startZoom: number;
+  }>({ active: false, startDistance: 0, startZoom: 1 });
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageCount, setPageCount] = useState(0);
@@ -286,6 +291,46 @@ export default function FermiPdfViewer() {
     setZoom((current) => Math.min(2.2, Number((current + 0.15).toFixed(2))));
   }
 
+  function touchDistance(touches: React.TouchList) {
+    if (touches.length < 2) return 0;
+    const first = touches[0];
+    const second = touches[1];
+    return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+  }
+
+  function handleTouchStart(event: React.TouchEvent<HTMLElement>) {
+    if (event.touches.length !== 2) return;
+
+    pinchRef.current = {
+      active: true,
+      startDistance: touchDistance(event.touches),
+      startZoom: zoom,
+    };
+  }
+
+  function handleTouchMove(event: React.TouchEvent<HTMLElement>) {
+    if (!pinchRef.current.active || event.touches.length !== 2) return;
+
+    const distance = touchDistance(event.touches);
+    if (!distance || !pinchRef.current.startDistance) return;
+
+    event.preventDefault();
+
+    const ratio = distance / pinchRef.current.startDistance;
+    const nextZoom = Math.min(
+      2.2,
+      Math.max(0.7, Number((pinchRef.current.startZoom * ratio).toFixed(2))),
+    );
+
+    setZoom(nextZoom);
+  }
+
+  function handleTouchEnd(event: React.TouchEvent<HTMLElement>) {
+    if (event.touches.length < 2) {
+      pinchRef.current.active = false;
+    }
+  }
+
   function goToTocPage(page: number | null) {
     if (!page) return;
     setPageNumber(Math.min(pageCount, Math.max(1, page)));
@@ -349,7 +394,14 @@ export default function FermiPdfViewer() {
         </div>
       </section>
 
-      <section className="fermi-pdf-stage" ref={stageRef}>
+      <section
+        className="fermi-pdf-stage"
+        ref={stageRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+      >
         {loading && (
           <div className="fermi-pdf-state" role="status">
             <span className="fermi-pdf-loader" />
