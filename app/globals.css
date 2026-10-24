@@ -9967,19 +9967,19 @@ body.member-admin-modal-open{overflow:hidden}
 
 /* Home section spacing — featured → upcoming → announcements */
 .home-shell .content > .section-block[data-tour="home-upcoming"] {
-  margin-top: 10px;
+  margin-top: 16px;
 }
 
 .home-shell .content > .section-block[data-tour="home-announcements"] {
-  margin-top: 16px;
+  margin-top: 24px;
 }
 
 @media (max-width: 420px) {
   .home-shell .content > .section-block[data-tour="home-upcoming"] {
-    margin-top: 12px;
+    margin-top: 18px;
   }
 
   .home-shell .content > .section-block[data-tour="home-announcements"] {
-    margin-top: 20px;
+    margin-top: 28px;
   }
 }
