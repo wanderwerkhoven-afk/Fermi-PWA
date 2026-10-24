@@ -6550,13 +6550,19 @@ body.member-admin-modal-open{overflow:hidden}
 }
 
 .activity-admin-form {
+  width: 100%;
+  min-width: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   display: grid;
   gap: 12px;
   padding: 14px 16px 18px;
+  box-sizing: border-box;
 }
 
 .activity-admin-form section {
+  width: 100%;
+  min-width: 0;
   display: grid;
   gap: 10px;
   padding: 13px;
@@ -6572,6 +6578,8 @@ body.member-admin-modal-open{overflow:hidden}
 }
 
 .activity-admin-form label {
+  width: 100%;
+  min-width: 0;
   display: grid;
   gap: 5px;
   color: var(--fermi-muted);
@@ -6585,7 +6593,9 @@ body.member-admin-modal-open{overflow:hidden}
 .activity-admin-form select,
 .activity-admin-form textarea {
   width: 100%;
+  max-width: 100%;
   min-width: 0;
+  box-sizing: border-box;
   border: 1px solid rgba(132,184,212,.20);
   border-radius: 10px;
   background: var(--fermi-navy-deep);
