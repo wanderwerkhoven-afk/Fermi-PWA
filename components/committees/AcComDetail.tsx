@@ -20,13 +20,12 @@ export default function AcComDetail({ committee }: { committee: Committee }) {
     <main className="app-shell committee-detail-shell accom-redesign">
       <div className="noise" aria-hidden="true" />
       <section className="committee-detail-hero accom-hero">
-        <header className="committee-detail-topbar">
+        <header className="committee-detail-topbar accom-topbar">
           <Link className="event-back-button" href="/fermi" aria-label="Terug naar Fermi"><ArrowLeft size={22}/></Link>
           <div className="brand committee-detail-brand"><img className="fermi-logo-image" src="/Fermi-PWA/images/branding/fermi-logo.png" alt=""/><span>SV Fermi</span></div>
           <Link className="icon-button notification-button" href="/meldingen" aria-label="Meldingen"><Bell size={21}/></Link>
         </header>
         <div className="accom-hero-title"><span className="committee-detail-kicker">SOCIAAL</span><h1>AcCom<img className="accom-crown" src="/Fermi-PWA/images/committees/accom/accom-crown.png" alt="" aria-hidden="true" /></h1><p>Activiteitencommissie</p></div>
-        {/* Illustration assets will be connected here after they are added to main. */}
         <img className="accom-hero-art" src="/Fermi-PWA/images/committees/accom/accom-header.png" alt="" aria-hidden="true" />
       </section>
       <nav className="accom-tabs" aria-label="Commissie onderdelen">
@@ -50,9 +49,16 @@ export default function AcComDetail({ committee }: { committee: Committee }) {
       </nav>
       <style jsx>{`
         .accom-redesign :global(.notification-button){color:#f8ead7;text-decoration:none}.accom-redesign :global(.notification-button svg){stroke:currentColor}.accom-redesign{background:#001e30;color:#f8ead7;min-height:100vh;padding-bottom:105px}
-        .accom-hero{height:355px;min-height:0;position:relative;overflow:hidden;background:radial-gradient(circle at 85% 65%,#12384a 0%,transparent 50%),#001b2d;padding:max(22px,env(safe-area-inset-top)) 16px 12px}
-        .accom-hero-title{position:absolute;left:20px;top:134px;padding-top:0;min-height:0;z-index:2}.accom-hero-title h1{font:800 clamp(48px,10.83vw,63px)/.92 Georgia,serif;margin:5px 0 3px;color:#fff1de}.accom-crown{position:absolute;width:72px;height:72px;object-fit:contain;left:clamp(175px,47vw,255px);top:-44px;transform:rotate(-9deg);pointer-events:none}.accom-hero-title p{font-size:20px;margin:0;color:#e5e9ed}.accom-hero-title :global(.committee-detail-kicker){color:#ff7927;font-weight:800;letter-spacing:1px}
-        .accom-hero-art{position:absolute;right:20px;bottom:20px;width:calc(100% - 40px);height:275px;object-fit:contain;object-position:right bottom;pointer-events:none;z-index:1}.accom-hero-title{z-index:2}
+        .accom-hero{height:300px;min-height:0;position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(circle at 82% 62%,#12384a 0%,transparent 55%),#001b2d;padding:0 20px}
+        .accom-hero :global(.accom-topbar){position:relative;z-index:4;display:flex;align-items:center;justify-content:flex-start;gap:16px;padding:12px 0 0;margin:0;width:100%;min-height:70px}
+        .accom-hero :global(.accom-topbar .committee-detail-brand){position:static;transform:none;margin:0;display:flex;align-items:center;gap:10px;white-space:nowrap}
+        .accom-hero :global(.accom-topbar .notification-button){margin-left:auto;color:#f8ead7}
+        .accom-hero-title{position:absolute;left:20px;top:117px;z-index:3;min-height:0;padding:0;pointer-events:none}
+        .accom-hero-title h1{position:relative;display:table;font:800 clamp(48px,11vw,72px)/.94 Georgia,serif;margin:4px 0 2px;color:#fff1de}
+        .accom-hero-title p{font-size:clamp(15px,4.1vw,20px);margin:0;color:#e5e9ed;white-space:nowrap}
+        .accom-hero-title :global(.committee-detail-kicker){color:#ff7927;font-weight:800;letter-spacing:1px}
+        .accom-crown{position:absolute;width:clamp(43px,12vw,62px);height:auto;aspect-ratio:1;object-fit:contain;right:-1px;top:-43px;transform:rotate(-9deg);pointer-events:none}
+        .accom-hero-art{position:absolute;right:0;bottom:0;width:100%;height:100%;object-fit:contain;object-position:right bottom;pointer-events:none;z-index:1}
         .accom-tabs{display:flex;gap:9px;padding:12px 20px;overflow-x:auto;scrollbar-width:none}.accom-tabs button{border:1px solid #36596a;background:transparent;color:#d3dce4;border-radius:30px;padding:12px 15px;display:flex;align-items:center;gap:8px;white-space:nowrap;cursor:pointer;font:inherit;font-size:14px}.accom-tabs button.selected{background:#ff7927;color:#071c29;border-color:#ff7927;font-weight:700}
         .accom-content{padding:0 20px}.accom-intro{border:1px solid #3c6071;border-radius:20px;padding:22px 17px;display:grid;grid-template-columns:55px minmax(0,1fr);column-gap:15px;row-gap:10px;min-height:195px;background:linear-gradient(125deg,#092d40,#032136)}.accom-intro-icon{width:55px;height:55px;border-radius:50%;background:#ff7927;color:#071b29;display:grid;place-items:center;flex-shrink:0}.accom-intro h2{font:700 clamp(22px,5vw,30px) Georgia,serif;margin:5px 0 10px}.accom-intro-description{grid-column:1/-1;color:#bccbd5;line-height:1.55;margin:0;overflow-wrap:break-word}.accom-intro-heading{min-width:0}.accom-intro :global(.committee-label){color:#ff7927;font-size:12px;font-weight:800}
         .accom-join{display:flex;gap:10px;margin:12px 0 24px;align-items:flex-start}.accom-join :global(.committee-signup-wrap){flex:1;min-width:0}.accom-join :global(.committee-signup-button){background:#ff7927;color:#061c2b;border-radius:16px;width:100%;min-height:54px;font-weight:750}.accom-join :global(small){display:block;color:#94a9b7;margin-top:8px}.accom-info-button{border:1px solid #42677a;background:transparent;color:#f3f6f8;border-radius:16px;min-height:54px;padding:0 12px;display:flex;gap:7px;align-items:center;cursor:pointer}
