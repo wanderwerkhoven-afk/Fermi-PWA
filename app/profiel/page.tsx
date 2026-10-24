@@ -90,15 +90,15 @@ export default function ProfilePage() {
     return () => window.clearTimeout(timer);
   }, [profileNotice]);
 
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [cropUrl, setCropUrl] = useState("");
   useEffect(() => {
     return () => {
       if (cropUrl) URL.revokeObjectURL(cropUrl);
     };
   }, [cropUrl]);
-  const [photoBusy, setPhotoBusy] = useState(false);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [cropFile, setCropFile] = useState<File | null>(null);
-  const [cropUrl, setCropUrl] = useState("");
   const [cropZoom, setCropZoom] = useState(1);
   const [cropOffset, setCropOffset] = useState({ x: 0, y: 0 });
   const [cropImageSize, setCropImageSize] = useState({ width: 1, height: 1 });
