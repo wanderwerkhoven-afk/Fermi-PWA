@@ -27,7 +27,7 @@ export default function AcComDetail({ committee }: { committee: Committee }) {
         </header>
         <div className="accom-hero-title"><span className="committee-detail-kicker">SOCIAAL</span><h1>AcCom</h1><p>Activiteitencommissie</p></div>
         {/* Illustration assets will be connected here after they are added to main. */}
-        <img className="accom-hero-art" src="/Fermi-PWA/32862F99-AE36-49CC-A0A1-2ABCFBCC74DB.png" alt="" aria-hidden="true" />
+        <img className="accom-hero-art" src="https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/32862F99-AE36-49CC-A0A1-2ABCFBCC74DB.png" alt="" aria-hidden="true" />
       </section>
       <nav className="accom-tabs" aria-label="Commissie onderdelen">
         {tabs.map(({ id, label, icon: Icon }) => <button key={id} type="button" className={tab === id ? "selected" : ""} aria-current={tab === id ? "page" : undefined} onClick={() => setTab(id)}>{Icon && <Icon size={17}/>}<span>{label}</span></button>)}
@@ -49,7 +49,7 @@ export default function AcComDetail({ committee }: { committee: Committee }) {
         <Link className="nav-item" href="/community"><UsersRound size={25}/><span>Community</span></Link><Link className="nav-item" href="/profiel"><UserRound size={24}/><span>Profiel</span></Link>
       </nav>
       <style jsx>{`
-        .accom-redesign{background:#001e30;color:#f8ead7;min-height:100vh;padding-bottom:105px}
+        .accom-redesign :global(.notification-button){color:#f8ead7;text-decoration:none}.accom-redesign :global(.notification-button svg){stroke:currentColor}.accom-redesign{background:#001e30;color:#f8ead7;min-height:100vh;padding-bottom:105px}
         .accom-hero{height:auto;min-height:330px;position:relative;overflow:hidden;background:radial-gradient(circle at 85% 65%,#12384a 0%,transparent 50%),#001b2d;padding:max(22px,env(safe-area-inset-top)) 16px 12px}
         .accom-hero-title{position:relative;padding-top:43px;min-height:235px;z-index:2}.accom-hero-title h1{font:800 clamp(58px,15vw,76px)/.9 Georgia,serif;margin:8px 0 0;color:#fff1de}.accom-hero-title p{font-size:20px;margin:0;color:#e5e9ed}.accom-hero-title :global(.committee-detail-kicker){color:#ff7927;font-weight:800;letter-spacing:1px}
         .accom-hero-art{position:absolute;right:-16px;bottom:0;width:min(68%,290px);height:235px;object-fit:contain;object-position:right bottom;pointer-events:none;z-index:1}.accom-hero-title{z-index:2}
