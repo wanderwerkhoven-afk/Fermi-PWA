@@ -5,8 +5,6 @@ import {
   doc,
   getDocs,
   getDocsFromCache,
-  query,
-  where,
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
@@ -95,18 +93,19 @@ function activePublishedAnnouncements(snapshot: Awaited<ReturnType<typeof getDoc
   ].join("-");
 
   return snapshot.docs.map((item) => asAnnouncement(item.id, item.data() as Record<string, unknown>))
+    .filter((item) => item.published)
     .filter((item) => !item.startsAt || item.startsAt <= today)
     .filter((item) => !item.expiresAt || item.expiresAt >= today)
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 }
 
 export async function listPublishedAnnouncements(): Promise<AnnouncementData[]> {
-  const snapshot = await getDocs(query(collection(db, "announcements"), where("published", "==", true)));
+  const snapshot = await getDocs(collection(db, "announcements"));
   return activePublishedAnnouncements(snapshot);
 }
 
 export async function listPublishedAnnouncementsFromCache(): Promise<AnnouncementData[]> {
-  const snapshot = await getDocsFromCache(query(collection(db, "announcements"), where("published", "==", true)));
+  const snapshot = await getDocsFromCache(collection(db, "announcements"));
   return activePublishedAnnouncements(snapshot);
 }
 
