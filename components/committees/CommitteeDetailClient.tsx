@@ -16,6 +16,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import CommitteeSignup from "@/components/committees/CommitteeSignup";
+import AcComDetail from "@/components/committees/AcComDetail";
 import { committees, type Committee } from "@/data/committees";
 import { useAssociationContent } from "@/lib/services/association";
 
@@ -30,6 +31,7 @@ export default function CommitteeDetailClient({ baseCommittee }: { baseCommittee
   const { content } = useAssociationContent();
   const committee = { ...baseCommittee, ...content.committees.find((entry) => entry.slug === baseCommittee.slug) };
   const Icon = iconMap[committee.icon];
+  if (committee.slug === "accom") return <AcComDetail committee={committee} />;
 
   return (
     <main className={`app-shell committee-detail-shell committee-detail-shell-${committee.slug}`}>
