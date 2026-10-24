@@ -27,7 +27,7 @@ export default function AcComDetail({ committee }: { committee: Committee }) {
         </header>
         <div className="accom-hero-title"><span className="committee-detail-kicker">SOCIAAL</span><h1>AcCom</h1><p>Activiteitencommissie</p></div>
         {/* Illustration assets will be connected here after they are added to main. */}
-        <img className="accom-hero-art" src="https://raw.githubusercontent.com/wanderwerkhoven-afk/Fermi-PWA/main/32862F99-AE36-49CC-A0A1-2ABCFBCC74DB.png" alt="" aria-hidden="true" />
+        <img className="accom-hero-art" src="/Fermi-PWA/images/committees/accom/accom-header.png" alt="" aria-hidden="true" />
       </section>
       <nav className="accom-tabs" aria-label="Commissie onderdelen">
         {tabs.map(({ id, label, icon: Icon }) => <button key={id} type="button" className={tab === id ? "selected" : ""} aria-current={tab === id ? "page" : undefined} onClick={() => setTab(id)}>{Icon && <Icon size={17}/>}<span>{label}</span></button>)}
