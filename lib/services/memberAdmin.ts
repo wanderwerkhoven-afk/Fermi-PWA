@@ -17,6 +17,8 @@ import type {
   MembershipPayment,
   MembershipPaymentStatus,
   UserRole,
+  AssociationRole,
+  AccessLevel,
 } from "../models/backend";
 
 export type AdminMemberLifecycle = "active" | "pending" | "suspended" | "archived";
@@ -33,6 +35,8 @@ export interface DirectoryMember {
   startYear: number | null;
   status: AdminMemberLifecycle;
   role: UserRole;
+  associationRole?: AssociationRole;
+  accessLevel?: AccessLevel;
   linkedUserId: string | null;
   payment?: MembershipPayment;
   createdAt?: unknown;
@@ -62,6 +66,8 @@ export interface AdminMemberRow {
   startYear: number | null;
   status: AdminMemberLifecycle;
   role: UserRole;
+  associationRole?: AssociationRole;
+  accessLevel?: AccessLevel;
   membershipId: string | null;
   endDate: string;
   digitalCardId: string;
@@ -252,6 +258,8 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
       startYear: resolvedMembership?.startYear ?? (resolvedMembership?.startDate ? Number(resolvedMembership.startDate.slice(0, 4)) : directory?.startYear ?? null),
       status: resolvedStatus,
       role: user.role,
+      associationRole: user.associationRole ?? "member",
+      accessLevel: user.accessLevel ?? user.role,
       membershipId: membership?.id ?? snapshotMembership?.id ?? null,
       endDate: resolvedMembership?.endDate ?? directory?.endDate ?? "",
       digitalCardId: resolvedMembership?.digitalCard?.cardId ?? "",
@@ -279,6 +287,8 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
       startYear: record.startYear ?? null,
       status: record.status,
       role: record.role,
+      associationRole: record.associationRole ?? "member",
+      accessLevel: record.accessLevel ?? record.role,
       membershipId: null,
       endDate: record.endDate ?? "",
       digitalCardId: "",
@@ -527,6 +537,8 @@ export interface AdminMemberDetailsInput {
   endDate: string;
   status: AdminMemberLifecycle;
   role: UserRole;
+  associationRole?: AssociationRole;
+  accessLevel?: AccessLevel;
 }
 
 export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMemberDetailsInput) {
@@ -548,7 +560,9 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
       startYear: input.startYear,
       endDate: input.endDate,
       status: directoryStatus,
-      role: input.role,
+      role: input.accessLevel === "qr_scan" ? "member" : (input.accessLevel ?? input.role),
+      associationRole: input.associationRole ?? "member",
+      accessLevel: input.accessLevel ?? input.role,
       linkedUserId: row.uid,
       payment: membershipPayment(row),
       updatedAt: serverTimestamp(),
@@ -595,7 +609,9 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
     "profile.email": normalized,
     "profile.phone": input.phone.trim() || null,
     "profile.city": input.city.trim() || null,
-    role: input.role,
+    role: input.accessLevel === "qr_scan" ? "member" : (input.accessLevel ?? input.role),
+    associationRole: input.associationRole ?? "member",
+    accessLevel: input.accessLevel ?? input.role,
     status: input.status === "suspended" ? "suspended" : "active",
     membership: membershipSnapshot(snapshotRow, membershipStatus, cardId, payment),
     updatedAt: serverTimestamp(),
