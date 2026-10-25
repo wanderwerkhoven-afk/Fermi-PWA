@@ -78,7 +78,7 @@ export default function ProfilePage() {
   const { fermiUser, membership } = useFermiSession();
   const isActive = fermiUser?.status === "active";
   const isAdmin = Boolean(isActive && fermiUser?.role === "admin");
-  const canScan = Boolean(isActive && fermiUser && ["committee", "board", "admin"].includes(fermiUser.role));
+  const canScan = Boolean(isActive && fermiUser && ["qr_scan", "committee", "board", "admin"].includes(fermiUser.accessLevel ?? fermiUser.role));
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
