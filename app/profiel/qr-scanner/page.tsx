@@ -31,7 +31,7 @@ type ScannerHandle = {
   clear: () => void;
 };
 
-const allowedRoles = new Set(["committee", "board", "admin"]);
+const allowedRoles = new Set(["qr_scan", "committee", "board", "admin"]);
 
 function eventDate(item: ActivityData) {
   const months = ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AUG","SEP","OKT","NOV","DEC"];
@@ -83,7 +83,7 @@ export default function QrScannerPage() {
 
       try {
         const profile = await getUserProfile(user.uid);
-        const allowed = Boolean(profile?.status === "active" && allowedRoles.has(profile.role));
+        const allowed = Boolean(profile?.status === "active" && allowedRoles.has(profile.accessLevel ?? profile.role));
         setAuthorized(allowed);
         if (!allowed) return;
 
@@ -203,7 +203,7 @@ export default function QrScannerPage() {
       <main className="scanner-gate">
         <ShieldAlert size={44} />
         <h1>Geen scannertoegang</h1>
-        <p>De scanner is alleen beschikbaar voor actieve commissie-, bestuurs- en adminaccounts.</p>
+        <p>De scanner is alleen beschikbaar voor actieve accounts met QR-scanrechten.</p>
         <Link href="/profiel">Terug naar profiel</Link>
       </main>
     );
