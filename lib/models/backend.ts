@@ -1,3 +1,5 @@
+export type AssociationRole = "member" | "accom" | "educom" | "sturecom" | "chair" | "vice_chair" | "secretary" | "treasurer" | "general_board";
+export type AccessLevel = "member" | "qr_scan" | "committee" | "board" | "admin";
 export type UserRole = "member" | "committee" | "board" | "admin";
 export type AccountStatus = "active" | "suspended";
 export type MembershipStatus = "active" | "expired" | "cancelled" | "pending";
@@ -43,6 +45,8 @@ export interface FermiUser {
   uid: string;
   profile: UserProfile;
   role: UserRole;
+  associationRole?: AssociationRole;
+  accessLevel?: AccessLevel;
   status: AccountStatus;
   membership?: CurrentMembershipSnapshot | null;
   createdAt?: unknown;
