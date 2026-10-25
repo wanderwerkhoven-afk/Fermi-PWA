@@ -71,7 +71,7 @@ service cloud.firestore {
 
     match /events/{eventId} {
       allow read: if signedIn();
-      allow create, update, delete: if hasRole(["board", "admin"]);
+      allow create, update, delete: if hasRole(["committee", "board", "admin"]);
     }
 
     function registrationDocId(activityId) {
@@ -115,7 +115,7 @@ service cloud.firestore {
 
     match /activities/{activityId} {
       allow read: if signedIn();
-      allow create, update, delete: if hasRole(["admin"]);
+      allow create, update, delete: if hasRole(["committee", "board", "admin"]);
     }
 
     match /activityStats/{activityId} {
@@ -268,7 +268,7 @@ service cloud.firestore {
 
     match /announcements/{announcementId} {
       allow read: if signedIn();
-      allow create, update, delete: if hasRole(["board", "admin"]);
+      allow create, update, delete: if hasRole(["committee", "board", "admin"]);
     }
 
     match /notifications/{notificationId} {
