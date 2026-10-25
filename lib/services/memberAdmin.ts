@@ -137,7 +137,8 @@ async function writeCommunityMember(row: AdminMemberRow) {
     {
       firstName: row.firstName,
       lastName: row.lastName,
-      role: row.role,
+      role: row.associationRole ?? "member",
+      associationRole: row.associationRole ?? "member",
       startYear: row.startYear,
       study: null,
       studyYear: currentStudyYear(row.startYear),
@@ -581,6 +582,7 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
       endDate: input.endDate,
       status: directoryStatus,
       role: input.role,
+      associationRole: input.associationRole ?? "member",
     });
     return;
   }
