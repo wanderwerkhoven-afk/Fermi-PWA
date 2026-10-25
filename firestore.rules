@@ -18,10 +18,18 @@ service cloud.firestore {
       return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid));
     }
 
+    function accessLevel() {
+      return currentUser().data.get("accessLevel", currentUser().data.get("role", "member"));
+    }
+
     function hasRole(roles) {
       return hasProfile()
         && currentUser().data.status == "active"
-        && currentUser().data.role in roles;
+        && accessLevel() in roles;
+    }
+
+    function canScanQr() {
+      return hasRole(["qr_scan", "committee", "board", "admin"]);
     }
 
 
@@ -29,6 +37,8 @@ service cloud.firestore {
       allow create: if isOwner(uid)
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.role == "member"
+        && request.resource.data.get("accessLevel", "member") == "member"
+        && request.resource.data.get("associationRole", "member") == "member"
         && request.resource.data.status == "active";
 
       allow read: if isOwner(uid) || hasRole(["board", "admin"]);
@@ -45,7 +55,7 @@ service cloud.firestore {
     match /memberships/{membershipId} {
       allow read: if signedIn() &&
         (resource.data.userId == request.auth.uid || hasRole(["committee", "board", "admin"]));
-      allow create, update, delete: if hasRole(["board", "admin"]);
+      allow create, update, delete: if hasRole(["committee", "board", "admin"]);
     }
 
     match /memberDirectory/{memberId} {
@@ -56,7 +66,7 @@ service cloud.firestore {
     // It intentionally contains no email, phone number, city or membership identifiers.
     match /communityMembers/{memberId} {
       allow read: if signedIn();
-      allow create, update, delete: if hasRole(["admin"]);
+      allow create, update, delete: if hasRole(["committee", "board", "admin"]);
     }
 
     match /events/{eventId} {
