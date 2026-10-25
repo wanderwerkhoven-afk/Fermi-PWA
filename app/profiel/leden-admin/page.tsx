@@ -33,7 +33,7 @@ import {
   upsertDirectoryMember,
   upsertDirectoryMembers,
 } from "../../../lib/services/memberAdmin";
-import type { UserRole } from "../../../lib/models/backend";
+import type { UserRole, AssociationRole, AccessLevel } from "../../../lib/models/backend";
 
 const lifecycleLabels: Record<AdminMemberLifecycle, string> = {
   active: "Actief",
@@ -48,6 +48,9 @@ const roleLabels: Record<UserRole, string> = {
   board: "Bestuur",
   admin: "Admin",
 };
+
+const associationLabels: Record<AssociationRole, string> = {member:"Lid",accom:"AcCom",educom:"EduCom",sturecom:"StuReCom",chair:"Voorzitter",vice_chair:"Vicevoorzitter",secretary:"Secretaris",treasurer:"Penningmeester",general_board:"Algemeen bestuurslid"};
+const accessLabels: Record<AccessLevel, string> = {member:"Geen beheerrechten",qr_scan:"QR-scan",committee:"Commissie",board:"Bestuur",admin:"Admin"};
 
 function splitCsvLine(line: string, separator: string) {
   const result: string[] = [];
@@ -149,6 +152,8 @@ export default function LedenAdminPage() {
     endDate: "2027-08-31",
     status: "active" as AdminMemberLifecycle,
     role: "member" as UserRole,
+    associationRole: "member" as AssociationRole,
+    accessLevel: "member" as AccessLevel,
   });
   const [form, setForm] = useState({
     firstName: "",
@@ -244,6 +249,8 @@ export default function LedenAdminPage() {
       endDate: member.endDate || "2027-08-31",
       status: member.status,
       role: member.role,
+      associationRole: member.associationRole ?? "member",
+      accessLevel: member.accessLevel ?? member.role,
     });
     setNotice("");
   }
@@ -446,7 +453,7 @@ export default function LedenAdminPage() {
               </div>
               <div className="member-admin-row-meta">
                 <span>{lifecycleLabels[member.status]}</span>
-                <span>{roleLabels[member.role]}</span>
+                <span>{associationLabels[member.associationRole ?? "member"]}</span>
               </div>
               <ChevronRight className="member-admin-row-chevron" size={19} />
             </button>
@@ -555,7 +562,7 @@ export default function LedenAdminPage() {
                 <h3>Status & rol</h3>
                 <div className="member-admin-choice-grid">
                   <label>Status<select value={edit.status} onChange={(e) => setEdit({ ...edit, status: e.target.value as AdminMemberLifecycle })}>{Object.entries(lifecycleLabels).map(([value,label]) => <option key={value} value={value} disabled={value === "active" && selected.paymentStatus === "unpaid"}>{label}</option>)}</select></label>
-                  <label>Rol<select value={edit.role} onChange={(e) => setEdit({ ...edit, role: e.target.value as UserRole })}>{Object.entries(roleLabels).map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+                  <label>Rol binnen Fermi<select value={edit.associationRole} onChange={(e) => setEdit({ ...edit, associationRole: e.target.value as AssociationRole })}>{Object.entries(associationLabels).map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></label><label>Rechten<select value={edit.accessLevel} onChange={(e) => setEdit({ ...edit, accessLevel: e.target.value as AccessLevel, role: e.target.value === "qr_scan" ? "member" : e.target.value as UserRole })}>{Object.entries(accessLabels).map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></label>
                 </div>
               </section>
             </div>
