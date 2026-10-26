@@ -189,6 +189,7 @@ export default function CommunityPage() {
 
           <div className="community-member-list">
             {visibleMembers.map((member) => {
+              const photoUrl = member.id === fermiUser?.uid ? (fermiUser.profile.photoUrl || member.photoUrl) : member.photoUrl;
               const badge = memberBadge(member);
               const subtitle = memberSubtitle(member);
               const name = [member.firstName, member.lastName].filter(Boolean).join(" ") || "Fermi-lid";
@@ -200,8 +201,8 @@ export default function CommunityPage() {
 
               return (
                 <button type="button" className="community-member-row community-member-row-live community-member-open" key={member.id} onClick={() => setSelectedMember(member)} aria-label={`Bekijk profiel van ${name}`}>
-                  {member.photoUrl ? (
-                    <img src={member.photoUrl} alt={`Profielfoto van ${name}`} />
+                  {photoUrl ? (
+                    <img src={photoUrl} alt={`Profielfoto van ${name}`} />
                   ) : (
                     <span className="community-member-avatar" aria-hidden="true">{initials}</span>
                   )}
@@ -242,7 +243,7 @@ export default function CommunityPage() {
           <section className="member-preview-panel" role="dialog" aria-modal="true" aria-label={`Profiel van ${selectedMember.firstName} ${selectedMember.lastName}`} onClick={(event) => event.stopPropagation()}>
             <button type="button" className="member-preview-close" onClick={() => setSelectedMember(null)} aria-label="Sluit ledenprofiel">×</button>
             <div className="member-preview-top">
-              {selectedMember.photoUrl ? <img className="member-preview-photo" src={selectedMember.photoUrl} alt="Profielfoto" /> : <span className="member-preview-initials">{(selectedMember.firstName.charAt(0) + selectedMember.lastName.charAt(0)).toUpperCase()}</span>}
+              {(selectedMember.id === fermiUser?.uid ? (fermiUser.profile.photoUrl || selectedMember.photoUrl) : selectedMember.photoUrl) ? <img className="member-preview-photo" src={(selectedMember.id === fermiUser?.uid ? (fermiUser.profile.photoUrl || selectedMember.photoUrl) : selectedMember.photoUrl)!} alt="Profielfoto" /> : <span className="member-preview-initials">{(selectedMember.firstName.charAt(0) + selectedMember.lastName.charAt(0)).toUpperCase()}</span>}
               <h2>{selectedMember.firstName} {selectedMember.lastName}</h2>
               <span className="member-preview-role">{memberBadge(selectedMember).label}</span>
             </div>
