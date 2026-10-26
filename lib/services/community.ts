@@ -1,8 +1,8 @@
 "use client";
 
-import { collection, getDocs, getDocsFromCache } from "firebase/firestore";
+import { collection, doc, getDocs, getDocsFromCache, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import type { AssociationRole } from "../models/backend";
+import type { AssociationRole, UserProfile } from "../models/backend";
 
 export interface CommunityDirectoryMember {
   id: string;
@@ -31,4 +31,25 @@ export async function listCommunityMembers(): Promise<CommunityDirectoryMember[]
 
 export async function listCommunityMembersFromCache(): Promise<CommunityDirectoryMember[]> {
   return mapCommunityMembers(await getDocsFromCache(collection(db, "communityMembers")));
+}
+
+export async function syncOwnCommunityProfile(uid: string, profile: UserProfile) {
+  await setDoc(doc(db, "communityMembers", uid), {
+    firstName: profile.firstName.trim(),
+    lastName: profile.lastName.trim(),
+    photoUrl: profile.photoUrl ?? null,
+    study: profile.study?.trim() || null,
+    studyYear: profile.studyYear ?? null,
+    bio: profile.bio?.trim() || null,
+    updatedAt: serverTimestamp(),
+  }, { merge: true });
+}
+
+export function subscribeCommunityMembers(
+  callback: (members: CommunityDirectoryMember[]) => void,
+  onError?: (error: Error) => void,
+) {
+  return onSnapshot(collection(db, "communityMembers"), (snapshot) => {
+    callback(mapCommunityMembers(snapshot));
+  }, onError);
 }
