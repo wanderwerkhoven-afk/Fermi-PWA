@@ -49,19 +49,19 @@ const menuItems = [
     title: "Notificaties",
     subtitle: "Beheer je meldingen en voorkeuren",
     icon: Bell,
-    href: "#",
+    href: "/profiel/notificaties",
   },
   {
     title: "Privacy",
     subtitle: "Jouw gegevens en privacy instellingen",
     icon: ShieldCheck,
-    href: "#",
+    href: "/profiel/privacy",
   },
   {
     title: "Instellingen",
     subtitle: "App instellingen en voorkeuren",
     icon: Settings,
-    href: "#",
+    href: "/profiel/instellingen",
   },
 ];
 
