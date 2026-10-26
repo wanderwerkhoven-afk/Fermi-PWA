@@ -4,8 +4,8 @@ export type Committee = {
   fullName: string;
   description: string;
   intro: string;
-  art: "drinks" | "lecture" | "travel" | "promo";
-  icon: "users" | "education" | "plane" | "megaphone";
+  art: "drinks" | "lecture" | "travel" | "promo" | "web" | "acquisition";
+  icon: "users" | "education" | "plane" | "megaphone" | "code" | "handshake";
   colorLabel: string;
   activities: string[];
   learn: string[];
@@ -125,7 +125,64 @@ export const committees: Committee[] = [
       "Je wilt Fermi herkenbaar en zichtbaar maken"
     ],
     commitment: "Regelmatige kleine taken, met extra werk rondom campagnes en evenementen."
+  }  ,
+  {
+    slug: "webcom",
+    name: "WebCom",
+    fullName: "Websitecommissie",
+    description: "Website, app en digitale innovatie",
+    intro: "De WebCom werkt aan de digitale omgeving van S.V. Fermi. Van de verenigingswebsite en de ledenapp tot toegankelijkheid, onderhoud en nieuwe online functies: deze commissie maakt Fermi digitaal beter bereikbaar.",
+    art: "web",
+    icon: "code",
+    colorLabel: "DIGITAAL",
+    activities: [
+      "De website en Fermi-app onderhouden en verbeteren",
+      "Nieuwe functies ontwerpen, bouwen en testen",
+      "Problemen oplossen en de gebruikservaring verbeteren",
+      "Samenwerken met andere commissies aan digitale oplossingen"
+    ],
+    learn: [
+      "Webontwikkeling en UX-design",
+      "Samenwerken met Git en code reviews",
+      "Testen en digitaal projectbeheer",
+      "Veilig en toegankelijk ontwerpen"
+    ],
+    idealFor: [
+      "Je vindt programmeren, ontwerpen of techniek interessant",
+      "Je wilt leren hoe een website of app wordt gebouwd",
+      "Je werkt graag aan praktische digitale projecten"
+    ],
+    commitment: "Flexibel, met regelmatige onderhoudstaken en extra inzet bij releases."
+  },
+  {
+    slug: "acquisitiecom",
+    name: "AcquisitieCom",
+    fullName: "Acquisitiecommissie",
+    description: "Sponsoring, partners en samenwerkingen",
+    intro: "De AcquisitieCom bouwt relaties op met bedrijven en organisaties die S.V. Fermi willen ondersteunen. De commissie zoekt kansen voor sponsoring, samenwerkingen en waardevolle contacten voor de vereniging en haar leden.",
+    art: "acquisition",
+    icon: "handshake",
+    colorLabel: "SAMENWERKING",
+    activities: [
+      "Potentiële sponsors en samenwerkingspartners benaderen",
+      "Sponsorvoorstellen en afspraken voorbereiden",
+      "Contact onderhouden met bestaande partners",
+      "Samenwerken met commissies aan ondersteunde activiteiten"
+    ],
+    learn: [
+      "Professioneel communiceren",
+      "Netwerken en relatiebeheer",
+      "Onderhandelen en presenteren",
+      "Commercieel en organisatorisch denken"
+    ],
+    idealFor: [
+      "Je vindt het leuk om nieuwe contacten te leggen",
+      "Je wilt ervaring opdoen met bedrijven en partnerships",
+      "Je bent ondernemend en denkt in mogelijkheden"
+    ],
+    commitment: "Flexibel gedurende het jaar, met extra inzet rond sponsoracties en evenementen."
   }
+
 ];
 
 export function getCommittee(slug: string) {
