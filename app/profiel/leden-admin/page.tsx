@@ -49,7 +49,7 @@ const roleLabels: Record<UserRole, string> = {
   admin: "Admin",
 };
 
-const associationLabels: Record<AssociationRole, string> = {member:"Lid",accom:"AcCom",educom:"EduCom",sturecom:"StuReCom",chair:"Voorzitter",vice_chair:"Vicevoorzitter",secretary:"Secretaris",treasurer:"Penningmeester",general_board:"Algemeen bestuurslid"};
+const associationLabels: Record<AssociationRole, string> = {member:"Lid",accom:"AcCom",educom:"EduCom",webcom:"WebCom",acquisitiecom:"AcquisitieCom",sturecom:"StuReCom",chair:"Voorzitter",vice_chair:"Vicevoorzitter",secretary:"Secretaris",treasurer:"Penningmeester",general_board:"Algemeen bestuurslid"};
 const accessLabels: Record<AccessLevel, string> = {member:"Geen beheerrechten",qr_scan:"QR-scan",committee:"Commissie",board:"Bestuur",admin:"Admin"};
 
 function splitCsvLine(line: string, separator: string) {
