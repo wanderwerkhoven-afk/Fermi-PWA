@@ -1,0 +1,5 @@
+"use client";
+import Link from "next/link";
+import { useEffect,useState } from "react";
+import { restartFermiTour } from "@/components/GuidedAppTour";
+export default function SettingsPage(){const [motion,setMotion]=useState(false);useEffect(()=>{setMotion(localStorage.getItem("fermi-reduce-motion")==="true")},[]);return <main className="app-shell profile-page-shell"><section className="association-admin-panel"><Link href="/profiel">← Terug naar profiel</Link><h1>Instellingen</h1><label className="profile-menu-row"><span>Animaties verminderen</span><input type="checkbox" checked={motion} onChange={e=>{setMotion(e.target.checked);localStorage.setItem("fermi-reduce-motion",String(e.target.checked));document.documentElement.classList.toggle("fermi-reduce-motion",e.target.checked)}} /></label><button onClick={()=>{restartFermiTour();window.location.href="/Fermi-PWA/"}}>Walkthrough opnieuw starten</button><p>Deze voorkeur wordt op dit apparaat bewaard.</p></section></main>}
