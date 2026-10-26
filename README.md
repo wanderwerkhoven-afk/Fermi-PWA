@@ -104,7 +104,7 @@ Status: **Gevonden** = broncode of route aangetroffen (geen functionele test); *
 | Fermi | Commissiekaarten | Gevonden | [`app/fermi/page.tsx`](app/fermi/page.tsx), [`data/committees.ts`](data/committees.ts) |
 | Fermi | AcCom | Gevonden | [`app/fermi/commissies/[slug]/page.tsx`](app/fermi/commissies/%5Bslug%5D/page.tsx), [`components/committees/AcComDetail.tsx`](components/committees/AcComDetail.tsx) |
 | Fermi | EduCom, ReisCom, PromoCom | Gevonden | [`data/committees.ts`](data/committees.ts), [`components/committees/CommitteeDetailClient.tsx`](components/committees/CommitteeDetailClient.tsx) |
-| Fermi | AquasitieCon, WebCom | Niet gevonden | Niet aanwezig in de huidige [`data/committees.ts`](data/committees.ts); nog geen implementatie bevestigd |
+| Fermi | AcquisitieCom en WebCom | Toegevoegd, nog niet gebouwd/getest | [`data/committees.ts`](data/committees.ts), [`components/committees/CommitteeDetailClient.tsx`](components/committees/CommitteeDetailClient.tsx), [`app/fermi/page.tsx`](app/fermi/page.tsx), [`lib/models/backend.ts`](lib/models/backend.ts), [`app/profiel/leden-admin/page.tsx`](app/profiel/leden-admin/page.tsx) |
 | Fermi | Documenten en PDF-viewer | Gevonden | [`app/fermi/page.tsx`](app/fermi/page.tsx), [`app/fermi/documenten/beleidsplan/page.tsx`](app/fermi/documenten/beleidsplan/page.tsx), [`components/documents/FermiPdfViewer.tsx`](components/documents/FermiPdfViewer.tsx) |
 | Community | Header en leden-tab | Gevonden | [`app/community/page.tsx`](app/community/page.tsx) — `community-hero`, `community-tabs` |
 | Community | Ledenfilters en zoekveld | Gevonden | [`app/community/page.tsx`](app/community/page.tsx) — `memberCategories`, `visibleMembers` |
@@ -145,7 +145,7 @@ Status: **Gevonden** = broncode of route aangetroffen (geen functionele test); *
 1. **Profiel:** vijf nieuwe routes zijn toegevoegd en vanuit het profiel gekoppeld. Nog nodig: build, runtime- en Firestore-regeltests; uitgebreidere privacyfunctionaliteit, voorkeuren en eventuele commissielidmaatschappen buiten `associationRole`.
 2. **Community:** ledenprofiel-preview; bepaal privé-fotoalbumintegratie.
 3. **Scanner:** verifieer of succesvolle scans aanwezigheid persistent opslaan en hoe dubbele scans worden behandeld.
-4. **Fermi:** bevestig of AquasitieCon en WebCom toegevoegd moeten worden; definieer gewenste functionaliteit van Vereniging CRM.
+4. **Fermi:** WebCom en AcquisitieCom zijn toegevoegd aan de gedeelde commissiedata, overzichts- en detailpagina's, verenigingbeheer en ledenrollen. Nog nodig: build en visuele test; definieer gewenste functionaliteit van Vereniging CRM.
 5. **E-mail:** ontwerp ontvangerselectie, veilige verzending, toestemming en verzendhistorie.
 
 ### Implementatielog — 26 oktober 2026
