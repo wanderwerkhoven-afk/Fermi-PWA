@@ -42,6 +42,8 @@ async function photoDataUrl(file: File, crop?: ProfilePhotoCrop): Promise<string
     canvas.width = dimension;
     canvas.height = dimension;
     ctx.clearRect(0, 0, dimension, dimension);
+    ctx.fillStyle = "#021722";
+    ctx.fillRect(0, 0, dimension, dimension);
 
     if (!crop) {
       const size = Math.min(img.naturalWidth, img.naturalHeight);
@@ -50,7 +52,7 @@ async function photoDataUrl(file: File, crop?: ProfilePhotoCrop): Promise<string
     }
 
     const zoom = Math.max(1, Math.min(3, crop.zoom));
-    const baseScale = Math.max(dimension / img.naturalWidth, dimension / img.naturalHeight);
+    const baseScale = Math.min(dimension / img.naturalWidth, dimension / img.naturalHeight);
     const scale = baseScale * zoom;
     const drawWidth = img.naturalWidth * scale;
     const drawHeight = img.naturalHeight * scale;
