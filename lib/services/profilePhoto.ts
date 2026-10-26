@@ -3,6 +3,8 @@
 import { ref, deleteObject } from "firebase/storage";
 import { doc, getDocFromServer, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db, storage } from "../firebase";
+import { syncOwnCommunityProfile } from "./community";
+import type { FermiUser } from "../models/backend";
 
 const MAX_SOURCE_BYTES = 10 * 1024 * 1024;
 const OUTPUT_SIZE = 256;
@@ -103,6 +105,7 @@ export async function uploadOwnProfilePhoto(uid: string, file: File, crop?: Prof
   if (snapshot.data()?.profile?.photoUrl !== photoUrl) {
     throw new Error("Firebase heeft de profielfoto niet bevestigd. Probeer het opnieuw.");
   }
+  await syncOwnCommunityProfile(uid, (snapshot.data() as FermiUser).profile);
   return photoUrl;
 }
 
@@ -111,6 +114,8 @@ export async function removeOwnProfilePhoto(uid: string) {
     "profile.photoUrl": null,
     updatedAt: serverTimestamp(),
   });
+  const saved = await getDocFromServer(doc(db, "users", uid));
+  if (saved.exists()) await syncOwnCommunityProfile(uid, (saved.data() as FermiUser).profile);
   try {
     await deleteObject(ref(storage, `profile-photos/${uid}/avatar.webp`));
   } catch {
