@@ -404,6 +404,23 @@ export default function ProfilePage() {
       </section>
 
       <section className="profile-content">
+        <section className="profile-public-info" aria-label="Mijn ledenprofiel">
+          <div className="profile-public-info-heading">
+            <div>
+              <small>ZO ZIEN ANDERE LEDEN JOU</small>
+              <h2>Mijn ledenprofiel</h2>
+            </div>
+            <button type="button" onClick={openProfileEditor}>Bewerken <Pencil size={15} /></button>
+          </div>
+          <div className="profile-public-info-grid">
+            <div><small>Studie</small><strong>{fermiUser?.profile.study || "Niet ingevuld"}</strong></div>
+            <div><small>Studiejaar</small><strong>{fermiUser?.profile.studyYear ? `Jaar ${fermiUser.profile.studyYear}` : "Niet ingevuld"}</strong></div>
+            <div><small>Lid sinds</small><strong>{membership?.startYear || (membership?.startDate ? new Date(membership.startDate).getFullYear() : null) || "Niet ingevuld"}</strong></div>
+            <div><small>Rol binnen Fermi</small><strong>{roleLabel}</strong></div>
+          </div>
+          <h3>Over mij</h3>
+          <p className="profile-public-info-bio">{fermiUser?.profile.bio?.trim() || "Je hebt nog geen bio toegevoegd. Vertel andere Fermi-leden iets over jezelf!"}</p>
+        </section>
         <section className="member-card" data-tour="profile-member-card">
           <div className="member-card-paper" />
           <div className="member-card-left">
@@ -469,6 +486,19 @@ export default function ProfilePage() {
         </section>
       </section>
 
+        <style jsx>{`
+          .profile-public-info{background:#f7efe2;color:#092d40;border-radius:23px;padding:22px;margin-bottom:22px;box-shadow:0 12px 35px #001b2c15}
+          .profile-public-info-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+          .profile-public-info-heading small{color:#c56822;font-size:10px;font-weight:900;letter-spacing:.12em}
+          .profile-public-info-heading h2{font-family:Georgia,serif;font-size:25px;margin:5px 0 0}
+          .profile-public-info-heading button{border:0;background:#092d40;color:white;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:7px;font-weight:750;cursor:pointer}
+          .profile-public-info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+          .profile-public-info-grid>div{background:#fffaf2;padding:14px;border-radius:14px;display:flex;flex-direction:column;gap:6px}
+          .profile-public-info-grid small{font-size:12px;color:#64727b}
+          .profile-public-info-grid strong{font-size:15px;overflow-wrap:anywhere}
+          .profile-public-info h3{font-family:Georgia,serif;font-size:20px;margin:22px 0 9px}
+          .profile-public-info-bio{margin:0;line-height:1.65;color:#45535d;white-space:pre-wrap;overflow-wrap:anywhere}
+        `}</style>
       {cropFile && cropUrl && (
         <div className="profile-crop-backdrop" role="presentation" onClick={() => !photoBusy && closePhotoCropper()}>
           <section className="profile-crop-modal" role="dialog" aria-modal="true" aria-label="Profielfoto bijsnijden" onClick={(event) => event.stopPropagation()}>
