@@ -2,13 +2,13 @@
 
 import { collection, getDocs, getDocsFromCache } from "firebase/firestore";
 import { db } from "../firebase";
-import type { UserRole } from "../models/backend";
+import type { AssociationRole } from "../models/backend";
 
 export interface CommunityDirectoryMember {
   id: string;
   firstName: string;
   lastName: string;
-  role: UserRole;
+  role: AssociationRole;
   startYear: number | null;
   study: string | null;
   studyYear: number | null;
