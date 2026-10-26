@@ -21,16 +21,16 @@ const filters = ["Alle leden", "Bestuur", "Commissies", "Jaar 1", "Jaar 2+"];
 
 function memberCategories(member: CommunityDirectoryMember) {
   const categories = ["Alle leden"];
-  if (["chair", "vice_chair", "secretary", "treasurer", "general_board"].includes(member.role)) categories.push("Bestuur");
-  if (["accom", "educom", "webcom", "acquisitiecom", "sturecom"].includes(member.role)) categories.push("Commissies");
+  if (["board", "chair", "vice_chair", "secretary", "treasurer", "general_board"].includes(member.role)) categories.push("Bestuur");
+  if (["committee", "accom", "educom", "webcom", "acquisitiecom", "sturecom"].includes(member.role)) categories.push("Commissies");
   if (member.studyYear === 1) categories.push("Jaar 1");
   if ((member.studyYear ?? 0) >= 2) categories.push("Jaar 2+");
   return categories;
 }
 
 function memberBadge(member: CommunityDirectoryMember) {
-  if (member.role === "board") return { label: "Bestuur", tone: "orange" as const };
-  if (member.role === "committee") return { label: "Commissie", tone: "navy" as const };
+  if (["board", "chair", "vice_chair", "secretary", "treasurer", "general_board"].includes(member.role)) return { label: "Bestuur", tone: "orange" as const };
+  if (["committee", "accom", "educom", "webcom", "acquisitiecom", "sturecom"].includes(member.role)) return { label: "Commissie", tone: "navy" as const };
 
   if (member.studyYear) return { label: `Jaar ${member.studyYear}`, tone: "soft" as const };
   return { label: "Lid", tone: "soft" as const };
