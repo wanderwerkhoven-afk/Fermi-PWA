@@ -15,6 +15,7 @@ import {
 import {
   listCommunityMembers,
   listCommunityMembersFromCache,
+  subscribeCommunityMembers,
   type CommunityDirectoryMember,
 } from "../lib/services/community";
 
@@ -116,6 +117,16 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return () => {
       active = false;
     };
+  }, [firebaseUser, fermiUser, membership, sessionLoading]);
+
+  useEffect(() => {
+    if (sessionLoading || !firebaseUser || fermiUser?.status !== "active") return;
+    const membershipStatus = membership?.status ?? fermiUser.membership?.status;
+    if (membershipStatus !== "active" && !["board", "admin"].includes(fermiUser.accessLevel ?? fermiUser.role)) return;
+    return subscribeCommunityMembers(
+      (members) => { setCommunityMembers(members); setCommunityError(""); setCommunityLoading(false); },
+      (error) => { console.error("Community live updates mislukt", error); },
+    );
   }, [firebaseUser, fermiUser, membership, sessionLoading]);
 
   // Prepare all published activity imagery, including detail images, while online.
