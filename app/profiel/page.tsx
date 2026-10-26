@@ -162,7 +162,7 @@ export default function ProfilePage() {
 
   function cropBounds(zoom = cropZoom) {
     const viewport = cropViewportRef.current?.clientWidth || 280;
-    const baseScale = Math.max(viewport / cropImageSize.width, viewport / cropImageSize.height);
+    const baseScale = Math.min(viewport / cropImageSize.width, viewport / cropImageSize.height);
     const drawWidth = cropImageSize.width * baseScale * zoom;
     const drawHeight = cropImageSize.height * baseScale * zoom;
     return {
