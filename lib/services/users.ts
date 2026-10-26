@@ -1,6 +1,7 @@
 import type { User } from "firebase/auth";
-import { doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, getDocFromServer, onSnapshot, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { syncOwnCommunityProfile } from "./community";
 import type { FermiUser } from "../models/backend";
 
 export async function ensureUserProfile(user: User) {
@@ -160,4 +161,8 @@ export async function updateOwnUserProfile(uid: string, _current: FermiUser["pro
     "profile.bio": input.bio?.trim() || null,
     updatedAt: serverTimestamp(),
   });
+  const saved = await getDocFromServer(doc(db, "users", uid));
+  if (saved.exists()) {
+    await syncOwnCommunityProfile(uid, (saved.data() as FermiUser).profile);
+  }
 }
