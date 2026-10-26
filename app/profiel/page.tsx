@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../lib/firebase";
@@ -90,6 +91,8 @@ export default function ProfilePage() {
     return () => window.clearTimeout(timer);
   }, [profileNotice]);
 
+  const [navPortalReady, setNavPortalReady] = useState(false);
+  useEffect(() => setNavPortalReady(true), []);
   const [photoBusy, setPhotoBusy] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [cropFile, setCropFile] = useState<File | null>(null);
@@ -611,6 +614,7 @@ export default function ProfilePage() {
         </div>
       )}
 
+      {navPortalReady && createPortal(
       <nav className="bottom-nav" aria-label="Hoofdnavigatie">
         <Link className="nav-item" href="/" data-tour="nav-home">
           <Home size={23} />
@@ -635,7 +639,7 @@ export default function ProfilePage() {
           <span>Profiel</span>
           <i />
         </Link>
-      </nav>
+      </nav>, document.body)}
     </main>
   );
 }
