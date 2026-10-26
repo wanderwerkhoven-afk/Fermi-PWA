@@ -125,7 +125,7 @@ export const committees: Committee[] = [
       "Je wilt Fermi herkenbaar en zichtbaar maken"
     ],
     commitment: "Regelmatige kleine taken, met extra werk rondom campagnes en evenementen."
-  }  ,
+  },
   {
     slug: "webcom",
     name: "WebCom",
