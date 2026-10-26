@@ -45,6 +45,7 @@ function memberSubtitle(member: CommunityDirectoryMember) {
 export default function CommunityPage() {
   const [query, setQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("Alle leden");
+  const [selectedMember, setSelectedMember] = useState<CommunityDirectoryMember | null>(null);
   const { fermiUser, membership } = useFermiSession();
   const membershipStatus = membership?.status ?? fermiUser?.membership?.status;
   const isMembershipPending = membershipStatus === "pending";
@@ -198,7 +199,7 @@ export default function CommunityPage() {
                 .slice(0, 2) || "F";
 
               return (
-                <article className="community-member-row community-member-row-live" key={member.id}>
+                <button type="button" className="community-member-row community-member-row-live community-member-open" key={member.id} onClick={() => setSelectedMember(member)} aria-label={`Bekijk profiel van ${name}`}>
                   {member.photoUrl ? (
                     <img src={member.photoUrl} alt={`Profielfoto van ${name}`} />
                   ) : (
@@ -212,7 +213,7 @@ export default function CommunityPage() {
                   <span className={`community-member-badge ${badge.tone}`}>
                     {badge.label}
                   </span>
-                </article>
+                </button>
               );
             })}
 
@@ -236,6 +237,45 @@ export default function CommunityPage() {
         </section>
       </section>
 
+      {selectedMember && !isMembershipPending && (
+        <div className="member-preview-backdrop" role="presentation" onClick={() => setSelectedMember(null)}>
+          <section className="member-preview-panel" role="dialog" aria-modal="true" aria-label={`Profiel van ${selectedMember.firstName} ${selectedMember.lastName}`} onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="member-preview-close" onClick={() => setSelectedMember(null)} aria-label="Sluit ledenprofiel">×</button>
+            <div className="member-preview-top">
+              {selectedMember.photoUrl ? <img className="member-preview-photo" src={selectedMember.photoUrl} alt="Profielfoto" /> : <span className="member-preview-initials">{(selectedMember.firstName.charAt(0) + selectedMember.lastName.charAt(0)).toUpperCase()}</span>}
+              <h2>{selectedMember.firstName} {selectedMember.lastName}</h2>
+              <span className="member-preview-role">{memberBadge(selectedMember).label}</span>
+            </div>
+            <div className="member-preview-body">
+              <h3>Over dit lid</h3>
+              <div className="member-preview-details">
+                <div><small>Studie</small><strong>{selectedMember.study || "Technische Natuurkunde"}</strong></div>
+                <div><small>Studiejaar</small><strong>{selectedMember.studyYear ? `Jaar ${selectedMember.studyYear}` : "Niet ingevuld"}</strong></div>
+                <div><small>Lid sinds</small><strong>{selectedMember.startYear || "Niet ingevuld"}</strong></div>
+              </div>
+              <h3>Bio</h3>
+              <p className="member-preview-bio">{selectedMember.bio?.trim() || "Dit lid heeft nog geen bio toegevoegd."}</p>
+            </div>
+          </section>
+        </div>
+      )}
+      <style jsx>{`
+        .community-member-open{width:100%;text-align:left;cursor:pointer;font:inherit;border:0}
+        .community-member-open:focus-visible{outline:3px solid #ff7a1a;outline-offset:2px}
+        .member-preview-backdrop{position:fixed;inset:0;z-index:1200;background:rgba(3,29,44,.7);display:flex;align-items:flex-end;justify-content:center}
+        .member-preview-panel{position:relative;background:#f7efe2;color:#092d40;width:min(100%,540px);max-height:88dvh;overflow:auto;border-radius:28px 28px 0 0;padding:24px 24px max(32px,env(safe-area-inset-bottom));box-shadow:0 -12px 60px #0004}
+        .member-preview-close{position:absolute;right:20px;top:16px;border:0;border-radius:50%;background:#e6d9c7;color:#092d40;width:38px;height:38px;font-size:27px;cursor:pointer}
+        .member-preview-top{text-align:center;padding:18px 0 26px;border-bottom:1px solid #dacdb9}
+        .member-preview-photo,.member-preview-initials{width:112px;height:112px;border-radius:50%;object-fit:cover;display:grid;place-items:center;margin:0 auto 14px;background:#092d40;color:#fff;font-size:38px;font-weight:800;border:5px solid #fff}
+        .member-preview-top h2{font-family:Georgia,serif;font-size:28px;margin:0 0 12px}
+        .member-preview-role{display:inline-block;background:#ff7a1a;color:#fff;border-radius:30px;padding:6px 14px;font-weight:800;font-size:13px}
+        .member-preview-body h3{font-family:Georgia,serif;font-size:20px;margin:24px 0 12px}
+        .member-preview-details{display:grid;gap:10px}
+        .member-preview-details>div{background:#fffaf2;border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:4px}
+        .member-preview-details small{color:#6a7780;font-size:12px}.member-preview-details strong{font-size:15px}
+        .member-preview-bio{line-height:1.65;white-space:pre-wrap;color:#45535d;margin:0}
+        @media(min-width:700px){.member-preview-backdrop{align-items:center}.member-preview-panel{border-radius:28px;max-height:85dvh}}
+      `}</style>
       <nav className="bottom-nav" aria-label="Hoofdnavigatie">
         <Link className="nav-item" href="/" data-tour="nav-home">
           <Home size={23} />
