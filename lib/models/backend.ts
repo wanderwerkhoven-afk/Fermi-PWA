@@ -1,4 +1,4 @@
-export type AssociationRole = "member" | "accom" | "educom" | "sturecom" | "chair" | "vice_chair" | "secretary" | "treasurer" | "general_board";
+export type AssociationRole = "member" | "accom" | "educom" | "webcom" | "acquisitiecom" | "sturecom" | "chair" | "vice_chair" | "secretary" | "treasurer" | "general_board";
 export type AccessLevel = "member" | "qr_scan" | "committee" | "board" | "admin";
 export type UserRole = "member" | "committee" | "board" | "admin";
 export type AccountStatus = "active" | "suspended";
