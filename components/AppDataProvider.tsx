@@ -16,6 +16,7 @@ import {
   listCommunityMembers,
   listCommunityMembersFromCache,
   subscribeCommunityMembers,
+  syncOwnCommunityProfile,
   type CommunityDirectoryMember,
 } from "../lib/services/community";
 
@@ -128,6 +129,17 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       (error) => { console.error("Community live updates mislukt", error); },
     );
   }, [firebaseUser, fermiUser, membership, sessionLoading]);
+
+  // Backfill existing accounts: older community projections may lack a photo,
+  // study year or bio until the member edits their profile again.
+  useEffect(() => {
+    if (!firebaseUser || !fermiUser || fermiUser.status !== "active") return;
+    const membershipStatus = membership?.status ?? fermiUser.membership?.status;
+    if (membershipStatus !== "active") return;
+    void syncOwnCommunityProfile(firebaseUser.uid, fermiUser.profile).catch((error) => {
+      console.warn("Communityprofiel synchroniseren mislukt", error);
+    });
+  }, [firebaseUser?.uid, fermiUser?.profile, fermiUser?.status, membership?.status, fermiUser?.membership?.status]);
 
   // Prepare all published activity imagery, including detail images, while online.
   // The Firebase document cache remains responsible for event text and metadata.
