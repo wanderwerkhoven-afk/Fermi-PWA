@@ -5,6 +5,8 @@ import {
   ArrowLeft,
   Bell,
   CalendarDays,
+  Code2,
+  Handshake,
   CheckCircle2,
   Clock3,
   GraduationCap,
@@ -25,6 +27,8 @@ const iconMap = {
   education: GraduationCap,
   plane: Plane,
   megaphone: Megaphone,
+  code: Code2,
+  handshake: Handshake,
 };
 
 export default function CommitteeDetailClient({ baseCommittee }: { baseCommittee: Committee }) {
