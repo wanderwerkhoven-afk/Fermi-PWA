@@ -1,0 +1,4 @@
+"use client";
+import Link from "next/link";
+import { useFermiSession } from "@/components/SessionProvider";
+export default function PrivacyPage(){const {fermiUser}=useFermiSession();return <main className="app-shell profile-page-shell"><section className="association-admin-panel"><Link href="/profiel">← Terug naar profiel</Link><h1>Privacy</h1><p>Hier zie je welke accountgegevens de app voor je profiel gebruikt.</p><dl><dt>Naam</dt><dd>{[fermiUser?.profile.firstName,fermiUser?.profile.lastName].filter(Boolean).join(" ")||"Onbekend"}</dd><dt>E-mailadres</dt><dd>{fermiUser?.email||"Onbekend"}</dd><dt>Accountstatus</dt><dd>{fermiUser?.status||"Onbekend"}</dd></dl><p>Je kunt je profielgegevens aanpassen via Profiel bewerken. Neem voor inzage-, correctie- of verwijderverzoeken contact op met het bestuur van S.V. Fermi. Deze pagina verwijdert niet zelfstandig verenigingsadministratie.</p><Link href="/profiel">Naar mijn profiel</Link></section></main>}
