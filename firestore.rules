@@ -64,9 +64,31 @@ service cloud.firestore {
 
     // Privacy-safe member projection used by the members-only Community screen.
     // It intentionally contains no email, phone number, city or membership identifiers.
+    function ownCommunityFieldsMatch() {
+      return request.resource.data.firstName == currentUser().data.profile.firstName
+        && request.resource.data.lastName == currentUser().data.profile.lastName
+        && request.resource.data.photoUrl == currentUser().data.profile.get("photoUrl", null)
+        && request.resource.data.study == currentUser().data.profile.get("study", null)
+        && request.resource.data.studyYear == currentUser().data.profile.get("studyYear", null)
+        && request.resource.data.bio == currentUser().data.profile.get("bio", null);
+    }
+
     match /communityMembers/{memberId} {
       allow read: if signedIn();
-      allow create, update, delete: if hasRole(["admin"]);
+      allow create: if hasRole(["admin"]) || (
+        isOwner(memberId)
+        && hasProfile()
+        && currentUser().data.status == "active"
+        && request.resource.data.keys().hasOnly(["firstName", "lastName", "photoUrl", "study", "studyYear", "bio", "updatedAt"])
+        && ownCommunityFieldsMatch()
+      );
+      allow update: if hasRole(["admin"]) || (
+        isOwner(memberId)
+        && hasProfile()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["firstName", "lastName", "photoUrl", "study", "studyYear", "bio", "updatedAt"])
+        && ownCommunityFieldsMatch()
+      );
+      allow delete: if hasRole(["admin"]);
     }
 
     match /events/{eventId} {
