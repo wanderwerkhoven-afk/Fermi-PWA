@@ -118,11 +118,11 @@ Status: **Gevonden** = broncode of route aangetroffen (geen functionele test); *
 | Profiel | Digitale ledenpas en QR | Gevonden | [`app/profiel/page.tsx`](app/profiel/page.tsx), [`components/MemberQrCode.tsx`](components/MemberQrCode.tsx) |
 | Profiel | KPI's | Gevonden | [`app/profiel/page.tsx`](app/profiel/page.tsx) — `profile-stats` |
 | Profiel | Mijn Fermi rechtenafhankelijke menu's | Gevonden | [`app/profiel/page.tsx`](app/profiel/page.tsx) — `visibleMenuItems`, `canScan`, `isAdmin` |
-| Profiel | Mijn activiteiten (eigen pagina) | Gedeeltelijk | Menu linkt nu naar [`/agenda`](app/agenda/page.tsx), geen afzonderlijk overzicht bevestigd |
-| Profiel | Mijn commissies (eigen pagina) | Gedeeltelijk | Menu linkt nu naar [`/fermi`](app/fermi/page.tsx), geen persoonlijk commissieoverzicht bevestigd |
-| Profiel | Notificaties en geschiedenis | Gepland | [`app/profiel/page.tsx`](app/profiel/page.tsx) heeft momenteel `href: "#"` |
-| Profiel | Privacy | Gepland | [`app/profiel/page.tsx`](app/profiel/page.tsx) heeft momenteel `href: "#"` |
-| Profiel | Instellingen | Gedeeltelijk | Instellingen-UI op [profiel](app/profiel/page.tsx), maar menulink heeft `href: "#"` |
+| Profiel | Mijn activiteiten (eigen pagina) | Implementatie toegevoegd, nog niet getest | [`app/profiel/mijn-activiteiten/page.tsx`](app/profiel/mijn-activiteiten/page.tsx), [`lib/services/registrations.ts`](lib/services/registrations.ts) |
+| Profiel | Mijn commissies (eigen pagina) | Implementatie toegevoegd, nog niet getest | [`app/profiel/mijn-commissies/page.tsx`](app/profiel/mijn-commissies/page.tsx); koppeling via `associationRole` |
+| Profiel | Notificaties en geschiedenis | Implementatie toegevoegd, nog niet getest | [`app/profiel/notificaties/page.tsx`](app/profiel/notificaties/page.tsx), Firestore `notifications` |
+| Profiel | Privacy | Basisimplementatie toegevoegd | [`app/profiel/privacy/page.tsx`](app/profiel/privacy/page.tsx); verwijderverzoeken nog handmatig |
+| Profiel | Instellingen | Basisimplementatie toegevoegd | [`app/profiel/instellingen/page.tsx`](app/profiel/instellingen/page.tsx); voorkeur en walkthrough |
 | Profiel | QR-scanner / Admin CRM menu | Gevonden | [`app/profiel/page.tsx`](app/profiel/page.tsx) — `canScan`, `isAdmin` |
 | Scanner | Header, activiteitselector, camerabox | Gevonden | [`app/profiel/qr-scanner/page.tsx`](app/profiel/qr-scanner/page.tsx) |
 | Scanner | Goed-/afkeuring en autorisatie | Gevonden | [`app/profiel/qr-scanner/page.tsx`](app/profiel/qr-scanner/page.tsx), [`lib/services/scanner.ts`](lib/services/scanner.ts), [`firestore.rules`](firestore.rules) |
@@ -142,11 +142,15 @@ Status: **Gevonden** = broncode of route aangetroffen (geen functionele test); *
 
 ### Aandachtspunten voor volgende ontwikkelronde
 
-1. **Profiel:** bouw eigen activiteiten, persoonlijke commissies, notificatiegeschiedenis, privacy en instellingen uit in plaats van placeholder-links.
+1. **Profiel:** vijf nieuwe routes zijn toegevoegd en vanuit het profiel gekoppeld. Nog nodig: build, runtime- en Firestore-regeltests; uitgebreidere privacyfunctionaliteit, voorkeuren en eventuele commissielidmaatschappen buiten `associationRole`.
 2. **Community:** ledenprofiel-preview; bepaal privé-fotoalbumintegratie.
 3. **Scanner:** verifieer of succesvolle scans aanwezigheid persistent opslaan en hoe dubbele scans worden behandeld.
 4. **Fermi:** bevestig of AquasitieCon en WebCom toegevoegd moeten worden; definieer gewenste functionaliteit van Vereniging CRM.
 5. **E-mail:** ontwerp ontvangerselectie, veilige verzending, toestemming en verzendhistorie.
+
+### Implementatielog — 26 oktober 2026
+
+Toegevoegd: `app/profiel/mijn-activiteiten/page.tsx`, `app/profiel/mijn-commissies/page.tsx`, `app/profiel/notificaties/page.tsx`, `app/profiel/privacy/page.tsx` en `app/profiel/instellingen/page.tsx`. De links in `app/profiel/page.tsx` zijn aangepast. **Status: code naar main geschreven, niet lokaal gebouwd of end-to-end getest.** Openstaande onderdelen blijven als gepland/gedeeltelijk gemarkeerd; er is geen claim dat alle gebruikerswensen gereed zijn.
 
 ## Onderhoudsafspraak
 
