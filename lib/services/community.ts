@@ -13,6 +13,7 @@ export interface CommunityDirectoryMember {
   study: string | null;
   studyYear: number | null;
   photoUrl: string | null;
+  bio?: string | null;
 }
 
 function mapCommunityMembers(snapshot: Awaited<ReturnType<typeof getDocs>>): CommunityDirectoryMember[] {
