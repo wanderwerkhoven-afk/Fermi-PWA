@@ -72,6 +72,82 @@ De onderstaande locaties zijn rechtstreeks in de huidige broncode geverifieerd. 
 
 De **fotogalerij** en eventuele bijbehorende opslag/API-integratie zijn nog niet gelokaliseerd. Ook overige, niet hierboven genoemde routes en componenten verdienen verdere inventarisatie. De HTML-e-mailpreview is gevonden; een verzendintegratie is niet bevestigd.
 
+## Functionele checklist — inventarisatie gebruikersschermen (26-10-2026)
+
+Status: **Gevonden** = broncode of route aangetroffen (geen functionele test); **Gedeeltelijk** = UI aanwezig maar gevraagde aparte functionaliteit niet vastgesteld; **Gepland** = door gebruiker aangegeven als nog te bouwen; **Niet gevonden** = niet aangetroffen in de geïnspecteerde configuratie. Bestandslinks verwijzen naar de actuele implementatie. CSS van schermen staat veelal in [`app/globals.css`](app/globals.css); scanner gebruikt ook inline styling.
+
+| Gebied | Onderdeel | Status | Code / toelichting |
+| --- | --- | --- | --- |
+| Toegang | Inlogscherm | Gevonden | [`app/login/page.tsx`](app/login/page.tsx) |
+| Toegang | Account aanmaken / authenticatie | Gevonden | [`app/register/page.tsx`](app/register/page.tsx), [`app/register/ander-email/page.tsx`](app/register/ander-email/page.tsx), [`lib/services/auth.ts`](lib/services/auth.ts), [`lib/services/users.ts`](lib/services/users.ts) |
+| Toegang | Leden-QR-code genereren | Gevonden | [`components/MemberQrCode.tsx`](components/MemberQrCode.tsx), [`components/SessionProvider.tsx`](components/SessionProvider.tsx) |
+| Algemeen | Laadscherm, page loading, skeletons | Gevonden | [`components/AuthGuard.tsx`](components/AuthGuard.tsx), [`app/page.tsx`](app/page.tsx), [`app/fermi/page.tsx`](app/fermi/page.tsx), [`components/AppDataProvider.tsx`](components/AppDataProvider.tsx); volledige loader-assetketen nog na te lopen |
+| Algemeen | Handmatige walkthrough | Gevonden | [`components/GuidedAppTour.tsx`](components/GuidedAppTour.tsx), [`app/tour.css`](app/tour.css), herstart via [profiel](app/profiel/page.tsx) |
+| Home | Welkomstnaam in header | Gevonden | [`app/page.tsx`](app/page.tsx) — `memberName` |
+| Home | Featured activiteit | Gevonden | [`app/page.tsx`](app/page.tsx) — `featuredActivity`, `resolveHomeFeaturedImage` |
+| Home | Binnenkort-cards | Gevonden | [`app/page.tsx`](app/page.tsx) — `homeUpcomingActivities` |
+| Home | Mededelingen | Gevonden | [`app/page.tsx`](app/page.tsx), [`lib/services/announcements.ts`](lib/services/announcements.ts) |
+| Home | Digitale ledenpas button, modal en QR | Gevonden | [`app/page.tsx`](app/page.tsx) — `openMemberPass` en modal; [`components/MemberQrCode.tsx`](components/MemberQrCode.tsx) |
+| Home | Meldingen rechtsboven | Gevonden | [`app/page.tsx`](app/page.tsx) — `notificationsOpen`, `subscribePendingApprovals` |
+| Home | Page loading en preload | Gevonden | [`app/page.tsx`](app/page.tsx) — `homeVisualReady`, `home-featured-skeleton` |
+| Agenda | Header styling en afbeeldingen | Gevonden | [`app/agenda/page.tsx`](app/agenda/page.tsx), [`app/globals.css`](app/globals.css) |
+| Agenda | Maandnavigatie / alles | Gevonden | [`app/agenda/page.tsx`](app/agenda/page.tsx) — `selectedMonth`, `showAllFuture` |
+| Agenda | Activiteitstypefilters | Gevonden | [`app/agenda/page.tsx`](app/agenda/page.tsx) — `matchesAgendaFilter` |
+| Agenda | Kalenderweergave | Gevonden | [`app/agenda/page.tsx`](app/agenda/page.tsx) — `eventOccursOnDate` |
+| Agenda | Activiteitencontainers | Gevonden | [`app/agenda/page.tsx`](app/agenda/page.tsx) — `agenda-card` |
+| Agenda | Activiteitdetails | Gevonden | [`app/agenda/activiteit/page.tsx`](app/agenda/activiteit/page.tsx), [`components/events/EventDetailClient.tsx`](components/events/EventDetailClient.tsx) |
+| Agenda | Inschrijven en registratie | Gevonden | [`components/events/EventActions.tsx`](components/events/EventActions.tsx), [`lib/services/registrations.ts`](lib/services/registrations.ts) |
+| Agenda | Activiteitenafbeeldingen | Gevonden | [`data/agenda-images.generated.ts`](data/agenda-images.generated.ts), [`scripts/generate-agenda-image-manifest.mjs`](scripts/generate-agenda-image-manifest.mjs), [`app/agenda/page.tsx`](app/agenda/page.tsx) |
+| Fermi | Headerafbeeldingen | Gevonden | [`app/fermi/page.tsx`](app/fermi/page.tsx) — `FERMI_VISUAL_ASSETS` |
+| Fermi | Bestuurskaarten overzicht | Gevonden | [`app/fermi/page.tsx`](app/fermi/page.tsx), [`lib/services/association.ts`](lib/services/association.ts) |
+| Fermi | Bestuur flipcards | Gevonden | [`app/fermi/bestuur/page.tsx`](app/fermi/bestuur/page.tsx) — `flipped`, `toggleCard` |
+| Fermi | Commissiekaarten | Gevonden | [`app/fermi/page.tsx`](app/fermi/page.tsx), [`data/committees.ts`](data/committees.ts) |
+| Fermi | AcCom | Gevonden | [`app/fermi/commissies/[slug]/page.tsx`](app/fermi/commissies/%5Bslug%5D/page.tsx), [`components/committees/AcComDetail.tsx`](components/committees/AcComDetail.tsx) |
+| Fermi | EduCom, ReisCom, PromoCom | Gevonden | [`data/committees.ts`](data/committees.ts), [`components/committees/CommitteeDetailClient.tsx`](components/committees/CommitteeDetailClient.tsx) |
+| Fermi | AquasitieCon, WebCom | Niet gevonden | Niet aanwezig in de huidige [`data/committees.ts`](data/committees.ts); nog geen implementatie bevestigd |
+| Fermi | Documenten en PDF-viewer | Gevonden | [`app/fermi/page.tsx`](app/fermi/page.tsx), [`app/fermi/documenten/beleidsplan/page.tsx`](app/fermi/documenten/beleidsplan/page.tsx), [`components/documents/FermiPdfViewer.tsx`](components/documents/FermiPdfViewer.tsx) |
+| Community | Header en leden-tab | Gevonden | [`app/community/page.tsx`](app/community/page.tsx) — `community-hero`, `community-tabs` |
+| Community | Ledenfilters en zoekveld | Gevonden | [`app/community/page.tsx`](app/community/page.tsx) — `memberCategories`, `visibleMembers` |
+| Community | Word actief-container | Gevonden | [`app/community/page.tsx`](app/community/page.tsx) — `community-join-card` |
+| Community | Ledenlijst en informatiecontainers | Gevonden | [`app/community/page.tsx`](app/community/page.tsx), [`lib/services/community.ts`](lib/services/community.ts) |
+| Community | Ledenprofiel-preview | Gepland | Nog te ontwikkelen volgens functionele lijst |
+| Community | Fotoalbums | Gevonden | [`app/community/fotoalbums/page.tsx`](app/community/fotoalbums/page.tsx), [`data/photo-albums.ts`](data/photo-albums.ts); privé opslag/API nog niet bevestigd |
+| Profiel | Header, profielgegevens, bewerkknop | Gevonden | [`app/profiel/page.tsx`](app/profiel/page.tsx) |
+| Profiel | Profiel bewerken pop-up | Gevonden | [`app/profiel/page.tsx`](app/profiel/page.tsx) — `openProfileEditor`, `profile-edit-modal` |
+| Profiel | Foto-editor met zoom en positie | Gevonden | [`app/profiel/page.tsx`](app/profiel/page.tsx) — `cropZoom`, `cropOffset`, pointer handlers; [`lib/services/profilePhoto.ts`](lib/services/profilePhoto.ts) |
+| Profiel | Digitale ledenpas en QR | Gevonden | [`app/profiel/page.tsx`](app/profiel/page.tsx), [`components/MemberQrCode.tsx`](components/MemberQrCode.tsx) |
+| Profiel | KPI's | Gevonden | [`app/profiel/page.tsx`](app/profiel/page.tsx) — `profile-stats` |
+| Profiel | Mijn Fermi rechtenafhankelijke menu's | Gevonden | [`app/profiel/page.tsx`](app/profiel/page.tsx) — `visibleMenuItems`, `canScan`, `isAdmin` |
+| Profiel | Mijn activiteiten (eigen pagina) | Gedeeltelijk | Menu linkt nu naar [`/agenda`](app/agenda/page.tsx), geen afzonderlijk overzicht bevestigd |
+| Profiel | Mijn commissies (eigen pagina) | Gedeeltelijk | Menu linkt nu naar [`/fermi`](app/fermi/page.tsx), geen persoonlijk commissieoverzicht bevestigd |
+| Profiel | Notificaties en geschiedenis | Gepland | [`app/profiel/page.tsx`](app/profiel/page.tsx) heeft momenteel `href: "#"` |
+| Profiel | Privacy | Gepland | [`app/profiel/page.tsx`](app/profiel/page.tsx) heeft momenteel `href: "#"` |
+| Profiel | Instellingen | Gedeeltelijk | Instellingen-UI op [profiel](app/profiel/page.tsx), maar menulink heeft `href: "#"` |
+| Profiel | QR-scanner / Admin CRM menu | Gevonden | [`app/profiel/page.tsx`](app/profiel/page.tsx) — `canScan`, `isAdmin` |
+| Scanner | Header, activiteitselector, camerabox | Gevonden | [`app/profiel/qr-scanner/page.tsx`](app/profiel/qr-scanner/page.tsx) |
+| Scanner | Goed-/afkeuring en autorisatie | Gevonden | [`app/profiel/qr-scanner/page.tsx`](app/profiel/qr-scanner/page.tsx), [`lib/services/scanner.ts`](lib/services/scanner.ts), [`firestore.rules`](firestore.rules) |
+| Scanner | Aanwezigheid per activiteit | Gedeeltelijk | [`lib/services/scanner.ts`](lib/services/scanner.ts) — verificatie gevonden; registratie van aanwezigheid afzonderlijk controleren |
+| CRM | Navigatiepagina en tegels | Gevonden | [`app/profiel/admin/page.tsx`](app/profiel/admin/page.tsx) |
+| Leden CRM | Header, KPI's, toevoegen en uitklapformulier | Gevonden | [`app/profiel/leden-admin/page.tsx`](app/profiel/leden-admin/page.tsx) |
+| Leden CRM | CSV-import en kolomformat | Gevonden | [`app/profiel/leden-admin/page.tsx`](app/profiel/leden-admin/page.tsx) — `splitCsvLine`, `parseMemberCsv`, `importCsv` |
+| Leden CRM | Zoeken, filters, cards, informatie-pop-up | Gevonden | [`app/profiel/leden-admin/page.tsx`](app/profiel/leden-admin/page.tsx) — `filtered`, `member-admin-modal` |
+| Activiteiten CRM | Header, KPI's, zoeken, filters, cards | Gevonden | [`app/profiel/activiteiten-admin/page.tsx`](app/profiel/activiteiten-admin/page.tsx) — `counts`, `visibleActivities` |
+| Activiteiten CRM | Nieuwe activiteit en wijzigen pop-up | Gevonden | [`app/profiel/activiteiten-admin/page.tsx`](app/profiel/activiteiten-admin/page.tsx) — `openNew`, `openEdit`, `handleSave` |
+| Activiteiten CRM | Image paths en featured styling | Gevonden | [`app/profiel/activiteiten-admin/page.tsx`](app/profiel/activiteiten-admin/page.tsx), [`data/agenda-images.generated.ts`](data/agenda-images.generated.ts) |
+| Mededelingen CRM | Header, KPI's, zoeken en filters | Gevonden | [`app/profiel/mededelingen-admin/page.tsx`](app/profiel/mededelingen-admin/page.tsx) — `counts`, `visible` |
+| Mededelingen CRM | Invoer-/wijzigpop-up | Gevonden | [`app/profiel/mededelingen-admin/page.tsx`](app/profiel/mededelingen-admin/page.tsx) — `openNew`, `openEdit`, `handleSave` |
+| Vereniging CRM | Bestaande beheerfunctie | Gedeeltelijk | [`app/profiel/vereniging-admin/page.tsx`](app/profiel/vereniging-admin/page.tsx), [`lib/services/association.ts`](lib/services/association.ts); gewenste functionele scope nog bepalen |
+| E-mail CRM | Header, templatekaarten, HTML-preview | Gevonden | [`app/profiel/email-admin/page.tsx`](app/profiel/email-admin/page.tsx), [uitnodiging](public/email/templates/fermi-webapp-uitnodiging.html), [verjaardag](public/email/templates/fermi-happy-birthday.html) |
+| E-mail CRM | Verzenden naar geselecteerde leden | Gepland | Geen verzendworkflow bevestigd in de geïnspecteerde e-mailadminpagina |
+
+### Aandachtspunten voor volgende ontwikkelronde
+
+1. **Profiel:** bouw eigen activiteiten, persoonlijke commissies, notificatiegeschiedenis, privacy en instellingen uit in plaats van placeholder-links.
+2. **Community:** ledenprofiel-preview; bepaal privé-fotoalbumintegratie.
+3. **Scanner:** verifieer of succesvolle scans aanwezigheid persistent opslaan en hoe dubbele scans worden behandeld.
+4. **Fermi:** bevestig of AquasitieCon en WebCom toegevoegd moeten worden; definieer gewenste functionaliteit van Vereniging CRM.
+5. **E-mail:** ontwerp ontvangerselectie, veilige verzending, toestemming en verzendhistorie.
+
 ## Onderhoudsafspraak
 
 Bij iedere wijziging aan functionaliteit of bestandsstructuur controleert Team Fermi deze codekaart en actualiseert de geraakte regels in dezelfde wijziging. Een functie die meerdere lagen raakt, vermeldt alle relevante bestanden. De README is een navigatie-index, geen duplicaat van de broncode.
