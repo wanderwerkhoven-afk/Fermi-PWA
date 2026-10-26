@@ -46,6 +46,7 @@ export default function CommunityPage() {
   const [query, setQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("Alle leden");
   const [selectedMember, setSelectedMember] = useState<CommunityDirectoryMember | null>(null);
+  const [expandedPhoto, setExpandedPhoto] = useState<{ src: string; name: string } | null>(null);
   const { fermiUser, membership } = useFermiSession();
   const membershipStatus = membership?.status ?? fermiUser?.membership?.status;
   const isMembershipPending = membershipStatus === "pending";
@@ -243,7 +244,11 @@ export default function CommunityPage() {
           <section className="member-preview-panel" role="dialog" aria-modal="true" aria-label={`Profiel van ${selectedMember.firstName} ${selectedMember.lastName}`} onClick={(event) => event.stopPropagation()}>
             <button type="button" className="member-preview-close" onClick={() => setSelectedMember(null)} aria-label="Sluit ledenprofiel">×</button>
             <div className="member-preview-top">
-              {(selectedMember.id === fermiUser?.uid ? (fermiUser?.profile.photoUrl || selectedMember.photoUrl) : selectedMember.photoUrl) ? <img className="member-preview-photo" src={(selectedMember.id === fermiUser?.uid ? (fermiUser.profile.photoUrl || selectedMember.photoUrl) : selectedMember.photoUrl)!} alt="Profielfoto" /> : <span className="member-preview-initials">{(selectedMember.firstName.charAt(0) + selectedMember.lastName.charAt(0)).toUpperCase()}</span>}
+              {(selectedMember.id === fermiUser?.uid ? (fermiUser?.profile.photoUrl || selectedMember.photoUrl) : selectedMember.photoUrl) ? (
+                <button type="button" className="member-preview-photo-button" aria-label={`Bekijk profielfoto van ${selectedMember.firstName} op volledig scherm`} onClick={() => setExpandedPhoto({ src: (selectedMember.id === fermiUser?.uid ? (fermiUser?.profile.photoUrl || selectedMember.photoUrl) : selectedMember.photoUrl)!, name: `${selectedMember.firstName} ${selectedMember.lastName}` })}>
+                  <img className="member-preview-photo" src={(selectedMember.id === fermiUser?.uid ? (fermiUser?.profile.photoUrl || selectedMember.photoUrl) : selectedMember.photoUrl)!} alt={`Profielfoto van ${selectedMember.firstName}`} />
+                </button>
+              ) : <span className="member-preview-initials">{(selectedMember.firstName.charAt(0) + selectedMember.lastName.charAt(0)).toUpperCase()}</span>}
               <h2>{selectedMember.firstName} {selectedMember.lastName}</h2>
               <span className="member-preview-role">{memberBadge(selectedMember).label}</span>
             </div>
@@ -260,7 +265,22 @@ export default function CommunityPage() {
           </section>
         </div>
       )}
+      {expandedPhoto && (
+        <div className="member-photo-fullscreen" role="presentation" onClick={() => setExpandedPhoto(null)}>
+          <section className="member-photo-fullscreen-content" role="dialog" aria-modal="true" aria-label={`Profielfoto van ${expandedPhoto.name}`} onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="member-photo-fullscreen-close" aria-label="Sluit grote profielfoto" onClick={() => setExpandedPhoto(null)}>×</button>
+            <img src={expandedPhoto.src} alt={`Profielfoto van ${expandedPhoto.name}`} />
+          </section>
+        </div>
+      )}
       <style jsx>{`
+        .member-preview-photo-button{display:block;border:0;background:transparent;padding:0;margin:0 auto 14px;border-radius:50%;cursor:zoom-in}
+        .member-preview-photo-button:focus-visible{outline:3px solid #ff7a1a;outline-offset:4px}
+        .member-preview-photo-button .member-preview-photo{margin:0}
+        .member-photo-fullscreen{position:fixed;inset:0;z-index:1500;background:rgba(0,14,24,.97);display:flex;align-items:center;justify-content:center;padding:20px}
+        .member-photo-fullscreen-content{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+        .member-photo-fullscreen-content img{display:block;max-width:100%;max-height:calc(100dvh - 100px);width:auto;height:auto;object-fit:contain;border-radius:4px}
+        .member-photo-fullscreen-close{position:absolute;top:max(12px,env(safe-area-inset-top));right:4px;z-index:1;width:48px;height:48px;border:0;border-radius:50%;background:#ffffff25;color:white;font-size:32px;cursor:pointer}
         .community-member-open{width:100%;text-align:left;cursor:pointer;font:inherit;border:0}
         .community-member-open:focus-visible{outline:3px solid #ff7a1a;outline-offset:2px}
         .member-preview-backdrop{position:fixed;inset:0;z-index:1200;background:rgba(3,29,44,.7);display:flex;align-items:flex-end;justify-content:center}
