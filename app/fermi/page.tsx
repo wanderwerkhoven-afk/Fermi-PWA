@@ -6,6 +6,8 @@ import {
   Atom,
   Bell,
   CalendarDays,
+  Code2,
+  Handshake,
   ChevronRight,
   Coins,
   FileText,
@@ -251,6 +253,8 @@ export default function FermiPage() {
                 committee.icon === "users" ? UsersRound :
                 committee.icon === "education" ? GraduationCap :
                 committee.icon === "plane" ? Plane :
+                committee.icon === "code" ? Code2 :
+                committee.icon === "handshake" ? Handshake :
                 Megaphone;
 
               return (
