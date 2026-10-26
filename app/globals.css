@@ -9994,3 +9994,16 @@ body.member-admin-modal-open{overflow:hidden}
     margin-top: 28px;
   }
 }
+
+/* Keep profile navigation attached to the visible viewport on iOS PWA.
+   The profile nav is portaled to body to avoid transformed ancestors. */
+body > .bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+@media (min-width: 760px) {
+  body > .bottom-nav { bottom: 28px; }
+}
