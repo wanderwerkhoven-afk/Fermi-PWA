@@ -46,9 +46,31 @@ Deze index is op 26 oktober 2026 gecontroleerd tegen bestaande repositorybestand
 | Deployment/basePath | [`next.config.ts`](next.config.ts), [`package.json`](package.json) | Statische export en GitHub Pages pad |
 | Team Fermi agents | [`AGENTS.md`](AGENTS.md), [`.agents/skills/readme-documentation-agent/SKILL.md`](.agents/skills/readme-documentation-agent/SKILL.md), [`.agents/skills/knowledge-base-agent/SKILL.md`](.agents/skills/knowledge-base-agent/SKILL.md) | Workflow, codekaartonderhoud en kennisbank |
 
+### Uitgebreide routekaart — admin, scanner en registratie
+
+De onderstaande locaties zijn rechtstreeks in de huidige broncode geverifieerd. De admin-onderdelen staan onder `/profiel/`, niet onder `/admin/`.
+
+| Functie | Pagina/component | Logica en gerelateerde bestanden |
+| --- | --- | --- |
+| Admin CRM overzicht | [`app/profiel/admin/page.tsx`](app/profiel/admin/page.tsx) | Links naar vijf beheermodules; admin-toegangscontrole via [users service](lib/services/users.ts) |
+| Leden Admin | [`app/profiel/leden-admin/page.tsx`](app/profiel/leden-admin/page.tsx) | [`lib/services/memberAdmin.ts`](lib/services/memberAdmin.ts), [`lib/models/backend.ts`](lib/models/backend.ts), [`firestore.rules`](firestore.rules) — betaalstatus, lidmaatschap, rollen en accessLevel |
+| Activiteiten Admin | [`app/profiel/activiteiten-admin/page.tsx`](app/profiel/activiteiten-admin/page.tsx) | [`lib/services/activities.ts`](lib/services/activities.ts), [`data/agenda-events.ts`](data/agenda-events.ts), [`data/agenda-images.generated.ts`](data/agenda-images.generated.ts) — formulieren, opslaan en beeldselectie |
+| Mededelingen Admin | [`app/profiel/mededelingen-admin/page.tsx`](app/profiel/mededelingen-admin/page.tsx) | [`lib/services/announcements.ts`](lib/services/announcements.ts) — mededelingen aanmaken, aanpassen en publiceren |
+| Vereniging Admin | [`app/profiel/vereniging-admin/page.tsx`](app/profiel/vereniging-admin/page.tsx) | [`lib/services/association.ts`](lib/services/association.ts) — bestuurs- en verenigingscontent |
+| E-mail Admin en preview | [`app/profiel/email-admin/page.tsx`](app/profiel/email-admin/page.tsx) | [Uitnodiging](public/email/templates/fermi-webapp-uitnodiging.html), [verjaardag](public/email/templates/fermi-happy-birthday.html) — HTML-templates en preview; verzendworkflow niet vastgesteld |
+| QR-scanner | [`app/profiel/qr-scanner/page.tsx`](app/profiel/qr-scanner/page.tsx) | [`lib/services/scanner.ts`](lib/services/scanner.ts), [`lib/services/activities.ts`](lib/services/activities.ts), [`firestore.rules`](firestore.rules) — scannen, controle en beveiliging |
+| Registratie HvA-mail | [`app/register/page.tsx`](app/register/page.tsx) | [`lib/services/auth.ts`](lib/services/auth.ts), [`lib/services/users.ts`](lib/services/users.ts), [`app/register/register.module.css`](app/register/register.module.css) |
+| Registratie alternatief e-mailadres | [`app/register/ander-email/page.tsx`](app/register/ander-email/page.tsx) | [`lib/services/auth.ts`](lib/services/auth.ts), [`app/register/register.module.css`](app/register/register.module.css) |
+| Inschrijven voor activiteit | [`components/events/EventActions.tsx`](components/events/EventActions.tsx) | [`lib/services/registrations.ts`](lib/services/registrations.ts), [`lib/services/memberships.ts`](lib/services/memberships.ts) |
+| Activiteitdetail renderen | [`components/events/EventDetailClient.tsx`](components/events/EventDetailClient.tsx) | [`components/events/ActivityRouteClient.tsx`](components/events/ActivityRouteClient.tsx), [`lib/services/activities.ts`](lib/services/activities.ts) |
+| Profielfoto-editor (zoom/positie) | [`app/profiel/page.tsx`](app/profiel/page.tsx) | `cropZoom`, `cropOffset`, pointer handlers, `saveProfilePhotoCrop`; [`lib/services/profilePhoto.ts`](lib/services/profilePhoto.ts) verwerkt opslag |
+| Commissiedetail UI | [`components/committees/CommitteeDetailClient.tsx`](components/committees/CommitteeDetailClient.tsx) | [`components/committees/CommitteeSignup.tsx`](components/committees/CommitteeSignup.tsx), [`components/committees/AcComDetail.tsx`](components/committees/AcComDetail.tsx), [`data/committees.ts`](data/committees.ts) |
+
+**Praktische zoekregel:** bij wijzigingen in QR-rechten controleer minimaal `app/profiel/page.tsx`, `app/profiel/qr-scanner/page.tsx`, `lib/services/scanner.ts`, `lib/services/memberAdmin.ts`, `lib/models/backend.ts` en `firestore.rules`. Bij activiteiten ook `components/events/EventActions.tsx` en `lib/services/registrations.ts` meenemen.
+
 ### Nog nader te inventariseren
 
-De exacte routes en bestanden voor de **admin-schermen, QR-scannerpagina, e-mailtemplatebeheer, fotogalerij en registratieflow** zijn nog niet vastgesteld. Voeg deze pas toe na verificatie van de betreffende bronbestanden. Ook de volledige importketen van de profielfoto-editor en activiteitdetailclient vraagt een verdere inspectie.
+De **fotogalerij** en eventuele bijbehorende opslag/API-integratie zijn nog niet gelokaliseerd. Ook overige, niet hierboven genoemde routes en componenten verdienen verdere inventarisatie. De HTML-e-mailpreview is gevonden; een verzendintegratie is niet bevestigd.
 
 ## Onderhoudsafspraak
 
