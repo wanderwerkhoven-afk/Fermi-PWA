@@ -13,6 +13,7 @@ Wanneer de gebruiker **Team Fermi** zegt, wordt dit team als één geïntegreerd
 - **Routing Agent** — Next.js routes, navigatie, actieve tabs, deep links, back behavior en GitHub Pages basePath.
 - **Folder Manager Agent** — repositorystructuur, bestandsnamen, assets, veilige moves en imports.
 - **Styling Agent** — design tokens, Fermi huisstijl, component styling, responsive CSS en visuele consistentie.
+- **README Documentation Agent** — onderhoudt een gecontroleerde codekaart in de README: per pagina en functie de exacte routes, componenten, services, configuratie en relevante bestanden.
 - **Knowledge Base Agent** — onderhoudt de JSON knowledge base met schermen, routes, componenten, designregels, assets en beslissingen.
 - **QA Agent** — test flows, responsive gedrag, build/deploy, routes, states en regressies.
 - **Review & Improve Agent** — eindreview, codekwaliteit, UX-consistentie en gerichte verbeteringen.
@@ -23,6 +24,7 @@ Agentinstructies:
 - `.agents/skills/folder-manager-agent/SKILL.md`
 - `.agents/skills/styling-agent/SKILL.md`
 - `.agents/skills/knowledge-base-agent/SKILL.md`
+- `.agents/skills/readme-documentation-agent/SKILL.md`
 - `.agents/skills/qa-agent/SKILL.md`
 - `.agents/skills/review-improve-agent/SKILL.md`
 
@@ -37,12 +39,13 @@ Bij een implementatieverzoek:
 2. UI/UX, Routing en Styling beoordelen parallel welke onderdelen geraakt worden.
 3. Implementeer de kleinste samenhangende wijziging; stop niet bij advies als de opdracht uitvoerbaar is.
 4. Folder Manager controleert nieuwe/mutated bestanden en assets.
-5. Knowledge Base Agent werkt structurele projectkennis bij zodra routes, schermen, tokens, componenten, assets of architectuurbeslissingen veranderen.
-6. QA controleert relevante user flows, mobiele layouts, routewerking en build/deploy-risico's.
-7. Review & Improve controleert de gecombineerde wijziging en repareert duidelijke regressies of inconsistenties.
-8. Als QA of Review code wijzigt, controleer de geraakte flow opnieuw.
-9. Bestaande werkende functionaliteit blijft behouden tenzij het verzoek deze bewust vervangt.
-10. Geen tijdelijke hacks wanneer een herbruikbare component, token of structurele oplossing logisch is.
+5. README Documentation Agent controleert bij elke codewijziging de functie-naar-bestand-index in `README.md` en werkt geraakte paden en afhankelijkheden bij.
+6. Knowledge Base Agent werkt structurele projectkennis bij zodra routes, schermen, tokens, componenten, assets of architectuurbeslissingen veranderen.
+7. QA controleert relevante user flows, mobiele layouts, routewerking en build/deploy-risico's.
+8. Review & Improve controleert de gecombineerde wijziging en repareert duidelijke regressies of inconsistenties.
+9. Als QA of Review code wijzigt, controleer de geraakte flow opnieuw.
+10. Bestaande werkende functionaliteit blijft behouden tenzij het verzoek deze bewust vervangt.
+11. Geen tijdelijke hacks wanneer een herbruikbare component, token of structurele oplossing logisch is.
 
 ## Productregels
 
@@ -87,6 +90,7 @@ Styling ─────────┘
         │
 Folder Manager ─────> structuur + assets/imports
         │
+README Documentation ─> actuele codekaart
 Knowledge Base ─────> actuele projectkennis
         │
 QA ─────────────────> route/build/device tests + fixes
@@ -117,6 +121,7 @@ Een wijziging is pas gereed wanneer relevant:
 - gebruikte styling volgt bestaande tokens/patronen;
 - assets staan logisch en hebben consistente namen;
 - knowledge base bevat nieuwe structurele informatie;
+- README-codekaart verwijst naar de actuele implementatiebestanden van gewijzigde functies;
 - TypeScript/build wordt niet bewust gebroken;
 - GitHub Pages base path is gerespecteerd;
 - bestaande Home/Agenda flows zijn niet onbedoeld beschadigd.
