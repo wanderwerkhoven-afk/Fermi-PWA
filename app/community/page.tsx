@@ -279,7 +279,7 @@ export default function CommunityPage() {
         .member-preview-photo-button .member-preview-photo{margin:0}
         .member-photo-fullscreen{position:fixed;inset:0;z-index:1500;background:rgba(0,14,24,.97);display:flex;align-items:center;justify-content:center;padding:20px}
         .member-photo-fullscreen-content{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
-        .member-photo-fullscreen-content img{display:block;max-width:100%;max-height:calc(100dvh - 100px);width:auto;height:auto;object-fit:contain;border-radius:4px}
+        .member-photo-fullscreen-content img{display:block;width:100vw;max-width:100vw;height:auto;max-height:calc(100dvh - 100px);object-fit:contain;border-radius:0}
         .member-photo-fullscreen-close{position:absolute;top:max(12px,env(safe-area-inset-top));right:4px;z-index:1;width:48px;height:48px;border:0;border-radius:50%;background:#ffffff25;color:white;font-size:32px;cursor:pointer}
         .community-member-open{width:100%;text-align:left;cursor:pointer;font:inherit;border:0}
         .community-member-open:focus-visible{outline:3px solid #ff7a1a;outline-offset:2px}
