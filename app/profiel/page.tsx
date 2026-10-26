@@ -37,13 +37,13 @@ const menuItems = [
     title: "Mijn activiteiten",
     subtitle: "Bekijk en beheer je aanmeldingen",
     icon: CalendarDays,
-    href: "/agenda",
+    href: "/profiel/mijn-activiteiten",
   },
   {
     title: "Mijn commissies",
     subtitle: "Overzicht van je commissies",
     icon: UsersRound,
-    href: "/fermi",
+    href: "/profiel/mijn-commissies",
   },
   {
     title: "Notificaties",
