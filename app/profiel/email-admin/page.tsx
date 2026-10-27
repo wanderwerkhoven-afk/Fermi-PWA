@@ -6,8 +6,11 @@ import { onAuthStateChanged } from "firebase/auth";
 import { ArrowLeft, Mail, FileText, ShieldAlert, Eye, X } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { getUserProfile } from "@/lib/services/users";
+import { listActivities } from "@/lib/services/activities";
+import { monthlyActivitiesEmail } from "@/lib/email/monthlyActivities";
 
 const templates = [
+  { id: "monthly-activities", title: "Activiteiten van deze maand", description: "Automatisch gevuld met Firebase-activiteiten en GitHub-afbeeldingen", file: "" },
   { id: "fermi-webapp-uitnodiging", title: "Uitnodiging Fermi WebApp", description: "Introductie van de nieuwe ledenapp", file: "fermi-webapp-uitnodiging.html" },
   { id: "fermi-happy-birthday", title: "Happy birthday", description: "Persoonlijke verjaardagsmail voor leden", file: "fermi-happy-birthday.html" },
 ];
@@ -18,6 +21,8 @@ export default function EmailAdminPage() {
   const [previewHtml, setPreviewHtml] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [month, setMonth] = useState(() => new Date().getMonth());
+  const [year, setYear] = useState(() => new Date().getFullYear());
 
   useEffect(() => onAuthStateChanged(auth, async (user) => {
     if (!user) { setAuthorized(false); return; }
@@ -35,6 +40,13 @@ export default function EmailAdminPage() {
     setPreviewHtml("");
     const selected = templates.find((template) => template.id === preview);
     if (!selected) { setLoading(false); return; }
+    if (preview === "monthly-activities") {
+      listActivities().then(events => {
+        if (!cancelled) setPreviewHtml(monthlyActivitiesEmail(events, year, month));
+      }).catch(() => { if (!cancelled) setError("Activiteiten laden vanuit Firebase is mislukt."); })
+        .finally(() => { if (!cancelled) setLoading(false); });
+      return () => { cancelled = true; };
+    }
     fetch(`${window.location.pathname.split("/profiel/")[0]}/email/templates/${selected.file}`)
       .then(async (response) => {
         if (!response.ok) throw new Error("De HTML-preview kon niet worden geladen.");
@@ -48,7 +60,7 @@ export default function EmailAdminPage() {
       .catch(() => { if (!cancelled) setError("De preview kon niet worden geladen. Probeer de pagina opnieuw te openen."); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [preview, authorized]);
+  }, [preview, authorized, month, year]);
 
   const selected = templates.find((template) => template.id === preview);
   return <main className="app-shell association-admin-shell">
@@ -73,7 +85,11 @@ export default function EmailAdminPage() {
               <h2 style={{margin:0,fontSize:"1.35rem"}}>{selected.title}</h2>
               <button type="button" onClick={() => setPreview(null)} aria-label="Sluit preview" style={{display:"flex",alignItems:"center",gap:6,padding:"9px 12px",borderRadius:12,border:"1px solid #517183",background:"#10384b",color:"#f4eadc",cursor:"pointer"}}><X size={18}/> Sluiten</button>
             </div>
-            <p style={{marginBottom:12}}>Voorbeeldweergave met testnaam. Er wordt niets verzonden.</p>
+            {preview === "monthly-activities" && <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:16}}>
+              <label>Maand <select value={month} onChange={e => setMonth(Number(e.target.value))} style={{marginLeft:8,padding:9,borderRadius:8}}>{["Januari","Februari","Maart","April","Mei","Juni","Juli","Augustus","September","Oktober","November","December"].map((name,index) => <option key={name} value={index}>{name}</option>)}</select></label>
+              <label>Jaar <select value={year} onChange={e => setYear(Number(e.target.value))} style={{marginLeft:8,padding:9,borderRadius:8}}>{Array.from({length:7},(_,i)=>new Date().getFullYear()-2+i).map(value=><option key={value} value={value}>{value}</option>)}</select></label>
+            </div>}
+            <p style={{marginBottom:12}}>Preview van de HTML-mail. Er wordt niets verzonden.</p>
             {loading ? <p>Preview laden…</p> : error ? <p role="alert">{error}</p> :
               <iframe title={`E-mailpreview: ${selected.title}`} srcDoc={previewHtml}
                 sandbox="" style={{display:"block",width:"100%",height:"740px",border:"1px solid #517183",borderRadius:16,background:"#f8f0e8"}}/>}
