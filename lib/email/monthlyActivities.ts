@@ -24,7 +24,7 @@ export function activitiesForMonth(events: AgendaEvent[], year: number, monthInd
 }
 
 function imageUrl(event: AgendaEvent): string | null {
-  const path = event.imagePath || (event.backgroundPreset ? "/images/agenda/activities/container-images/"+event.backgroundPreset+".png" : "");
+  const path = event.detailImagePath || "";
   if (!path) return null;
   if (/^https?:\/\//i.test(path)) return path;
   if (!path.startsWith("/")) return null;
