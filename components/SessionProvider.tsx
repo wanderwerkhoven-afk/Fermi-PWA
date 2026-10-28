@@ -6,7 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import type { FermiUser, Membership } from "../lib/models/backend";
 import { subscribeUserProfile } from "../lib/services/users";
-import { getActiveMembership, getPendingMembership } from "../lib/services/memberships";
+import { listMembershipsForAccount, selectMembership } from "../lib/services/memberships";
 
 type SessionState = {
   firebaseUser: User | null;
@@ -132,9 +132,8 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
             // the embedded user snapshot so the QR scanner and event registration
             // always resolve the exact same membership identity.
             if (fermiUser && fermiUser.role !== "admin" && fermiUser.role !== "board") {
-              const activeMembership = await getActiveMembership(firebaseUser.uid);
-              const pendingMembership = activeMembership ? null : await getPendingMembership(firebaseUser.uid);
-              membership = activeMembership || pendingMembership || snapshotMembership;
+              const items = await listMembershipsForAccount(firebaseUser.uid);
+              membership = selectMembership(items, "active") || selectMembership(items, "pending") || snapshotMembership;
             }
 
             if (
