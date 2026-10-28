@@ -1,11 +1,10 @@
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import type { FermiMember } from "../models/backend";
 
 /**
- * Read-only gateway for canonical association identities.
- * Writes and account linking must go through a separately authorized migration
- * or admin workflow, never a public client-side self-link based on email.
+ * Canonical member identity reads. Account ownership is determined by the
+ * admin-controlled users/{uid}.memberId link, never by matching an email.
  */
 export async function getMemberById(memberId: string): Promise<FermiMember | null> {
   const snapshot = await getDoc(doc(db, "members", memberId));
@@ -13,9 +12,12 @@ export async function getMemberById(memberId: string): Promise<FermiMember | nul
 }
 
 export async function getMemberByAccountUid(uid: string): Promise<FermiMember | null> {
-  const snapshot = await getDocs(query(collection(db, "members"), where("authUid", "==", uid)));
-  // Fail closed on ambiguous identity links rather than choosing an arbitrary member.
-  if (snapshot.size !== 1) return null;
-  const item = snapshot.docs[0];
-  return { ...item.data(), id: item.id } as FermiMember;
+  const account = await getDoc(doc(db, "users", uid));
+  if (!account.exists()) return null;
+  const memberId = account.data().memberId;
+  if (typeof memberId !== "string" || !memberId) return null;
+  const member = await getMemberById(memberId);
+  // Fail closed on inconsistent links.
+  if (!member || member.authUid !== uid) return null;
+  return member;
 }
