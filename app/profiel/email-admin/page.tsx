@@ -76,9 +76,10 @@ export default function EmailAdminPage() {
     event.preventDefault();
     if (!authorized || !auth.currentUser || !selected || loading || !previewHtml || sending || !confirmed) return;
     const recipient = testEmail.trim();
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(recipient)) { setSendError("Vul een geldig e-mailadres in."); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) { setSendError("Vul een geldig e-mailadres in."); return; }
     const name = testName.trim() || "Fermion";
-    const html = previewHtml.replaceAll("Fermion", name).replaceAll("{{FIRST_NAME}}", name).replaceAll("{first-name}", name);
+    const safeName = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const html = previewHtml.replaceAll("Fermion", safeName).replaceAll("{{FIRST_NAME}}", safeName).replaceAll("{first-name}", safeName);
     const subject = preview === "monthly-activities" ? `S.V. Fermi | Activiteiten ${MONTH_NAMES[month]} ${year}` : preview === "fermi-happy-birthday" ? `Happy birthday ${name}! | S.V. Fermi` : "Ontdek de nieuwe S.V. Fermi WebApp!";
     setSending(true); setSendError(""); setSendResult("");
     try {
