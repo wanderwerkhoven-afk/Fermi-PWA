@@ -43,6 +43,8 @@ export interface CurrentMembershipSnapshot {
 
 export interface FermiUser {
   uid: string;
+  /** Stable association identity, populated after verified account linking. */
+  memberId?: string | null;
   profile: UserProfile;
   role: UserRole;
   associationRole?: AssociationRole;
@@ -56,6 +58,8 @@ export interface FermiUser {
 
 export interface Membership {
   id: string;
+  /** Association identity. Optional until existing records are backfilled. */
+  memberId?: string;
   userId: string;
   academicYear: string;
   membershipType: "student" | "alumni" | "honorary";
@@ -103,4 +107,15 @@ export interface FermiNotification {
   read: boolean;
   createdAt?: unknown;
   readAt?: unknown;
+}
+
+/** Planned canonical member identity; not yet used as an authorization source. */
+export interface FermiMember {
+  id: string;
+  authUid: string | null;
+  profile: UserProfile;
+  memberNumber: string;
+  associationRole?: AssociationRole;
+  createdAt?: unknown;
+  updatedAt?: unknown;
 }
