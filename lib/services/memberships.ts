@@ -1,29 +1,53 @@
-import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 import type { Membership } from "../models/backend";
 
-async function getMembershipByStatus(userId: string, status: Membership["status"]): Promise<Membership | null> {
+/**
+ * Single membership read gateway for all account-facing flows.
+ * Legacy storage remains memberships/{id} keyed by userId until a verified
+ * memberId migration is complete. Never select an arbitrary limit(1) document:
+ * multiple academic years (and historic duplicates) may exist.
+ */
+export async function listMembershipsForAccount(userId: string): Promise<Membership[]> {
   const snapshot = await getDocs(query(
     collection(db, "memberships"),
     where("userId", "==", userId),
-    where("status", "==", status),
-    limit(1),
   ));
-  if (snapshot.empty) return null;
-  const item = snapshot.docs[0];
-  return { id: item.id, ...item.data() } as Membership;
+  return snapshot.docs.map((item) => ({ ...item.data(), id: item.id } as Membership));
 }
 
-export function getActiveMembership(userId: string) {
-  return getMembershipByStatus(userId, "active");
+function academicYearStart(value: string): number {
+  const year = Number(value?.slice(0, 4));
+  return Number.isFinite(year) ? year : 0;
 }
 
-export function getPendingMembership(userId: string) {
-  return getMembershipByStatus(userId, "pending");
+/** Stable ordering, shared by session, event actions and admin CRM. */
+export function selectMembership(
+  memberships: Membership[],
+  status?: Membership["status"],
+): Membership | null {
+  const filtered = status ? memberships.filter((item) => item.status === status) : memberships;
+  const rank: Record<Membership["status"], number> = {
+    active: 0, pending: 1, expired: 2, cancelled: 3,
+  };
+  return [...filtered].sort((a, b) =>
+    rank[a.status] - rank[b.status]
+    || academicYearStart(b.academicYear) - academicYearStart(a.academicYear)
+    || a.id.localeCompare(b.id)
+  )[0] ?? null;
+}
+
+export async function getActiveMembership(userId: string): Promise<Membership | null> {
+  return selectMembership(await listMembershipsForAccount(userId), "active");
+}
+
+export async function getPendingMembership(userId: string): Promise<Membership | null> {
+  return selectMembership(await listMembershipsForAccount(userId), "pending");
 }
 
 export async function getMembershipAccess(userId: string): Promise<"active" | "pending" | "archive"> {
-  if (await getActiveMembership(userId)) return "active";
-  if (await getPendingMembership(userId)) return "pending";
+  const memberships = await listMembershipsForAccount(userId);
+  if (selectMembership(memberships, "active")) return "active";
+  if (selectMembership(memberships, "pending")) return "pending";
   return "archive";
 }
