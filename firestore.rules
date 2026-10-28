@@ -64,6 +64,12 @@ service cloud.firestore {
     match /members/{memberId} {
       allow read: if hasRole(["board", "admin"]) || ownsMember(memberId);
       allow create, update, delete: if hasRole(["admin"]);
+      // A linked account may update only its own profile, and only when the
+      // account profile has the same final value in this atomic write.
+      allow update: if ownsMember(memberId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["profile", "updatedAt"])
+        && request.resource.data.profile
+          == getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.profile;
 
       match /membershipHistory/{academicYear} {
         allow read: if hasRole(["board", "admin"]) || ownsMember(memberId);
