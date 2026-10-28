@@ -58,7 +58,7 @@ service cloud.firestore {
     function ownsMember(memberId) {
       return hasProfile()
         && currentUser().data.get("memberId", null) == memberId
-        && resource.data.get("authUid", null) == request.auth.uid;
+        && get(/databases/$(database)/documents/members/$(memberId)).data.get("authUid", null) == request.auth.uid;
     }
 
     match /members/{memberId} {
