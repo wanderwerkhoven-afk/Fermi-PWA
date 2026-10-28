@@ -52,6 +52,24 @@ service cloud.firestore {
       allow update, delete: if hasRole(["board", "admin"]);
     }
 
+    // Canonical private member records. Only administrators may create, modify
+    // or link identities. An account can read its linked record but cannot
+    // modify authUid/memberId or other members' private information.
+    function ownsMember(memberId) {
+      return hasProfile()
+        && currentUser().data.get("memberId", null) == memberId;
+    }
+
+    match /members/{memberId} {
+      allow read: if hasRole(["board", "admin"]) || ownsMember(memberId);
+      allow create, update, delete: if hasRole(["admin"]);
+
+      match /membershipHistory/{academicYear} {
+        allow read: if hasRole(["board", "admin"]) || ownsMember(memberId);
+        allow create, update, delete: if hasRole(["admin"]);
+      }
+    }
+
     match /memberships/{membershipId} {
       allow read: if signedIn() &&
         (resource.data.userId == request.auth.uid || canScanQr());
