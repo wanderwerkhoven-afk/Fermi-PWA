@@ -60,11 +60,17 @@ export async function verifyMemberForEvent(payload: string, eventId: string): Pr
     query(
       collection(db, "memberships"),
       where("digitalCard.cardId", "==", cardId),
-      limit(1),
+      limit(2),
     ),
   );
 
   if (memberships.empty) {
+    return { ok: false, reason: "unknown_card", cardId };
+  }
+
+  // A card must identify exactly one membership. Refuse ambiguous cards rather than
+  // accidentally validating the wrong member or academic year.
+  if (memberships.size !== 1) {
     return { ok: false, reason: "unknown_card", cardId };
   }
 
