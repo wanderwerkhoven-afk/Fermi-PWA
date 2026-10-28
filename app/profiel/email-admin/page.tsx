@@ -18,7 +18,7 @@ const MONTH_NAMES = ["januari","februari","maart","april","mei","juni","juli","a
 
 const templates = [
   { id: "fermi-herinschrijving", title: "Herinschrijving nieuw studiejaar", description: "Verleng je lidmaatschap, met sfeerbeelden van Fermi-activiteiten", file: "fermi-herinschrijving.html" },
-  { id: "fermi-welkom", title: "Welkom bij S.V. Fermi", description: "Persoonlijke welkomstmail voor nieuwe leden (testversie)", file: "fermi-welkom.html" },
+  { id: "fermi-welkom", title: "Welkom bij S.V. Fermi", description: "Persoonlijke welkomstmail voor nieuwe leden", file: "fermi-welkom.html" },
   { id: "monthly-activities", title: "Activiteiten van deze maand", description: "Automatisch gevuld met Firebase-activiteiten en GitHub-afbeeldingen", file: "" },
   { id: "fermi-webapp-uitnodiging", title: "Uitnodiging Fermi WebApp", description: "Introductie van de nieuwe ledenapp", file: "fermi-webapp-uitnodiging.html" },
   { id: "fermi-happy-birthday", title: "Happy birthday", description: "Persoonlijke verjaardagsmail voor leden", file: "fermi-happy-birthday.html" },
@@ -94,19 +94,19 @@ export default function EmailAdminPage() {
       const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ service_id: EMAILJS.serviceId, template_id: EMAILJS.templateId, user_id: EMAILJS.publicKey,
-          template_params: { to_email: recipient, title: `[TEST] ${subject}`, message_html: html, email: recipient } }),
+          template_params: { to_email: recipient, title: subject, message_html: html, email: recipient } }),
       });
       if (!response.ok) throw new Error((await response.text()).slice(0, 350) || `EmailJS fout ${response.status}`);
-      setSendResult(`Testmail aangevraagd bij EmailJS voor ${recipient}. Controleer je inbox en spammap.`);
+      setSendResult(`E-mail aangevraagd bij EmailJS voor ${recipient}. Controleer je inbox en spammap.`);
       setConfirmed(false);
-    } catch (error) { setSendError(error instanceof Error ? error.message : "De testmail kon niet worden verzonden."); }
+    } catch (error) { setSendError(error instanceof Error ? error.message : "De e-mail kon niet worden verzonden."); }
     finally { setSending(false); }
   };
   return <main className="app-shell association-admin-shell">
     <div className="association-admin-panel">
       <Link href="/profiel/admin" className="association-admin-back"><ArrowLeft size={19}/> Terug naar Admin CRM</Link>
       <h1><Mail size={28}/> E-mailcampagnes</h1>
-      <p>Bekijk Fermi-mails en verstuur een test naar één zelfgekozen e-mailadres. Bulkverzending is uitgeschakeld.</p>
+      <p>Bekijk Fermi-mails en verstuur een e-mail naar één zelfgekozen e-mailadres. Bulkverzending is uitgeschakeld.</p>
       {authorized === null ? <p>Toegang controleren…</p> : !authorized ?
         <p role="alert"><ShieldAlert size={18}/> Je hebt geen toegang tot deze beheerpagina.</p> :
         <>
@@ -128,12 +128,12 @@ export default function EmailAdminPage() {
               <label>Maand <select value={month} onChange={e => setMonth(Number(e.target.value))} style={{marginLeft:8,padding:9,borderRadius:8}}>{["Januari","Februari","Maart","April","Mei","Juni","Juli","Augustus","September","Oktober","November","December"].map((name,index) => <option key={name} value={index}>{name}</option>)}</select></label>
               <label>Jaar <select value={year} onChange={e => setYear(Number(e.target.value))} style={{marginLeft:8,padding:9,borderRadius:8}}>{Array.from({length:7},(_,i)=>new Date().getFullYear()-2+i).map(value=><option key={value} value={value}>{value}</option>)}</select></label>
             </div>}
-            <p style={{marginBottom:12}}>Preview van de HTML-mail. Alleen het onderstaande formulier kan een testmail versturen.</p>
+            <p style={{marginBottom:12}}>Preview van de HTML-mail. Versturen kan via het onderstaande formulier.</p>
             {loading ? <p>Preview laden…</p> : error ? <p role="alert">{error}</p> :
               <iframe title={`E-mailpreview: ${selected.title}`} srcDoc={previewHtml}
                 sandbox="" style={{display:"block",width:"100%",height:"740px",border:"1px solid #517183",borderRadius:16,background:"#f8f0e8"}}/>}
             <form onSubmit={sendTestEmail} style={{marginTop:22,padding:20,border:"1px solid #517183",borderRadius:16,display:"grid",gap:14}}>
-              <h3 style={{margin:0}}>Testmail versturen</h3>
+              <h3 style={{margin:0}}>E-mail versturen</h3>
               <p style={{margin:0}}>Er wordt maximaal één e-mail verstuurd naar het adres hieronder. Geen ledenlijst of bulkverzending.</p>
               <label style={{display:"grid",gap:6}}>Ontvanger (e-mailadres)
                 <input type="email" required autoComplete="email" value={testEmail} onChange={e => {setTestEmail(e.target.value);setSendResult("");}} placeholder="jij@voorbeeld.nl" style={{padding:12,borderRadius:10,border:"1px solid #517183"}}/>
@@ -141,8 +141,8 @@ export default function EmailAdminPage() {
               <label style={{display:"grid",gap:6}}>Voornaam voor de voorbeeldmail
                 <input value={testName} maxLength={80} onChange={e=>setTestName(e.target.value)} style={{padding:12,borderRadius:10,border:"1px solid #517183"}}/>
               </label>
-              <label style={{display:"flex",gap:9,alignItems:"start"}}><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/> Ik bevestig dat ik één testmail naar dit adres wil versturen.</label>
-              <button type="submit" disabled={!EMAILJS.serviceId || !EMAILJS.templateId || !EMAILJS.publicKey || !confirmed || !testEmail.trim() || !previewHtml || loading || sending || !!error} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 18px",border:0,borderRadius:12,background:"#ff792b",color:"#06283b",fontWeight:700,cursor:"pointer",opacity:(!confirmed||sending||loading||!previewHtml)?0.6:1}}><Send size={18}/>{sending ? "Versturen…" : "Verstuur één testmail"}</button>
+              <label style={{display:"flex",gap:9,alignItems:"start"}}><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/> Ik bevestig dat ik deze e-mail naar dit adres wil versturen.</label>
+              <button type="submit" disabled={!EMAILJS.serviceId || !EMAILJS.templateId || !EMAILJS.publicKey || !confirmed || !testEmail.trim() || !previewHtml || loading || sending || !!error} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 18px",border:0,borderRadius:12,background:"#ff792b",color:"#06283b",fontWeight:700,cursor:"pointer",opacity:(!confirmed||sending||loading||!previewHtml)?0.6:1}}><Send size={18}/>{sending ? "Versturen…" : "Verstuur e-mail"}</button>
               {(!EMAILJS.serviceId || !EMAILJS.templateId || !EMAILJS.publicKey) && <p role="alert">EmailJS-configuratie ontbreekt in deze build. Controleer GitHub Actions Secrets.</p>}
               {sendError && <p role="alert" style={{color:"#c33",margin:0}}>{sendError}</p>}
               {sendResult && <p role="status" style={{margin:0}}>{sendResult}</p>}
