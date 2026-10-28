@@ -34,6 +34,7 @@ import {
   upsertDirectoryMembers,
 } from "../../../lib/services/memberAdmin";
 import type { UserRole, AssociationRole, AccessLevel } from "../../../lib/models/backend";
+import { adoptAccountAsMember } from "../../../lib/services/memberAdminIdentity";
 
 const lifecycleLabels: Record<AdminMemberLifecycle, string> = {
   active: "Actief",
@@ -271,6 +272,23 @@ export default function LedenAdminPage() {
     }
   }
 
+  async function linkCanonicalMember() {
+    if (!selected?.uid || selected.source !== "account" || selected.memberId) return;
+    setBusyId(`link-${selected.id}`);
+    setNotice("");
+    try {
+      await adoptAccountAsMember(selected.uid);
+      const rows = await refresh();
+      setSelected(rows.find((item) => item.source === "account" && item.uid === selected.uid) ?? null);
+      setNotice("Het account is gekoppeld aan een centraal ledenrecord.");
+    } catch (error) {
+      console.error(error);
+      setNotice("Koppelen is niet gelukt. Controleer of het account al gekoppeld is.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   async function addMember() {
     if (!form.email.trim()) {
       setNotice("Vul minimaal een e-mailadres in.");
@@ -477,7 +495,14 @@ export default function LedenAdminPage() {
               <div>
                 <small>LIDPROFIEL</small>
                 <h2>{[edit.firstName, edit.lastName].filter(Boolean).join(" ") || "Naam ontbreekt"}</h2>
-                <p>{selected.source === "account" ? "Account gekoppeld" : "Nog geen account gekoppeld"}</p>
+                <p>{selected.source === "account"
+                  ? (selected.memberId ? "Centraal ledenrecord gekoppeld" : "Account gekoppeld · centraal ledenrecord ontbreekt")
+                  : "Nog geen account gekoppeld"}</p>
+                {selected.source === "account" && selected.uid && !selected.memberId && (
+                  <button type="button" onClick={linkCanonicalMember} disabled={busyId !== null}>
+                    {busyId === `link-${selected.id}` ? "Koppelen…" : "Centraal ledenrecord aanmaken"}
+                  </button>
+                )}
               </div>
               <button type="button" aria-label="Sluiten" onClick={closeMember}><X size={20} /></button>
             </header>
