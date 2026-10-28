@@ -136,6 +136,8 @@ export default function LedenAdminPage() {
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [members, setMembers] = useState<AdminMemberRow[]>([]);
   const [query, setQuery] = useState("");
+  const [paymentFilter, setPaymentFilter] = useState<"all" | "paid" | "waived" | "unpaid">("all");
+  const [archiveFilter, setArchiveFilter] = useState<"current" | "archived" | "all">("current");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
   const [showAdd, setShowAdd] = useState(false);
@@ -213,14 +215,14 @@ export default function LedenAdminPage() {
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    if (!needle) return members;
-    return members.filter((member) =>
-      [member.firstName, member.lastName, member.email, member.memberNumber]
-        .join(" ")
-        .toLowerCase()
-        .includes(needle),
-    );
-  }, [members, query]);
+    return members.filter((member) => {
+      if (archiveFilter === "current" && member.status === "archived") return false;
+      if (archiveFilter === "archived" && member.status !== "archived") return false;
+      if (paymentFilter !== "all" && member.paymentStatus !== paymentFilter) return false;
+      return !needle || [member.firstName, member.lastName, member.email, member.memberNumber]
+        .join(" ").toLowerCase().includes(needle);
+    });
+  }, [members, query, paymentFilter, archiveFilter]);
 
   const counts = useMemo(() => ({
     active: members.filter((member) => member.status === "active").length,
@@ -426,6 +428,37 @@ export default function LedenAdminPage() {
         <div className="member-admin-search">
           <Search size={18} />
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Zoek op naam, e-mail of lidnummer" aria-label="Leden zoeken" />
+        </div>
+
+        <div className="member-admin-filter-groups" aria-label="Ledenfilters" style={{ display: "grid", gap: 12, margin: "14px 0 18px" }}>
+          <div role="group" aria-label="Ledenstatus" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {([
+              ["current", "Huidige leden"],
+              ["archived", "Gearchiveerd"],
+              ["all", "Alle leden"],
+            ] as const).map(([value, label]) => (
+              <button key={value} type="button" aria-pressed={archiveFilter === value}
+                onClick={() => setArchiveFilter(value)}
+                style={{ padding: "9px 13px", borderRadius: 999, border: "1px solid #31576a", background: archiveFilter === value ? "#ff7918" : "transparent", color: archiveFilter === value ? "#071e2b" : "#e8e1d8", fontWeight: 700, cursor: "pointer" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <div role="group" aria-label="Betaalstatus" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {([
+              ["all", "Alle betalingen"],
+              ["paid", "Betaald"],
+              ["waived", "Vrijstelling"],
+              ["unpaid", "Niet betaald"],
+            ] as const).map(([value, label]) => (
+              <button key={value} type="button" aria-pressed={paymentFilter === value}
+                onClick={() => setPaymentFilter(value)}
+                style={{ padding: "9px 13px", borderRadius: 999, border: "1px solid #31576a", background: paymentFilter === value ? "#ff7918" : "transparent", color: paymentFilter === value ? "#071e2b" : "#e8e1d8", fontWeight: 700, cursor: "pointer" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <small style={{ color: "#b4c5ce" }}>{filtered.length} van {members.length} leden weergegeven</small>
         </div>
 
         <section className="member-admin-list">
