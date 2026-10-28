@@ -57,7 +57,8 @@ service cloud.firestore {
     // modify authUid/memberId or other members' private information.
     function ownsMember(memberId) {
       return hasProfile()
-        && currentUser().data.get("memberId", null) == memberId;
+        && currentUser().data.get("memberId", null) == memberId
+        && resource.data.get("authUid", null) == request.auth.uid;
     }
 
     match /members/{memberId} {
