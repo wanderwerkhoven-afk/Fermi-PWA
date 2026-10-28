@@ -9,7 +9,11 @@ import { getUserProfile } from "@/lib/services/users";
 import { listActivities } from "@/lib/services/activities";
 import { monthlyActivitiesEmail } from "@/lib/email/monthlyActivities";
 
-const EMAILJS = { serviceId: "service_hitczmx", templateId: "template_tz5xkw7", publicKey: "EQTlffNB88chdLoTe" };
+const EMAILJS = {
+  serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID ?? "",
+  templateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID ?? "",
+  publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY ?? "",
+};
 const MONTH_NAMES = ["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
 
 const templates = [
@@ -75,6 +79,7 @@ export default function EmailAdminPage() {
   const sendTestEmail = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!authorized || !auth.currentUser || !selected || loading || !previewHtml || sending || !confirmed) return;
+    if (!EMAILJS.serviceId || !EMAILJS.templateId || !EMAILJS.publicKey) { setSendError("EmailJS is niet geconfigureerd. Controleer de GitHub Actions Secrets en voer een nieuwe build uit."); return; }
     const recipient = testEmail.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) { setSendError("Vul een geldig e-mailadres in."); return; }
     const name = testName.trim() || "Fermion";
@@ -135,7 +140,8 @@ export default function EmailAdminPage() {
                 <input value={testName} maxLength={80} onChange={e=>setTestName(e.target.value)} style={{padding:12,borderRadius:10,border:"1px solid #517183"}}/>
               </label>
               <label style={{display:"flex",gap:9,alignItems:"start"}}><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/> Ik bevestig dat ik één testmail naar dit adres wil versturen.</label>
-              <button type="submit" disabled={!confirmed || !testEmail.trim() || !previewHtml || loading || sending || !!error} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 18px",border:0,borderRadius:12,background:"#ff792b",color:"#06283b",fontWeight:700,cursor:"pointer",opacity:(!confirmed||sending||loading||!previewHtml)?0.6:1}}><Send size={18}/>{sending ? "Versturen…" : "Verstuur één testmail"}</button>
+              <button type="submit" disabled={!EMAILJS.serviceId || !EMAILJS.templateId || !EMAILJS.publicKey || !confirmed || !testEmail.trim() || !previewHtml || loading || sending || !!error} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px 18px",border:0,borderRadius:12,background:"#ff792b",color:"#06283b",fontWeight:700,cursor:"pointer",opacity:(!confirmed||sending||loading||!previewHtml)?0.6:1}}><Send size={18}/>{sending ? "Versturen…" : "Verstuur één testmail"}</button>
+              {(!EMAILJS.serviceId || !EMAILJS.templateId || !EMAILJS.publicKey) && <p role="alert">EmailJS-configuratie ontbreekt in deze build. Controleer GitHub Actions Secrets.</p>}
               {sendError && <p role="alert" style={{color:"#c33",margin:0}}>{sendError}</p>}
               {sendResult && <p role="status" style={{margin:0}}>{sendResult}</p>}
             </form>
