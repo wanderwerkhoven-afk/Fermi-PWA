@@ -68,7 +68,7 @@ export default function EmailAdminPage() {
       .then((html) => {
         if (cancelled) return;
         // Example data only: never expose member data in the preview.
-        setPreviewHtml(html.replaceAll("{{FIRST_NAME}}", "Fermion").replaceAll("{first-name}", "Fermion").replaceAll("{{APP_URL}}", "#"));
+        setPreviewHtml(html.replaceAll("{{FIRST_NAME}}", "Fermion").replaceAll("{first-name}", "Fermion").replaceAll("{{APP_URL}}", "https://wanderwerkhoven-afk.github.io/Fermi-PWA/"));
       })
       .catch(() => { if (!cancelled) setError("De preview kon niet worden geladen. Probeer de pagina opnieuw te openen."); })
       .finally(() => { if (!cancelled) setLoading(false); });
