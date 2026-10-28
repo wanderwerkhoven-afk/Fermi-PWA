@@ -1,5 +1,5 @@
 import type { User } from "firebase/auth";
-import { doc, getDoc, getDocFromServer, onSnapshot, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, getDocFromServer, onSnapshot, runTransaction, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { syncOwnCommunityProfile } from "./community";
 import type { FermiUser } from "../models/backend";
@@ -147,19 +147,36 @@ export interface EditableUserProfileInput {
 }
 
 export async function updateOwnUserProfile(uid: string, _current: FermiUser["profile"], input: EditableUserProfileInput) {
-  // Update only edited fields. Replacing the entire profile object could undo a
-  // newly uploaded Base64 avatar when the local profile snapshot is stale.
-  await updateDoc(doc(db, "users", uid), {
-    "profile.firstName": input.firstName.trim(),
-    "profile.prefix": input.prefix?.trim() || null,
-    "profile.lastName": input.lastName.trim(),
-    "profile.pronouns": input.pronouns?.trim() || null,
-    "profile.phone": input.phone?.trim() || null,
-    "profile.city": input.city?.trim() || null,
-    "profile.study": input.study?.trim() || null,
-    "profile.studyYear": input.studyYear ?? null,
-    "profile.bio": input.bio?.trim() || null,
-    updatedAt: serverTimestamp(),
+  // Update the legacy account and its canonical member in one transaction.
+  // Never infer a member identity from an email address.
+  await runTransaction(db, async (tx) => {
+    const accountRef = doc(db, "users", uid);
+    const accountSnap = await tx.get(accountRef);
+    if (!accountSnap.exists()) throw new Error("profile/account-not-found");
+    const account = accountSnap.data() as FermiUser;
+    const memberRef = account.memberId ? doc(db, "members", account.memberId) : null;
+    const memberSnap = memberRef ? await tx.get(memberRef) : null;
+    if (memberRef && (!memberSnap?.exists() || memberSnap.data().authUid !== uid)) {
+      throw new Error("member/inconsistent-link");
+    }
+
+    // Preserve fields such as the avatar and email that are not edited here.
+    const profile = {
+      ...account.profile,
+      firstName: input.firstName.trim(),
+      prefix: input.prefix?.trim() || null,
+      lastName: input.lastName.trim(),
+      pronouns: input.pronouns?.trim() || null,
+      phone: input.phone?.trim() || null,
+      city: input.city?.trim() || null,
+      study: input.study?.trim() || null,
+      studyYear: input.studyYear ?? null,
+      bio: input.bio?.trim() || null,
+    };
+    tx.update(accountRef, { profile, updatedAt: serverTimestamp() });
+    if (memberRef) {
+      tx.update(memberRef, { profile, updatedAt: serverTimestamp() });
+    }
   });
   const saved = await getDocFromServer(doc(db, "users", uid));
   if (saved.exists()) {
