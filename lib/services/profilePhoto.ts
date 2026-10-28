@@ -1,7 +1,7 @@
 "use client";
 
 import { ref, deleteObject } from "firebase/storage";
-import { doc, getDocFromServer, serverTimestamp, updateDoc } from "firebase/firestore";
+import { doc, getDocFromServer, runTransaction, serverTimestamp } from "firebase/firestore";
 import { db, storage } from "../firebase";
 import { syncOwnCommunityProfile } from "./community";
 import type { FermiUser } from "../models/backend";
@@ -93,12 +93,26 @@ async function photoDataUrl(file: File, crop?: ProfilePhotoCrop): Promise<string
   throw new Error("Deze foto kon niet voldoende worden verkleind.");
 }
 
+async function persistProfilePhoto(uid: string, photoUrl: string | null) {
+  await runTransaction(db, async (tx) => {
+    const accountRef = doc(db, "users", uid);
+    const accountSnap = await tx.get(accountRef);
+    if (!accountSnap.exists()) throw new Error("profile/account-not-found");
+    const account = accountSnap.data() as FermiUser;
+    const memberRef = account.memberId ? doc(db, "members", account.memberId) : null;
+    const memberSnap = memberRef ? await tx.get(memberRef) : null;
+    if (memberRef && (!memberSnap?.exists() || memberSnap.data().authUid !== uid)) {
+      throw new Error("member/inconsistent-link");
+    }
+    const profile = { ...account.profile, photoUrl };
+    tx.update(accountRef, { profile, updatedAt: serverTimestamp() });
+    if (memberRef) tx.update(memberRef, { profile, updatedAt: serverTimestamp() });
+  });
+}
+
 export async function uploadOwnProfilePhoto(uid: string, file: File, crop?: ProfilePhotoCrop) {
   const photoUrl = await photoDataUrl(file, crop);
-  await updateDoc(doc(db, "users", uid), {
-    "profile.photoUrl": photoUrl,
-    updatedAt: serverTimestamp(),
-  });
+  await persistProfilePhoto(uid, photoUrl);
 
   // Confirm the server actually persisted the avatar, not just the local cache.
   const snapshot = await getDocFromServer(doc(db, "users", uid));
@@ -110,10 +124,7 @@ export async function uploadOwnProfilePhoto(uid: string, file: File, crop?: Prof
 }
 
 export async function removeOwnProfilePhoto(uid: string) {
-  await updateDoc(doc(db, "users", uid), {
-    "profile.photoUrl": null,
-    updatedAt: serverTimestamp(),
-  });
+  await persistProfilePhoto(uid, null);
   const saved = await getDocFromServer(doc(db, "users", uid));
   if (saved.exists()) await syncOwnCommunityProfile(uid, (saved.data() as FermiUser).profile);
   try {
