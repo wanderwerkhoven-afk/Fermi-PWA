@@ -55,6 +55,7 @@ export interface AdminPendingApproval {
 
 export interface AdminMemberRow {
   id: string;
+  memberId?: string | null;
   source: "account" | "directory";
   uid: string | null;
   firstName: string;
@@ -238,6 +239,7 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
 
     return {
       id: user.uid,
+      memberId: user.memberId ?? null,
       source: "account" as const,
       uid: user.uid,
       firstName: user.profile?.firstName ?? directory?.firstName ?? "",
