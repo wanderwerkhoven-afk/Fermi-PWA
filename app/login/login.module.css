@@ -47,3 +47,17 @@
 @media (max-width:520px){
   .hero p{max-width:300px}
 }
+
+/* Give the mobile welcome section more breathing room before the login form. */
+@media (max-width:520px) and (min-height:761px){
+  .hero{margin-top:64px;margin-bottom:40px}
+  .hero p{margin-top:24px;line-height:1.4}
+  .card{margin-top:0}
+  .join{margin-top:24px}
+}
+@media (max-width:520px) and (max-height:760px){
+  .page{height:auto;min-height:100svh;overflow-x:hidden;overflow-y:auto}
+  .content{height:auto;min-height:100svh}
+  .hero{margin-top:28px;margin-bottom:22px}
+  .hero p{margin-top:16px;line-height:1.35}
+}
