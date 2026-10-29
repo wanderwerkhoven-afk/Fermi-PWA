@@ -18,7 +18,8 @@ const MONTH_NAMES = ["januari","februari","maart","april","mei","juni","juli","a
 
 const templates = [
   { id: "fermi-herinschrijving", title: "Herinschrijving nieuw studiejaar", description: "Verleng je lidmaatschap, met sfeerbeelden van Fermi-activiteiten", file: "fermi-herinschrijving.html" },
-  { id: "fermi-welkom", title: "Welkom bij S.V. Fermi", description: "Persoonlijke welkomstmail voor nieuwe leden", file: "fermi-welkom.html" },
+  { id: "fermi-welkom", title: "Voor het eerst lid", description: "Persoonlijke welkomstmail voor leden die voor het eerst lid worden", file: "fermi-welkom.html" },
+  { id: "fermi-welkom-terug", title: "Welkom terug bij Fermi", description: "Persoonlijke welkomstmail voor terugkerende leden", file: "fermi-welkom-terug.html" },
   { id: "monthly-activities", title: "Activiteiten van deze maand", description: "Automatisch gevuld met Firebase-activiteiten en GitHub-afbeeldingen", file: "" },
   { id: "fermi-webapp-uitnodiging", title: "Uitnodiging Fermi WebApp", description: "Introductie van de nieuwe ledenapp", file: "fermi-webapp-uitnodiging.html" },
   { id: "fermi-happy-birthday", title: "Happy birthday", description: "Persoonlijke verjaardagsmail voor leden", file: "fermi-happy-birthday.html" },
@@ -87,7 +88,7 @@ export default function EmailAdminPage() {
     const name = testName.trim() || "Fermion";
     const safeName = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     const html = previewHtml.replaceAll("Fermion", safeName).replaceAll("{{FIRST_NAME}}", safeName).replaceAll("{first-name}", safeName);
-    const subject = preview === "monthly-activities" ? `S.V. Fermi | Activiteiten ${MONTH_NAMES[month]} ${year}` : preview === "fermi-happy-birthday" ? `Happy birthday ${name}! | S.V. Fermi` : preview === "fermi-welkom" ? `Welkom bij S.V. Fermi, ${name}!` : preview === "fermi-herinschrijving" ? `${name}, blijf jij bij S.V. Fermi?` : "Ontdek de nieuwe S.V. Fermi WebApp!";
+    const subject = preview === "monthly-activities" ? `S.V. Fermi | Activiteiten ${MONTH_NAMES[month]} ${year}` : preview === "fermi-happy-birthday" ? `Happy birthday ${name}! | S.V. Fermi` : preview === "fermi-welkom" ? `Welkom bij S.V. Fermi, ${name}!` : preview === "fermi-welkom-terug" ? `Welkom terug bij S.V. Fermi, ${name}!` : preview === "fermi-herinschrijving" ? `${name}, blijf jij bij S.V. Fermi?` : "Ontdek de nieuwe S.V. Fermi WebApp!";
     setSending(true); setSendError(""); setSendResult("");
     try {
       // This is deliberately single-recipient test sending only. Never send to Firebase member lists from the browser.
