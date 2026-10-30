@@ -73,7 +73,10 @@ service cloud.firestore {
           "startDate", "startYear", "endDate", "digitalCard", "payment",
           "createdAt", "updatedAt"
         ]);
-      allow create, update, delete: if hasRole(["board", "admin"]);
+      allow create: if hasRole(["board", "admin"]);
+      allow update: if hasRole(["board", "admin"])
+        && request.resource.data.userId == resource.data.userId;
+      allow delete: if hasRole(["board", "admin"]);
     }
 
     match /memberDirectory/{memberId} {
