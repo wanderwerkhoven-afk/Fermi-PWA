@@ -1,17 +1,46 @@
-import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 import type { Membership } from "../models/backend";
 
-async function getMembershipByStatus(userId: string, status: Membership["status"]): Promise<Membership | null> {
+/**
+ * Memberships is the authoritative source for academic-year membership state.
+ * Never infer access from the legacy users.membership snapshot.
+ */
+export function selectMembershipByStatus(
+  memberships: Membership[],
+  status: Membership["status"],
+): Membership | null {
+  return [...memberships]
+    .filter((membership) => membership.status === status)
+    .sort((a, b) =>
+      b.academicYear.localeCompare(a.academicYear)
+      || b.startDate.localeCompare(a.startDate)
+      || a.id.localeCompare(b.id),
+    )[0] ?? null;
+}
+
+export async function getUserMemberships(userId: string): Promise<Membership[]> {
   const snapshot = await getDocs(query(
     collection(db, "memberships"),
     where("userId", "==", userId),
-    where("status", "==", status),
-    limit(1),
   ));
-  if (snapshot.empty) return null;
-  const item = snapshot.docs[0];
-  return { id: item.id, ...item.data() } as Membership;
+  return snapshot.docs.map((item) => ({ ...item.data(), id: item.id } as Membership));
+}
+
+export function subscribeUserMemberships(
+  userId: string,
+  callback: (memberships: Membership[]) => void,
+  onError?: (error: Error) => void,
+) {
+  return onSnapshot(
+    query(collection(db, "memberships"), where("userId", "==", userId)),
+    (snapshot) => callback(snapshot.docs.map((item) => ({ ...item.data(), id: item.id } as Membership))),
+    (error) => onError?.(error),
+  );
+}
+
+async function getMembershipByStatus(userId: string, status: Membership["status"]): Promise<Membership | null> {
+  return selectMembershipByStatus(await getUserMemberships(userId), status);
 }
 
 export function getActiveMembership(userId: string) {
@@ -23,7 +52,8 @@ export function getPendingMembership(userId: string) {
 }
 
 export async function getMembershipAccess(userId: string): Promise<"active" | "pending" | "archive"> {
-  if (await getActiveMembership(userId)) return "active";
-  if (await getPendingMembership(userId)) return "pending";
+  const memberships = await getUserMemberships(userId);
+  if (selectMembershipByStatus(memberships, "active")) return "active";
+  if (selectMembershipByStatus(memberships, "pending")) return "pending";
   return "archive";
 }
