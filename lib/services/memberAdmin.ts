@@ -454,6 +454,10 @@ export async function setAdminMemberPaymentStatus(
     status: row.status === "suspended" ? ("suspended" satisfies AccountStatus) : ("active" satisfies AccountStatus),
     updatedAt: serverTimestamp(),
   });
+  batch.set(doc(db, "communityMembers", row.uid), {
+    active: membershipStatus === "active" && settled,
+    updatedAt: serverTimestamp(),
+  }, { merge: true });
 
   await batch.commit();
 }
