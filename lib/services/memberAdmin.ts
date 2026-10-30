@@ -230,12 +230,7 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
     linkedEmails.add(email);
     const membership = pickMembership(membershipsByUser.get(user.uid) ?? []);
     const directory = directoryByEmail.get(email);
-    const snapshotMembership = user.membership || null;
-    const resolvedMembership = membership || (snapshotMembership ? {
-      id: snapshotMembership.id || `current-${user.uid}`,
-      userId: user.uid,
-      ...snapshotMembership,
-    } as Membership : undefined);
+    const resolvedMembership = membership;
     const resolvedStatus = lifecycleFor(user, resolvedMembership);
     const payment = resolvedMembership?.payment || directory?.payment;
     const paymentStatus: MembershipPaymentStatus =
@@ -258,7 +253,7 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
       role: user.role,
       associationRole: user.associationRole ?? "member",
       accessLevel: user.accessLevel ?? user.role,
-      membershipId: membership?.id ?? snapshotMembership?.id ?? null,
+      membershipId: membership?.id ?? null,
       endDate: resolvedMembership?.endDate ?? directory?.endDate ?? "",
       digitalCardId: resolvedMembership?.digitalCard?.cardId ?? "",
       digitalCardEnabled: Boolean(resolvedMembership?.digitalCard?.enabled),
@@ -461,52 +456,27 @@ export async function setAdminMemberPaymentStatus(
           ? "expired"
           : "pending";
 
-  const nextRow: AdminMemberRow = {
-    ...row,
-    status: membershipStatus === "active" ? "active" : membershipStatus === "expired" ? "archived" : "pending",
-    paymentStatus,
-    paymentSource: "manual",
-    paymentPaidAt: payment.paidAt,
-    paymentConfirmedBy: payment.confirmedBy ?? null,
-  };
-
   const batch = writeBatch(db);
-  const userRef = doc(db, "users", row.uid);
-  const hasStoredMembership = Boolean(row.membershipId && !row.membershipId.startsWith("current-"));
-  const membershipRef = hasStoredMembership
-    ? doc(db, "memberships", row.membershipId as string)
-    : doc(collection(db, "memberships"));
+  const membershipRef = row.membershipId
+    ? doc(db, "memberships", row.membershipId)
+    : doc(db, "memberships", `${row.uid}_${(row.academicYear || "2026/2027").slice(0, 4)}`);
 
-  batch.set(
-    membershipRef,
-    {
-      userId: row.uid,
-      academicYear: row.academicYear || "2026/2027",
-      membershipType: "student",
-      status: membershipStatus,
-      memberNumber: row.memberNumber || `FERMI-${row.uid.slice(0, 6).toUpperCase()}`,
-      startDate: row.startYear ? `${row.startYear}-09-01` : "2026-09-01",
-      startYear: row.startYear ?? 2026,
-      endDate: row.endDate || "2027-08-31",
-      payment,
-      digitalCard: {
-        enabled: membershipStatus === "active" && settled,
-        cardId,
-      },
-      ...(hasStoredMembership ? {} : { createdAt: serverTimestamp() }),
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true },
-  );
+  batch.set(membershipRef, {
+    userId: row.uid,
+    academicYear: row.academicYear || "2026/2027",
+    membershipType: "student",
+    status: membershipStatus,
+    memberNumber: row.memberNumber || `FERMI-${row.uid.slice(0, 6).toUpperCase()}`,
+    startDate: row.startYear ? `${row.startYear}-09-01` : "2026-09-01",
+    startYear: row.startYear ?? 2026,
+    endDate: row.endDate || "2027-08-31",
+    payment,
+    digitalCard: { enabled: membershipStatus === "active" && settled, cardId },
+    updatedAt: serverTimestamp(),
+  }, { merge: true });
 
-  batch.update(userRef, {
-    status: row.status === "suspended"
-      ? ("suspended" satisfies AccountStatus)
-      : ("active" satisfies AccountStatus),
-    membership: {
-      ...membershipSnapshot(nextRow, membershipStatus, cardId, payment),
-      id: membershipRef.id,
-    },
+  batch.update(doc(db, "users", row.uid), {
+    status: row.status === "suspended" ? ("suspended" satisfies AccountStatus) : ("active" satisfies AccountStatus),
     updatedAt: serverTimestamp(),
   });
 
