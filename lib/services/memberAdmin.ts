@@ -567,7 +567,8 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
     endDate: input.endDate,
   };
 
-  await updateDoc(doc(db, "users", row.uid), {
+  const batch = writeBatch(db);
+  batch.update(doc(db, "users", row.uid), {
     "profile.firstName": input.firstName.trim(),
     "profile.lastName": input.lastName.trim(),
     "profile.email": normalized,
@@ -577,7 +578,6 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
     associationRole: input.associationRole ?? "member",
     accessLevel: input.accessLevel ?? input.role,
     status: input.status === "suspended" ? "suspended" : "active",
-    membership: membershipSnapshot(snapshotRow, membershipStatus, cardId, payment),
     updatedAt: serverTimestamp(),
   });
 
@@ -597,44 +597,32 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
   });
 
   if (row.membershipId) {
-    await updateDoc(doc(db, "memberships", row.membershipId), {
+    batch.update(doc(db, "memberships", row.membershipId), {
       academicYear: input.academicYear.trim(),
       memberNumber: input.memberNumber.trim(),
       startYear: input.startYear,
       endDate: input.endDate,
       status: membershipStatus,
       payment,
-      digitalCard: {
-        enabled: membershipStatus === "active" && paymentSettled,
-        cardId,
-      },
+      digitalCard: { enabled: membershipStatus === "active" && paymentSettled, cardId },
       updatedAt: serverTimestamp(),
     });
-    return;
+  } else if (input.status !== "archived" && input.status !== "suspended") {
+    const year = (input.academicYear.trim() || "2026/2027").slice(0, 4);
+    batch.set(doc(db, "memberships", `${row.uid}_${year}`), {
+      userId: row.uid,
+      academicYear: input.academicYear.trim() || "2026/2027",
+      membershipType: "student",
+      status: membershipStatus,
+      memberNumber: input.memberNumber.trim(),
+      startDate: input.startYear ? `${input.startYear}-09-01` : `${year}-09-01`,
+      startYear: input.startYear ?? Number(year),
+      endDate: input.endDate || `${Number(year) + 1}-08-31`,
+      payment,
+      digitalCard: { enabled: membershipStatus === "active" && paymentSettled, cardId },
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
   }
-
-  if (input.status === "archived" || input.status === "suspended") return;
-
-  const created = await addDoc(collection(db, "memberships"), {
-    userId: row.uid,
-    academicYear: input.academicYear.trim() || "2026/2027",
-    membershipType: "student",
-    status: membershipStatus,
-    memberNumber: input.memberNumber.trim(),
-    startDate: input.startYear ? `${input.startYear}-09-01` : "2026-09-01",
-    startYear: input.startYear,
-    endDate: input.endDate || "2027-08-31",
-    payment,
-    digitalCard: { enabled: membershipStatus === "active" && paymentSettled, cardId },
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
-
-  await updateDoc(doc(db, "users", row.uid), {
-    membership: {
-      ...membershipSnapshot(snapshotRow, membershipStatus, cardId, payment),
-      id: created.id,
-    },
-    updatedAt: serverTimestamp(),
-  });
+  await batch.commit();
 }
