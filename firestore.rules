@@ -93,14 +93,14 @@ service cloud.firestore {
 
     match /communityMembers/{memberId} {
       allow read: if signedIn();
-      allow create: if hasRole(["admin"]) || (
+      allow create: if hasRole(["board", "admin"]) || (
         isOwner(memberId)
         && hasProfile()
         && currentUser().data.status == "active"
         && request.resource.data.keys().hasOnly(["firstName", "lastName", "photoUrl", "study", "studyYear", "bio", "updatedAt"])
         && ownCommunityFieldsMatch()
       );
-      allow update: if hasRole(["admin"]) || (
+      allow update: if hasRole(["board", "admin"]) || (
         isOwner(memberId)
         && hasProfile()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["firstName", "lastName", "photoUrl", "study", "studyYear", "bio", "updatedAt"])
