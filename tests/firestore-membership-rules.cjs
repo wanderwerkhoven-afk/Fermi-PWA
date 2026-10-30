@@ -63,6 +63,10 @@ async function main() {
     await assertSucceeds(committee.doc("memberships/member-a_2026").get());
 
     await assertFails(own.doc("users/member-a").update({ accessLevel: "admin" }));
+    await assertFails(board.doc("users/member-a").update({ accessLevel: "admin" }));
+    await assertFails(board.doc("users/member-a").update({ role: "admin" }));
+    await assertFails(board.doc("users/admin-a").update({ status: "suspended" }));
+    await assertSucceeds(admin.doc("users/member-a").update({ accessLevel: "committee" }));
     await assertFails(own.doc("users/member-a").update({ status: "active", role: "admin" }));
     await assertSucceeds(own.doc("users/member-a").update({ "profile.bio": "Test bio" }));
     await assertFails(own.doc("memberships/member-a_2026").update({ "payment.status": "paid" }));
