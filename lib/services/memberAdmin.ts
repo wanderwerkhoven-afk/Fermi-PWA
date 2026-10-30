@@ -347,39 +347,47 @@ export async function setAdminMemberLifecycle(row: AdminMemberRow, status: Admin
     });
     return;
   }
-
   if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
 
   if (status === "suspended") {
-    const batch = writeBatch(db);
-  const membershipRef = row.membershipId
-    ? doc(db, "memberships", row.membershipId)
-    : doc(db, "memberships", `${row.uid}_${(row.academicYear || "2026/2027").slice(0, 4)}`);
+    await updateDoc(doc(db, "users", row.uid), {
+      status: "suspended" satisfies AccountStatus,
+      updatedAt: serverTimestamp(),
+    });
+    return;
+  }
 
+  const settled = row.paymentStatus === "paid" || row.paymentStatus === "waived";
+  const effectiveStatus = status === "active" && !settled ? "pending" : status;
+  const membershipStatus = effectiveStatus === "active" ? "active"
+    : effectiveStatus === "pending" ? "pending" : "expired";
+  const cardId = usableDigitalCardId(row.digitalCardId);
+  const payment = membershipPayment(row);
+  const batch = writeBatch(db);
   batch.update(doc(db, "users", row.uid), {
     status: "active" satisfies AccountStatus,
     updatedAt: serverTimestamp(),
   });
-
   if (row.membershipId) {
-    batch.update(membershipRef, {
+    batch.update(doc(db, "memberships", row.membershipId), {
       status: membershipStatus,
       payment,
-      digitalCard: { enabled: membershipStatus === "active" && paymentSettled, cardId },
+      digitalCard: { enabled: membershipStatus === "active" && settled, cardId },
       updatedAt: serverTimestamp(),
     });
   } else if (status !== "archived") {
-    batch.set(membershipRef, {
+    const year = (row.academicYear || "2026/2027").slice(0, 4);
+    batch.set(doc(db, "memberships", `${row.uid}_${year}`), {
       userId: row.uid,
       academicYear: row.academicYear || "2026/2027",
       membershipType: "student",
       status: membershipStatus,
       memberNumber: row.memberNumber || `FERMI-${row.uid.slice(0, 6).toUpperCase()}`,
-      startDate: row.startYear ? `${row.startYear}-09-01` : "2026-09-01",
-      startYear: row.startYear ?? 2026,
-      endDate: row.endDate || "2027-08-31",
+      startDate: `${year}-09-01`,
+      startYear: Number(year),
+      endDate: `${Number(year) + 1}-08-31`,
       payment,
-      digitalCard: { enabled: membershipStatus === "active" && paymentSettled, cardId },
+      digitalCard: { enabled: membershipStatus === "active" && settled, cardId },
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
