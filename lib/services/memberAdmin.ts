@@ -485,24 +485,25 @@ export interface AdminMemberDetailsInput {
 }
 
 export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMemberDetailsInput) {
-  const normalized = normalizeEmail(input.email);
-  if (!normalized) throw new Error("E-mailadres ontbreekt.");
+  const email = normalizeEmail(input.email);
+  if (!email) throw new Error("E-mailadres ontbreekt.");
+
+  const settled = row.paymentStatus === "paid" || row.paymentStatus === "waived";
+  const effectiveStatus = input.status === "active" && !settled ? "pending" : input.status;
 
   if (row.source === "directory") {
-    const directoryPaymentSettled = row.paymentStatus === "paid" || row.paymentStatus === "waived";
-    const directoryStatus = input.status === "active" && !directoryPaymentSettled ? "pending" : input.status;
-
-    await setDoc(doc(db, "memberDirectory", row.id), {
+    const batch = writeBatch(db);
+    batch.set(doc(db, "memberDirectory", row.id), {
       firstName: input.firstName.trim(),
       lastName: input.lastName.trim(),
-      email: normalized,
+      email,
       memberNumber: input.memberNumber.trim(),
       academicYear: input.academicYear.trim(),
       phone: input.phone.trim(),
       city: input.city.trim(),
       startYear: input.startYear,
       endDate: input.endDate,
-      status: directoryStatus,
+      status: effectiveStatus,
       role: input.accessLevel === "qr_scan" ? "member" : (input.accessLevel ?? input.role),
       associationRole: input.associationRole ?? "member",
       accessLevel: input.accessLevel ?? input.role,
@@ -510,14 +511,45 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
       payment: membershipPayment(row),
       updatedAt: serverTimestamp(),
     }, { merge: true });
+    batch.set(doc(db, "communityMembers", communityMemberId(row)), {
+      firstName: input.firstName.trim(),
+      lastName: input.lastName.trim(),
+      role: input.associationRole ?? "member",
+      associationRole: input.associationRole ?? "member",
+      startYear: input.startYear,
+      active: effectiveStatus === "active",
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+    await batch.commit();
+    return;
+  }
 
-    batch.set(doc(db, "communityMembers", row.uid), {
+  if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
+  const membershipStatus = effectiveStatus === "active" ? "active"
+    : effectiveStatus === "pending" ? "pending" : "expired";
+  const payment = membershipPayment(row);
+  const cardId = usableDigitalCardId(row.digitalCardId);
+  const batch = writeBatch(db);
+
+  batch.update(doc(db, "users", row.uid), {
+    "profile.firstName": input.firstName.trim(),
+    "profile.lastName": input.lastName.trim(),
+    "profile.email": email,
+    "profile.phone": input.phone.trim() || null,
+    "profile.city": input.city.trim() || null,
+    role: input.accessLevel === "qr_scan" ? "member" : (input.accessLevel ?? input.role),
+    associationRole: input.associationRole ?? "member",
+    accessLevel: input.accessLevel ?? input.role,
+    status: input.status === "suspended" ? "suspended" : "active",
+    updatedAt: serverTimestamp(),
+  });
+  batch.set(doc(db, "communityMembers", row.uid), {
     firstName: input.firstName.trim(),
     lastName: input.lastName.trim(),
     role: input.associationRole ?? "member",
     associationRole: input.associationRole ?? "member",
     startYear: input.startYear,
-    active: input.status === "active",
+    active: effectiveStatus === "active",
     updatedAt: serverTimestamp(),
   }, { merge: true });
 
@@ -529,7 +561,7 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
       endDate: input.endDate,
       status: membershipStatus,
       payment,
-      digitalCard: { enabled: membershipStatus === "active" && paymentSettled, cardId },
+      digitalCard: { enabled: membershipStatus === "active" && settled, cardId },
       updatedAt: serverTimestamp(),
     });
   } else if (input.status !== "archived" && input.status !== "suspended") {
@@ -540,11 +572,11 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
       membershipType: "student",
       status: membershipStatus,
       memberNumber: input.memberNumber.trim(),
-      startDate: input.startYear ? `${input.startYear}-09-01` : `${year}-09-01`,
-      startYear: input.startYear ?? Number(year),
+      startDate: `${year}-09-01`,
+      startYear: Number(year),
       endDate: input.endDate || `${Number(year) + 1}-08-31`,
       payment,
-      digitalCard: { enabled: membershipStatus === "active" && paymentSettled, cardId },
+      digitalCard: { enabled: membershipStatus === "active" && settled, cardId },
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
