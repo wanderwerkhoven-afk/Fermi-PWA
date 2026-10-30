@@ -182,29 +182,6 @@ function membershipPayment(row: AdminMemberRow): MembershipPayment {
   };
 }
 
-function membershipSnapshot(
-  row: AdminMemberRow,
-  status: "active" | "pending" | "expired",
-  cardId: string,
-  payment: MembershipPayment = membershipPayment(row),
-) {
-  return {
-    ...(row.membershipId ? { id: row.membershipId } : {}),
-    academicYear: row.academicYear || "2026/2027",
-    membershipType: "student" as const,
-    status,
-    memberNumber: row.memberNumber || (row.uid ? `FERMI-${row.uid.slice(0, 6).toUpperCase()}` : ""),
-    startDate: row.startYear ? `${row.startYear}-09-01` : "2026-09-01",
-    startYear: row.startYear ?? 2026,
-    endDate: row.endDate || "2027-08-31",
-    digitalCard: {
-      enabled: status === "active" && (payment.status === "paid" || payment.status === "waived"),
-      cardId,
-    },
-    payment,
-  };
-}
-
 function lifecycleFor(user: FermiUser, membership?: Membership): AdminMemberLifecycle {
   if (user.status === "suspended") return "suspended";
   if (membership?.status === "active") return "active";
@@ -531,70 +508,15 @@ export async function saveAdminMemberDetails(row: AdminMemberRow, input: AdminMe
       updatedAt: serverTimestamp(),
     }, { merge: true });
 
-    await writeCommunityMember({
-      ...row,
-      firstName: input.firstName.trim(),
-      lastName: input.lastName.trim(),
-      email: normalized,
-      memberNumber: input.memberNumber.trim(),
-      academicYear: input.academicYear.trim(),
-      phone: input.phone.trim(),
-      city: input.city.trim(),
-      startYear: input.startYear,
-      endDate: input.endDate,
-      status: directoryStatus,
-      role: input.role,
-      associationRole: input.associationRole ?? "member",
-    });
-    return;
-  }
-
-  if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
-
-  const paymentSettled = row.paymentStatus === "paid" || row.paymentStatus === "waived";
-  const effectiveStatus = input.status === "active" && !paymentSettled ? "pending" : input.status;
-  const membershipStatus =
-    effectiveStatus === "active" ? "active"
-    : effectiveStatus === "pending" ? "pending"
-    : "expired";
-  const payment = membershipPayment(row);
-  const cardId = usableDigitalCardId(row.digitalCardId);
-  const snapshotRow: AdminMemberRow = {
-    ...row,
-    memberNumber: input.memberNumber.trim(),
-    academicYear: input.academicYear.trim(),
-    startYear: input.startYear,
-    endDate: input.endDate,
-  };
-
-  const batch = writeBatch(db);
-  batch.update(doc(db, "users", row.uid), {
-    "profile.firstName": input.firstName.trim(),
-    "profile.lastName": input.lastName.trim(),
-    "profile.email": normalized,
-    "profile.phone": input.phone.trim() || null,
-    "profile.city": input.city.trim() || null,
-    role: input.accessLevel === "qr_scan" ? "member" : (input.accessLevel ?? input.role),
-    associationRole: input.associationRole ?? "member",
-    accessLevel: input.accessLevel ?? input.role,
-    status: input.status === "suspended" ? "suspended" : "active",
-    updatedAt: serverTimestamp(),
-  });
-
-  await writeCommunityMember({
-    ...row,
+    batch.set(doc(db, "communityMembers", row.uid), {
     firstName: input.firstName.trim(),
     lastName: input.lastName.trim(),
-    email: normalized,
-    memberNumber: input.memberNumber.trim(),
-    academicYear: input.academicYear.trim(),
-    phone: input.phone.trim(),
-    city: input.city.trim(),
+    role: input.associationRole ?? "member",
+    associationRole: input.associationRole ?? "member",
     startYear: input.startYear,
-    endDate: input.endDate,
-    status: input.status,
-    role: input.role,
-  });
+    active: input.status === "active",
+    updatedAt: serverTimestamp(),
+  }, { merge: true });
 
   if (row.membershipId) {
     batch.update(doc(db, "memberships", row.membershipId), {
