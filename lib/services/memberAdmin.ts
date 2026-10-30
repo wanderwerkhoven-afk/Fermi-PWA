@@ -358,62 +358,40 @@ export async function setAdminMemberLifecycle(row: AdminMemberRow, status: Admin
   if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
 
   if (status === "suspended") {
-    await updateDoc(doc(db, "users", row.uid), {
-      status: "suspended" satisfies AccountStatus,
-      updatedAt: serverTimestamp(),
-    });
-    return;
-  }
+    const batch = writeBatch(db);
+  const membershipRef = row.membershipId
+    ? doc(db, "memberships", row.membershipId)
+    : doc(db, "memberships", `${row.uid}_${(row.academicYear || "2026/2027").slice(0, 4)}`);
 
-  const paymentSettled = row.paymentStatus === "paid" || row.paymentStatus === "waived";
-  const effectiveStatus = status === "active" && !paymentSettled ? "pending" : status;
-  const membershipStatus = effectiveStatus === "active" ? "active" : effectiveStatus === "pending" ? "pending" : "expired";
-  const cardId = usableDigitalCardId(row.digitalCardId);
-  const payment = membershipPayment(row);
-
-  await updateDoc(doc(db, "users", row.uid), {
+  batch.update(doc(db, "users", row.uid), {
     status: "active" satisfies AccountStatus,
-    membership: membershipSnapshot(row, membershipStatus, cardId, payment),
     updatedAt: serverTimestamp(),
   });
 
   if (row.membershipId) {
-    await updateDoc(doc(db, "memberships", row.membershipId), {
+    batch.update(membershipRef, {
       status: membershipStatus,
       payment,
-      digitalCard: {
-        enabled: membershipStatus === "active" && paymentSettled,
-        cardId,
-      },
+      digitalCard: { enabled: membershipStatus === "active" && paymentSettled, cardId },
       updatedAt: serverTimestamp(),
     });
-    return;
+  } else if (status !== "archived") {
+    batch.set(membershipRef, {
+      userId: row.uid,
+      academicYear: row.academicYear || "2026/2027",
+      membershipType: "student",
+      status: membershipStatus,
+      memberNumber: row.memberNumber || `FERMI-${row.uid.slice(0, 6).toUpperCase()}`,
+      startDate: row.startYear ? `${row.startYear}-09-01` : "2026-09-01",
+      startYear: row.startYear ?? 2026,
+      endDate: row.endDate || "2027-08-31",
+      payment,
+      digitalCard: { enabled: membershipStatus === "active" && paymentSettled, cardId },
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
   }
-
-  if (status === "archived") return;
-
-  const created = await addDoc(collection(db, "memberships"), {
-    userId: row.uid,
-    academicYear: row.academicYear || "2026/2027",
-    membershipType: "student",
-    status: membershipStatus,
-    memberNumber: row.memberNumber || `FERMI-${row.uid.slice(0, 6).toUpperCase()}`,
-    startDate: row.startYear ? `${row.startYear}-09-01` : "2026-09-01",
-    startYear: row.startYear ?? 2026,
-    endDate: "2027-08-31",
-    payment,
-    digitalCard: { enabled: membershipStatus === "active" && paymentSettled, cardId },
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
-
-  await updateDoc(doc(db, "users", row.uid), {
-    membership: {
-      ...membershipSnapshot(row, membershipStatus === "active" ? "active" : "pending", cardId, payment),
-      id: created.id,
-    },
-    updatedAt: serverTimestamp(),
-  });
+  await batch.commit();
 }
 
 export async function setAdminMemberPaymentStatus(
