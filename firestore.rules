@@ -56,7 +56,7 @@ service cloud.firestore {
       allow read: if signedIn() &&
         (resource.data.userId == request.auth.uid || canScanQr());
       allow create: if signedIn()
-        && membershipId == request.auth.uid + "_" + request.resource.data.startYear
+        && membershipId.matches("^" + request.auth.uid + "_[0-9]{4}$")
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.status == "pending"
         && request.resource.data.membershipType == "student"
