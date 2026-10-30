@@ -55,6 +55,11 @@ async function main() {
     const board = dbFor("board-a");
     const admin = dbFor("admin-a");
 
+    const anonymous = env.unauthenticatedContext().firestore();
+    await assertFails(anonymous.doc("users/member-a").get());
+    await assertFails(anonymous.doc("memberships/member-a_2026").get());
+    await assertFails(anonymous.doc("communityMembers/member-a").get());
+
     await assertSucceeds(own.doc("users/member-a").get());
     await assertFails(stranger.doc("users/member-a").get());
     await assertSucceeds(board.doc("users/member-a").get());
@@ -71,6 +76,10 @@ async function main() {
     await assertSucceeds(own.doc("users/member-a").update({ "profile.bio": "Test bio" }));
     await assertFails(own.doc("memberships/member-a_2026").update({ "payment.status": "paid" }));
     await assertFails(committee.doc("memberships/member-a_2026").update({ status: "active" }));
+    await assertFails(stranger.doc("memberDirectory/legacy-member").set({ status: "active" }));
+    await assertFails(board.doc("memberDirectory/legacy-member").set({ status: "active" }));
+    await assertSucceeds(admin.doc("memberDirectory/legacy-member").set({ status: "pending" }));
+
     await assertFails(board.doc("memberships/member-a_2026").update({ userId: "member-b" }));
     await assertSucceeds(board.doc("memberships/member-a_2026").update({ status: "pending" }));
     await assertSucceeds(admin.doc("memberships/member-a_2026").update({ status: "active" }));
