@@ -1,5 +1,5 @@
 import type { User } from "firebase/auth";
-import { doc, getDoc, getDocFromServer, onSnapshot, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, getDocFromServer, onSnapshot, serverTimestamp, updateDoc, writeBatch } from "firebase/firestore";
 import { db } from "../firebase";
 import { syncOwnCommunityProfile } from "./community";
 import type { FermiUser } from "../models/backend";
@@ -10,10 +10,8 @@ export async function ensureUserProfile(user: User) {
 
   if (!snapshot.exists()) {
     const names = (user.displayName ?? "").trim().split(/\s+/);
-    const membershipDates = currentAcademicMembership();
-    const cardId = crypto.randomUUID();
-
-    await setDoc(ref, {
+    const batch = writeBatch(db);
+    batch.set(ref, {
       uid: user.uid,
       profile: {
         firstName: names[0] ?? "",
@@ -29,24 +27,12 @@ export async function ensureUserProfile(user: User) {
       },
       role: "member",
       status: "active",
-      membership: {
-        ...membershipDates,
-        membershipType: "student",
-        status: "pending",
-        memberNumber: "",
-        digitalCard: { enabled: false, cardId },
-        payment: {
-          status: "unpaid",
-          source: "manual",
-          paidAt: null,
-          confirmedBy: null,
-          molliePaymentId: null,
-        },
-      },
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       lastLoginAt: serverTimestamp(),
     });
+    batch.set(membershipDocument(user.uid), pendingMembership(user.uid));
+    await batch.commit();
     return;
   }
 
@@ -82,6 +68,25 @@ function currentAcademicMembership() {
   };
 }
 
+function membershipDocument(uid: string) {
+  const { startYear } = currentAcademicMembership();
+  return doc(db, "memberships", `${uid}_${startYear}`);
+}
+
+function pendingMembership(uid: string) {
+  return {
+    userId: uid,
+    ...currentAcademicMembership(),
+    membershipType: "student",
+    status: "pending",
+    memberNumber: "",
+    digitalCard: { enabled: false, cardId: crypto.randomUUID() },
+    payment: { status: "unpaid", source: "manual", paidAt: null, confirmedBy: null, molliePaymentId: null },
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
+}
+
 export interface RegistrationProfileInput {
   firstName: string;
   prefix?: string;
@@ -94,10 +99,8 @@ export interface RegistrationProfileInput {
 }
 
 export async function createRegisteredUserProfile(user: User, input: RegistrationProfileInput) {
-  const membershipDates = currentAcademicMembership();
-  const cardId = crypto.randomUUID();
-
-  await setDoc(doc(db, "users", user.uid), {
+  const batch = writeBatch(db);
+  batch.set(doc(db, "users", user.uid), {
     uid: user.uid,
     profile: {
       firstName: input.firstName.trim(),
@@ -113,24 +116,12 @@ export async function createRegisteredUserProfile(user: User, input: Registratio
     },
     role: "member",
     status: "active",
-    membership: {
-      ...membershipDates,
-      membershipType: "student",
-      status: "pending",
-      memberNumber: "",
-      digitalCard: { enabled: false, cardId },
-      payment: {
-        status: "unpaid",
-        source: "manual",
-        paidAt: null,
-        confirmedBy: null,
-        molliePaymentId: null,
-      },
-    },
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
     lastLoginAt: serverTimestamp(),
   });
+  batch.set(membershipDocument(user.uid), pendingMembership(user.uid));
+  await batch.commit();
 }
 
 
