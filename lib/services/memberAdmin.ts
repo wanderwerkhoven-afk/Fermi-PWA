@@ -341,10 +341,18 @@ export async function upsertDirectoryMembers(
 
 export async function setAdminMemberLifecycle(row: AdminMemberRow, status: AdminMemberLifecycle) {
   if (row.source === "directory") {
-    await updateDoc(doc(db, "memberDirectory", row.id), {
-      status,
+    const settled = row.paymentStatus === "paid" || row.paymentStatus === "waived";
+    const effectiveStatus = status === "active" && !settled ? "pending" : status;
+    const batch = writeBatch(db);
+    batch.update(doc(db, "memberDirectory", row.id), {
+      status: effectiveStatus,
       updatedAt: serverTimestamp(),
     });
+    batch.set(doc(db, "communityMembers", communityMemberId(row)), {
+      active: effectiveStatus === "active",
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+    await batch.commit();
     return;
   }
   if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
@@ -427,15 +435,20 @@ export async function setAdminMemberPaymentStatus(
 
   if (row.source === "directory") {
     const nextStatus: AdminMemberLifecycle =
-      settled && row.status === "pending"
-        ? "active"
-        : row.status;
-
-    await updateDoc(doc(db, "memberDirectory", row.id), {
+      row.status === "archived" || row.status === "suspended"
+        ? row.status
+        : settled ? "active" : "pending";
+    const batch = writeBatch(db);
+    batch.update(doc(db, "memberDirectory", row.id), {
       status: nextStatus,
       payment,
       updatedAt: serverTimestamp(),
     });
+    batch.set(doc(db, "communityMembers", communityMemberId(row)), {
+      active: nextStatus === "active",
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+    await batch.commit();
     return;
   }
 
