@@ -350,10 +350,22 @@ export async function setAdminMemberLifecycle(row: AdminMemberRow, status: Admin
   if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
 
   if (status === "suspended") {
-    await updateDoc(doc(db, "users", row.uid), {
+    const batch = writeBatch(db);
+    batch.update(doc(db, "users", row.uid), {
       status: "suspended" satisfies AccountStatus,
       updatedAt: serverTimestamp(),
     });
+    batch.set(doc(db, "communityMembers", row.uid), {
+      active: false,
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+    if (row.membershipId) {
+      batch.update(doc(db, "memberships", row.membershipId), {
+        digitalCard: { enabled: false, cardId: row.digitalCardId || "" },
+        updatedAt: serverTimestamp(),
+      });
+    }
+    await batch.commit();
     return;
   }
 
@@ -392,6 +404,10 @@ export async function setAdminMemberLifecycle(row: AdminMemberRow, status: Admin
       updatedAt: serverTimestamp(),
     });
   }
+  batch.set(doc(db, "communityMembers", row.uid), {
+    active: membershipStatus === "active" && settled,
+    updatedAt: serverTimestamp(),
+  }, { merge: true });
   await batch.commit();
 }
 
