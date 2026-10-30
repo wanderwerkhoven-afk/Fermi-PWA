@@ -156,7 +156,7 @@ async function writeCommunityMember(row: AdminMemberRow) {
       role: row.associationRole ?? "member",
       associationRole: row.associationRole ?? "member",
       startYear: row.startYear,
-      active: row.status === "active",
+      active: row.status === "active" && (row.paymentStatus === "paid" || row.paymentStatus === "waived"),
       updatedAt: serverTimestamp(),
     },
     { merge: true },
@@ -493,7 +493,14 @@ export async function setAdminMemberPaymentStatus(
 
 export async function setAdminMemberRole(row: AdminMemberRow, role: UserRole) {
   if (row.source === "directory") {
-    await updateDoc(doc(db, "memberDirectory", row.id), { role, updatedAt: serverTimestamp() });
+    const batch = writeBatch(db);
+    batch.update(doc(db, "memberDirectory", row.id), { role, updatedAt: serverTimestamp() });
+    batch.set(doc(db, "communityMembers", communityMemberId(row)), {
+      role: row.associationRole ?? "member",
+      associationRole: row.associationRole ?? "member",
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+    await batch.commit();
     return;
   }
   if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
