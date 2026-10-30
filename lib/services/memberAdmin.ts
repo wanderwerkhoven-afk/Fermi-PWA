@@ -4,6 +4,8 @@ import {
   doc,
   getDocs,
   onSnapshot,
+  query,
+  where,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -82,28 +84,43 @@ export function subscribePendingApprovals(
   callback: (items: AdminPendingApproval[]) => void,
   onError?: (error: Error) => void,
 ) {
-  return onSnapshot(
-    collection(db, "users"),
+  let accounts: FermiUser[] = [];
+  let pending = new Set<string>();
+  let loadedAccounts = false;
+  let loadedMemberships = false;
+  const publish = () => {
+    if (!loadedAccounts || !loadedMemberships) return;
+    const items = accounts
+      .filter((account) => account.role === "member" && pending.has(account.uid))
+      .map((account) => ({
+        uid: account.uid,
+        firstName: account.profile?.firstName ?? "",
+        lastName: account.profile?.lastName ?? "",
+        email: account.profile?.email ?? "",
+        requestedAt: account.createdAt ?? account.updatedAt,
+      }))
+      .sort((a, b) => {
+        const left = (a.requestedAt as { toMillis?: () => number } | undefined)?.toMillis?.() ?? 0;
+        const right = (b.requestedAt as { toMillis?: () => number } | undefined)?.toMillis?.() ?? 0;
+        return right - left;
+      });
+    callback(items);
+  };
+  const stopAccounts = onSnapshot(collection(db, "users"), (snapshot) => {
+    accounts = snapshot.docs.map((item) => item.data() as FermiUser);
+    loadedAccounts = true;
+    publish();
+  }, onError);
+  const stopMemberships = onSnapshot(
+    query(collection(db, "memberships"), where("status", "==", "pending")),
     (snapshot) => {
-      const items = snapshot.docs
-        .map((item) => item.data() as FermiUser)
-        .filter((user) => user.role === "member" && user.membership?.status === "pending")
-        .map((user) => ({
-          uid: user.uid,
-          firstName: user.profile?.firstName ?? "",
-          lastName: user.profile?.lastName ?? "",
-          email: user.profile?.email ?? "",
-          requestedAt: user.createdAt ?? user.updatedAt,
-        }))
-        .sort((a, b) => {
-          const av = (a.requestedAt as { toMillis?: () => number } | undefined)?.toMillis?.() ?? 0;
-          const bv = (b.requestedAt as { toMillis?: () => number } | undefined)?.toMillis?.() ?? 0;
-          return bv - av;
-        });
-      callback(items);
+      pending = new Set(snapshot.docs.map((item) => (item.data() as Membership).userId));
+      loadedMemberships = true;
+      publish();
     },
-    (error) => onError?.(error),
+    onError,
   );
+  return () => { stopAccounts(); stopMemberships(); };
 }
 
 function normalizeEmail(email: string) {
