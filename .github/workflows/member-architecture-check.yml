@@ -22,6 +22,10 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Install Firebase rules test tooling
+        run: npm install --no-save --no-audit --no-fund firebase-tools@14 @firebase/rules-unit-testing@5
+      - name: Firestore security emulator tests
+        run: npx firebase emulators:exec --project demo-fermi-member-rules --only firestore "node tests/firestore-membership-rules.cjs"
       - name: TypeScript validation
         run: npx tsc --noEmit
       - name: Production build
