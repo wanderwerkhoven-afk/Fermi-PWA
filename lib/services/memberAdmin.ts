@@ -1,5 +1,4 @@
 import {
-  addDoc,
   collection,
   doc,
   getDocs,
@@ -420,13 +419,9 @@ export async function setAdminMemberPaymentStatus(
 
   const cardId = usableDigitalCardId(row.digitalCardId);
   const membershipStatus: "active" | "pending" | "expired" =
-    settled && row.status === "pending"
-      ? "active"
-      : row.status === "active"
-        ? "active"
-        : row.status === "archived"
-          ? "expired"
-          : "pending";
+    row.status === "archived" ? "expired"
+      : row.status === "suspended" ? "pending"
+      : settled ? "active" : "pending";
 
   const batch = writeBatch(db);
   const membershipRef = row.membershipId
