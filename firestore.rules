@@ -49,7 +49,18 @@ service cloud.firestore {
         && request.resource.data.role == resource.data.role
         && request.resource.data.status == resource.data.status;
 
-      allow update, delete: if hasRole(["board", "admin"]);
+      // Board members may administer ordinary accounts, but may not promote
+      // anyone to admin, edit existing admins, or elevate the legacy role.
+      allow update: if hasRole(["admin"]) || (
+        hasRole(["board"])
+        && resource.data.get("accessLevel", resource.data.get("role", "member")) != "admin"
+        && request.resource.data.get("accessLevel", request.resource.data.get("role", "member")) != "admin"
+        && request.resource.data.get("role", "member") != "admin"
+      );
+      allow delete: if hasRole(["admin"]) || (
+        hasRole(["board"])
+        && resource.data.get("accessLevel", resource.data.get("role", "member")) != "admin"
+      );
     }
 
     match /memberships/{membershipId} {
