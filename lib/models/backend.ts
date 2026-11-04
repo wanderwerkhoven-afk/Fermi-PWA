@@ -70,6 +70,21 @@ export interface Membership {
   updatedAt?: unknown;
 }
 
+/** Public-safe directory projection. Never use this collection for authorization. */
+export interface CommunityMember {
+  firstName: string;
+  lastName: string;
+  photoUrl?: string | null;
+  study?: string | null;
+  studyYear?: number | null;
+  bio?: string | null;
+  associationRole?: AssociationRole;
+  role?: AssociationRole;
+  startYear?: number | null;
+  active: boolean;
+  updatedAt?: unknown;
+}
+
 export interface EventRegistration {
   id: string;
   eventId: string;
