@@ -11,6 +11,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { selectCurrentMembership } from "./memberships";
 import type {
   AccountStatus,
   FermiUser,
@@ -188,16 +189,7 @@ function lifecycleFor(user: FermiUser, membership?: Membership): AdminMemberLife
   return "archived";
 }
 
-function pickMembership(items: Membership[]) {
-  // Select the most recent academic year first. An older active membership
-  // must not hide a pending renewal for the current year.
-  return [...items].sort((a, b) => {
-    const yearDifference = (b.startYear ?? 0) - (a.startYear ?? 0);
-    if (yearDifference !== 0) return yearDifference;
-    const rank: Record<Membership["status"], number> = { active: 0, pending: 1, expired: 2, cancelled: 3 };
-    return rank[a.status] - rank[b.status];
-  })[0];
-}
+
 
 export async function listAdminMembers(): Promise<AdminMemberRow[]> {
   const [usersSnapshot, membershipsSnapshot, directorySnapshot] = await Promise.all([
@@ -225,7 +217,7 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
     const user = snapshot.data() as FermiUser;
     const email = normalizeEmail(user.profile?.email ?? "");
     linkedEmails.add(email);
-    const membership = pickMembership(membershipsByUser.get(user.uid) ?? []);
+    const membership = selectCurrentMembership(membershipsByUser.get(user.uid) ?? []);
     const directory = directoryByEmail.get(email);
     const resolvedMembership = membership;
     const resolvedStatus = lifecycleFor(user, resolvedMembership);
