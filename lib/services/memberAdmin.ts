@@ -192,96 +192,50 @@ function lifecycleFor(user: FermiUser, membership?: Membership): AdminMemberLife
 
 
 export async function listAdminMembers(): Promise<AdminMemberRow[]> {
-  const [usersSnapshot, membershipsSnapshot, directorySnapshot] = await Promise.all([
+  const [usersSnapshot, membershipsSnapshot] = await Promise.all([
     getDocs(collection(db, "users")),
     getDocs(collection(db, "memberships")),
-    getDocs(collection(db, "memberDirectory")),
   ]);
 
   const membershipsByUser = new Map<string, Membership[]>();
   membershipsSnapshot.docs.forEach((snapshot) => {
     const membership = { id: snapshot.id, ...snapshot.data() } as Membership;
-    const current = membershipsByUser.get(membership.userId) ?? [];
-    current.push(membership);
-    membershipsByUser.set(membership.userId, current);
+    const existing = membershipsByUser.get(membership.userId) ?? [];
+    existing.push(membership);
+    membershipsByUser.set(membership.userId, existing);
   });
 
-  const directoryByEmail = new Map<string, DirectoryMember>();
-  directorySnapshot.docs.forEach((snapshot) => {
-    const record = { id: snapshot.id, ...snapshot.data() } as DirectoryMember;
-    directoryByEmail.set(normalizeEmail(record.email), record);
-  });
-
-  const linkedEmails = new Set<string>();
-  const accountRows = usersSnapshot.docs.map((snapshot) => {
+  return usersSnapshot.docs.map((snapshot): AdminMemberRow => {
     const user = snapshot.data() as FermiUser;
-    const email = normalizeEmail(user.profile?.email ?? "");
-    linkedEmails.add(email);
     const membership = selectCurrentMembership(membershipsByUser.get(user.uid) ?? []);
-    const directory = directoryByEmail.get(email);
-    const resolvedMembership = membership;
-    const resolvedStatus = lifecycleFor(user, resolvedMembership ?? undefined);
-    const payment = resolvedMembership?.payment || directory?.payment;
-    const paymentStatus: MembershipPaymentStatus =
-      payment?.status
-      || (resolvedStatus === "active" ? "paid" : "unpaid");
-
+    const status = lifecycleFor(user, membership ?? undefined);
+    const payment = membership?.payment;
     return {
       id: user.uid,
-      source: "account" as const,
+      source: "account",
       uid: user.uid,
-      firstName: user.profile?.firstName ?? directory?.firstName ?? "",
-      lastName: user.profile?.lastName ?? directory?.lastName ?? "",
-      email,
-      memberNumber: resolvedMembership?.memberNumber ?? directory?.memberNumber ?? "",
-      academicYear: resolvedMembership?.academicYear ?? directory?.academicYear ?? "2026/2027",
-      phone: user.profile?.phone ?? directory?.phone ?? "",
-      city: user.profile?.city ?? directory?.city ?? "",
-      startYear: resolvedMembership?.startYear ?? (resolvedMembership?.startDate ? Number(resolvedMembership.startDate.slice(0, 4)) : directory?.startYear ?? null),
-      status: resolvedStatus,
+      firstName: user.profile?.firstName ?? "",
+      lastName: user.profile?.lastName ?? "",
+      email: normalizeEmail(user.profile?.email ?? ""),
+      memberNumber: membership?.memberNumber ?? "",
+      academicYear: membership?.academicYear ?? "",
+      phone: user.profile?.phone ?? "",
+      city: user.profile?.city ?? "",
+      startYear: membership?.startYear ?? null,
+      status,
       role: user.role,
       associationRole: user.associationRole ?? "member",
       accessLevel: user.accessLevel ?? user.role,
       membershipId: membership?.id ?? null,
-      endDate: resolvedMembership?.endDate ?? directory?.endDate ?? "",
-      digitalCardId: resolvedMembership?.digitalCard?.cardId ?? "",
-      digitalCardEnabled: Boolean(resolvedMembership?.digitalCard?.enabled),
-      paymentStatus,
-      paymentSource: payment?.source || "manual",
+      endDate: membership?.endDate ?? "",
+      digitalCardId: membership?.digitalCard?.cardId ?? "",
+      digitalCardEnabled: Boolean(membership?.digitalCard?.enabled),
+      paymentStatus: payment?.status ?? "unpaid",
+      paymentSource: payment?.source ?? "manual",
       paymentPaidAt: payment?.paidAt,
       paymentConfirmedBy: payment?.confirmedBy ?? null,
     };
-  });
-
-  const directoryRows = [...directoryByEmail.values()]
-    .filter((record) => !linkedEmails.has(normalizeEmail(record.email)))
-    .map((record) => ({
-      id: record.id,
-      source: "directory" as const,
-      uid: record.linkedUserId,
-      firstName: record.firstName,
-      lastName: record.lastName,
-      email: normalizeEmail(record.email),
-      memberNumber: record.memberNumber,
-      academicYear: record.academicYear,
-      phone: record.phone ?? "",
-      city: record.city ?? "",
-      startYear: record.startYear ?? null,
-      status: record.status,
-      role: record.role,
-      associationRole: record.associationRole ?? "member",
-      accessLevel: record.accessLevel ?? record.role,
-      membershipId: null,
-      endDate: record.endDate ?? "",
-      digitalCardId: "",
-      digitalCardEnabled: false,
-      paymentStatus: record.payment?.status || (record.status === "active" ? "paid" : "unpaid"),
-      paymentSource: record.payment?.source || "manual",
-      paymentPaidAt: record.payment?.paidAt,
-      paymentConfirmedBy: record.payment?.confirmedBy ?? null,
-    }));
-
-  return [...accountRows, ...directoryRows].sort((a, b) =>
+  }).sort((a, b) =>
     (a.lastName + a.firstName).localeCompare(b.lastName + b.firstName, "nl"),
   );
 }
