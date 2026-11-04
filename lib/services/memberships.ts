@@ -19,6 +19,19 @@ export function selectMembershipByStatus(
     )[0] ?? null;
 }
 
+/** The current academic-year record takes precedence over older active records. */
+export function selectCurrentMembership(memberships: Membership[]): Membership | null {
+  return [...memberships].sort((a, b) => {
+    const yearDifference = (b.startYear ?? 0) - (a.startYear ?? 0);
+    if (yearDifference !== 0) return yearDifference;
+    const statusRank: Record<Membership["status"], number> = {
+      active: 0, pending: 1, expired: 2, cancelled: 3,
+    };
+    return statusRank[a.status] - statusRank[b.status]
+      || a.id.localeCompare(b.id);
+  })[0] ?? null;
+}
+
 export async function getUserMemberships(userId: string): Promise<Membership[]> {
   const snapshot = await getDocs(query(
     collection(db, "memberships"),
