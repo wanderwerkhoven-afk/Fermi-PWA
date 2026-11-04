@@ -220,7 +220,7 @@ export async function listAdminMembers(): Promise<AdminMemberRow[]> {
     const membership = selectCurrentMembership(membershipsByUser.get(user.uid) ?? []);
     const directory = directoryByEmail.get(email);
     const resolvedMembership = membership;
-    const resolvedStatus = lifecycleFor(user, resolvedMembership);
+    const resolvedStatus = lifecycleFor(user, resolvedMembership ?? undefined);
     const payment = resolvedMembership?.payment || directory?.payment;
     const paymentStatus: MembershipPaymentStatus =
       payment?.status
