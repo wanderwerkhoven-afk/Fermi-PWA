@@ -91,7 +91,7 @@ export function subscribePendingApprovals(
   const publish = () => {
     if (!loadedAccounts || !loadedMemberships) return;
     const items = accounts
-      .filter((account) => account.role === "member" && pending.has(account.uid))
+      .filter((account) => account.status === "active" && (account.accessLevel ?? account.role) === "member" && pending.has(account.uid))
       .map((account) => ({
         uid: account.uid,
         firstName: account.profile?.firstName ?? "",
