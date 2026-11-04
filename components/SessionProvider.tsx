@@ -6,7 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import type { FermiUser, Membership } from "../lib/models/backend";
 import { subscribeUserProfile } from "../lib/services/users";
-import { selectMembershipByStatus, subscribeUserMemberships } from "../lib/services/memberships";
+import { selectCurrentMembership, subscribeUserMemberships } from "../lib/services/memberships";
 
 type SessionState = {
   firebaseUser: User | null;
@@ -79,11 +79,13 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
       const publish = () => {
         if (sessionGeneration !== generation || !profileReady || !membershipsReady) return;
-        const membership = selectMembershipByStatus(memberships, "active")
-          ?? selectMembershipByStatus(memberships, "pending")
-          ?? (profile?.status === "active" && (profile.role === "admin" || profile.role === "board")
-            ? privilegedMembership(profile)
-            : null);
+        const currentMembership = selectCurrentMembership(memberships);
+        const membership = profile?.status === "suspended"
+          ? null
+          : currentMembership
+            ?? (profile?.status === "active" && (profile.role === "admin" || profile.role === "board")
+              ? privilegedMembership(profile)
+              : null);
         const currentStatus = membership?.status ?? null;
         const justApproved = !initialResolution && previousStatus === "pending" && currentStatus === "active";
         initialResolution = false;
