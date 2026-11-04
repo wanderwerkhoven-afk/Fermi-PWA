@@ -454,7 +454,11 @@ export async function setAdminMemberRole(row: AdminMemberRow, role: UserRole) {
     return;
   }
   if (!row.uid) throw new Error("Dit lid heeft geen gekoppeld account.");
-  await updateDoc(doc(db, "users", row.uid), { role, updatedAt: serverTimestamp() });
+  await updateDoc(doc(db, "users", row.uid), {
+    role,
+    accessLevel: role,
+    updatedAt: serverTimestamp(),
+  });
 }
 
 
