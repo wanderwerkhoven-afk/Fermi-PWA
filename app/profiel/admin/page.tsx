@@ -11,7 +11,7 @@ const modules = [
   { title: "Leden", description: "Leden, betaalstatus en lidmaatschappen beheren", href: "/profiel/leden-admin", icon: UserCog },
   { title: "Activiteiten", description: "Activiteiten, inschrijvingen en agenda beheren", href: "/profiel/activiteiten-admin", icon: CalendarCog },
   { title: "Mededelingen", description: "Mededelingen publiceren en aanpassen", href: "/profiel/mededelingen-admin", icon: Megaphone },
-  { title: "Vereniging", description: "Vier bestuursleden en commissies beheren", href: "/profiel/vereniging-admin", icon: UsersRound },
+  { title: "Vereniging", description: "Bestuursleden en commissies beheren", href: "/profiel/vereniging-admin", icon: UsersRound },
   { title: "E-mailcampagnes", description: "E-mails, uitnodigingen en mailcampagnes beheren", href: "/profiel/email-admin", icon: Mail },
 ];
 
@@ -21,7 +21,7 @@ export default function AdminOverviewPage() {
     if (!user) { setAuthorized(false); return; }
     try {
       const profile = await getUserProfile(user.uid);
-      setAuthorized(profile?.status === "active" && profile.role === "admin");
+      setAuthorized(profile?.status === "active" && (profile.accessLevel ?? profile.role) === "admin");
     } catch { setAuthorized(false); }
   }), []);
 
